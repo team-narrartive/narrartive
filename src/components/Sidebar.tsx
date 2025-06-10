@@ -16,16 +16,21 @@ interface SidebarProps {
   isOpen: boolean;
   onToggle: () => void;
   currentView: string;
+  onNavigate?: (view: string) => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView, onNavigate }) => {
   const menuItems = [
-    { id: 'dashboard', icon: Home, label: 'Dashboard' },
-    { id: 'projects', icon: BookOpen, label: 'My Projects' },
-    { id: 'community', icon: Sparkles, label: 'Community' },
-    { id: 'settings', icon: Settings, label: 'Settings' },
-    { id: 'feedback', icon: MessageSquare, label: 'Feedback' },
+    { id: 'dashboard', icon: Home, label: 'Dashboard', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' })) },
+    { id: 'projects', icon: BookOpen, label: 'My Projects', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'projects' })) },
+    { id: 'community', icon: Sparkles, label: 'Community', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'community' })) },
+    { id: 'settings', icon: Settings, label: 'Settings', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'settings' })) },
+    { id: 'feedback', icon: MessageSquare, label: 'Feedback', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'feedback' })) },
   ];
+
+  const handleLogout = () => {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'logout' }));
+  };
 
   return (
     <div className={`fixed left-0 top-0 h-full bg-white/90 backdrop-blur-xl border-r border-white/20 transition-all duration-300 z-50 ${isOpen ? 'w-64' : 'w-16'}`}>
@@ -63,6 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView 
         {menuItems.map((item) => (
           <Button
             key={item.id}
+            onClick={item.onClick}
             variant={currentView === item.id ? "default" : "ghost"}
             className={`w-full justify-start space-x-3 ${!isOpen && 'px-3'} ${
               currentView === item.id 
@@ -79,6 +85,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView 
       {/* Bottom Section */}
       <div className="absolute bottom-4 left-4 right-4">
         <Button
+          onClick={handleLogout}
           variant="ghost"
           className={`w-full justify-start space-x-3 text-red-500 hover:bg-red-50 ${!isOpen && 'px-3'}`}
         >

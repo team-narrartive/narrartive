@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -9,14 +9,55 @@ import { Landing } from './components/Landing';
 import { Auth } from './components/Auth';
 import { Dashboard } from './components/Dashboard';
 import { StoryInput } from './components/StoryInput';
+import { Settings } from './components/Settings';
+import { Feedback } from './components/Feedback';
+import { CommunityShowcase } from './components/CommunityShowcase';
+import { MyProjects } from './components/MyProjects';
 
 const queryClient = new QueryClient();
 
-type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation';
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects';
 
 const App = () => {
   const [currentView, setCurrentView] = useState<View>('landing');
   const [currentStory, setCurrentStory] = useState('');
+
+  // Set up event listeners for navigation
+  useEffect(() => {
+    const handleNavigation = (event: CustomEvent) => {
+      const destination = event.detail;
+      console.log('Navigation event:', destination);
+      
+      switch (destination) {
+        case 'dashboard':
+          setCurrentView('dashboard');
+          break;
+        case 'projects':
+          setCurrentView('projects');
+          break;
+        case 'community':
+          setCurrentView('community');
+          break;
+        case 'settings':
+          setCurrentView('settings');
+          break;
+        case 'feedback':
+          setCurrentView('feedback');
+          break;
+        case 'logout':
+          setCurrentView('landing');
+          break;
+        default:
+          console.log('Unknown navigation destination:', destination);
+      }
+    };
+
+    window.addEventListener('navigate', handleNavigation as EventListener);
+    
+    return () => {
+      window.removeEventListener('navigate', handleNavigation as EventListener);
+    };
+  }, []);
 
   const handleGetStarted = () => {
     setCurrentView('auth');
@@ -48,13 +89,23 @@ const App = () => {
   };
 
   const handleViewProjects = () => {
-    // Will implement later
-    console.log('View projects');
+    setCurrentView('projects');
   };
 
   const handleViewCommunity = () => {
-    // Will implement later
-    console.log('View community');
+    setCurrentView('community');
+  };
+
+  const handleSettings = () => {
+    setCurrentView('settings');
+  };
+
+  const handleFeedback = () => {
+    setCurrentView('feedback');
+  };
+
+  const handleLogout = () => {
+    setCurrentView('landing');
   };
 
   const renderCurrentView = () => {
@@ -91,6 +142,29 @@ const App = () => {
             onGenerateWidgets={handleGenerateWidgets}
           />
         );
+
+      case 'settings':
+        return (
+          <Settings onBack={handleBackToDashboard} />
+        );
+
+      case 'feedback':
+        return (
+          <Feedback onBack={handleBackToDashboard} />
+        );
+
+      case 'community':
+        return (
+          <CommunityShowcase onBack={handleBackToDashboard} />
+        );
+
+      case 'projects':
+        return (
+          <MyProjects 
+            onBack={handleBackToDashboard}
+            onCreateNew={handleCreateNew}
+          />
+        );
       
       case 'creation':
         return (
@@ -118,7 +192,9 @@ const App = () => {
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        {renderCurrentView()}
+        <div className="min-h-screen">
+          {renderCurrentView()}
+        </div>
       </TooltipProvider>
     </QueryClientProvider>
   );

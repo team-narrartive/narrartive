@@ -12,9 +12,17 @@ interface LayoutProps {
 export const Layout: React.FC<LayoutProps> = ({ 
   children, 
   showSidebar = false, 
-  currentView = 'dashboard' 
+  currentView = 'dashboard'
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  const handleSettings = () => {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'settings' }));
+  };
+
+  const handleLogout = () => {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'logout' }));
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -27,7 +35,11 @@ export const Layout: React.FC<LayoutProps> = ({
       )}
       
       <div className={`transition-all duration-300 ${showSidebar && sidebarOpen ? 'ml-64' : showSidebar ? 'ml-16' : ''}`}>
-        <Header showSidebar={showSidebar} />
+        <Header 
+          showSidebar={showSidebar}
+          onSettings={handleSettings}
+          onLogout={handleLogout}
+        />
         <main className="p-6">
           {children}
         </main>

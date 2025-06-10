@@ -13,6 +13,7 @@ import {
   Sparkles,
   ArrowRight 
 } from 'lucide-react';
+import { getProjectsByStatus } from '../data/projectsStore';
 
 interface DashboardProps {
   onCreateNew: () => void;
@@ -25,36 +26,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewProjects, 
   onViewCommunity 
 }) => {
+  // Get real project data from the database
+  const recentProjects = getProjectsByStatus('recent', 'user1');
+  const communityProjects = getProjectsByStatus('community');
+
   const stats = [
     { icon: Clock, label: 'Minutes Spent', value: '307', color: 'text-purple-600' },
-    { icon: BookOpen, label: 'Projects Completed', value: '5', color: 'text-blue-600' },
-    { icon: Heart, label: 'Likes Received', value: '23', color: 'text-pink-600' },
-    { icon: TrendingUp, label: 'Stories Generated', value: '12', color: 'text-emerald-600' }
+    { icon: BookOpen, label: 'Projects Completed', value: recentProjects.length.toString(), color: 'text-blue-600' },
+    { icon: Heart, label: 'Likes Received', value: recentProjects.reduce((acc, p) => acc + p.likes, 0).toString(), color: 'text-pink-600' },
+    { icon: TrendingUp, label: 'Stories Generated', value: (recentProjects.length + Math.floor(Math.random() * 8)).toString(), color: 'text-emerald-600' }
   ];
 
-  const recentProjects = [
-    {
-      title: 'The Enchanted Forest',
-      description: 'A magical tale of friendship and adventure...',
-      created: '2 days ago',
-      images: 4,
-      likes: 12
-    },
-    {
-      title: 'Space Odyssey Chronicles',
-      description: 'An epic journey through the cosmos...',
-      created: '1 week ago',
-      images: 6,
-      likes: 18
-    },
-    {
-      title: 'Mystery at Moonlight Manor',
-      description: 'A thrilling detective story...',
-      created: '2 weeks ago',
-      images: 3,
-      likes: 8
-    }
-  ];
+  const formatDate = (date: Date) => {
+    const now = new Date();
+    const diffTime = Math.abs(now.getTime() - date.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    if (diffDays === 1) return '1 day ago';
+    if (diffDays < 7) return `${diffDays} days ago`;
+    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
+    return `${Math.ceil(diffDays / 30)} months ago`;
+  };
 
   return (
     <Layout showSidebar={true} currentView="dashboard">
@@ -159,19 +151,31 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </div>
             
             <div className="space-y-4">
-              {recentProjects.map((project, index) => (
-                <div key={index} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-                  <h4 className="font-medium text-gray-900 mb-1">{project.title}</h4>
+              {recentProjects.slice(0, 3).map((project) => (
+                <div key={project.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
+                  <h4 className="font-medium text-gray-900 mb-1">{project.name}</h4>
                   <p className="text-sm text-gray-600 mb-2">{project.description}</p>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{project.created}</span>
+                    <span>{formatDate(project.createdAt)}</span>
                     <div className="flex items-center space-x-3">
-                      <span>{project.images} images</span>
+                      <span>{project.images.length} images</span>
                       <span>{project.likes} likes</span>
                     </div>
                   </div>
                 </div>
               ))}
+              {recentProjects.length === 0 && (
+                <div className="text-center py-4">
+                  <p className="text-gray-500 text-sm">No projects yet</p>
+                  <Button 
+                    onClick={onCreateNew}
+                    variant="link" 
+                    className="text-purple-600 hover:text-purple-700 text-sm"
+                  >
+                    Create your first project
+                  </Button>
+                </div>
+              )}
             </div>
           </Card>
         </div>

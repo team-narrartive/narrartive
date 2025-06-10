@@ -1,13 +1,40 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Bell, Search, User } from 'lucide-react';
+import { Notifications } from './Notifications';
+import { UserProfile } from './UserProfile';
 
 interface HeaderProps {
   showSidebar?: boolean;
+  onSettings?: () => void;
+  onLogout?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ showSidebar }) => {
+export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogout }) => {
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [showProfile, setShowProfile] = useState(false);
+
+  const handleNotificationClick = () => {
+    setShowNotifications(!showNotifications);
+    setShowProfile(false); // Close profile if open
+  };
+
+  const handleProfileClick = () => {
+    setShowProfile(!showProfile);
+    setShowNotifications(false); // Close notifications if open
+  };
+
+  const handleSettingsClick = () => {
+    setShowProfile(false);
+    onSettings?.();
+  };
+
+  const handleLogoutClick = () => {
+    setShowProfile(false);
+    onLogout?.();
+  };
+
   return (
     <header className="bg-white/80 backdrop-blur-md border-b border-white/20 px-6 py-4">
       <div className="flex items-center justify-between">
@@ -34,14 +61,37 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar }) => {
             />
           </div>
           
-          <Button variant="ghost" size="sm" className="relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="relative"
+              onClick={handleNotificationClick}
+            >
+              <Bell className="w-5 h-5" />
+              <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+            </Button>
+            <Notifications 
+              isOpen={showNotifications} 
+              onClose={() => setShowNotifications(false)} 
+            />
+          </div>
           
-          <Button variant="ghost" size="sm">
-            <User className="w-5 h-5" />
-          </Button>
+          <div className="relative">
+            <Button 
+              variant="ghost" 
+              size="sm"
+              onClick={handleProfileClick}
+            >
+              <User className="w-5 h-5" />
+            </Button>
+            <UserProfile 
+              isOpen={showProfile} 
+              onClose={() => setShowProfile(false)}
+              onSettings={handleSettingsClick}
+              onLogout={handleLogoutClick}
+            />
+          </div>
         </div>
       </div>
     </header>
