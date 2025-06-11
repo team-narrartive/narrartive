@@ -41,9 +41,11 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <header className="px-6 py-6">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-600 to-blue-600 rounded-xl flex items-center justify-center animate-glow">
-                <Sparkles className="w-6 h-6 text-white" />
-              </div>
+              <img 
+                src="/lovable-uploads/22334d6c-7e2a-4a4b-a894-fb416e4fb182.png" 
+                alt="NarrArtive" 
+                className="w-10 h-10"
+              />
               <div>
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                   NarrArtive
@@ -165,9 +167,11 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <footer className="px-6 py-12 border-t border-gray-200">
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+              <img 
+                src="/lovable-uploads/22334d6c-7e2a-4a4b-a894-fb416e4fb182.png" 
+                alt="NarrArtive" 
+                className="w-8 h-8"
+              />
               <span className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
                 NarrArtive
               </span>

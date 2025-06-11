@@ -47,9 +47,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
-          <div className="w-8 h-8 bg-gradient-to-r from-purple-600 to-blue-600 rounded-lg flex items-center justify-center animate-glow">
-            <span className="text-white font-bold text-sm">N</span>
-          </div>
+          <img 
+            src="/lovable-uploads/22334d6c-7e2a-4a4b-a894-fb416e4fb182.png" 
+            alt="NarrArtive" 
+            className="w-8 h-8"
+          />
           {isOpen && (
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
