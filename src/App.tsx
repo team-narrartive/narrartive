@@ -26,13 +26,18 @@ const AppContent = () => {
   const [currentStoryId, setCurrentStoryId] = useState('');
   const { user, loading } = useAuth();
 
-  // Redirect authenticated users to dashboard
+  // Handle authentication state changes
   useEffect(() => {
-    if (!loading && user && currentView === 'landing') {
-      setCurrentView('dashboard');
-    }
-    if (!loading && !user && currentView !== 'landing' && currentView !== 'auth') {
-      setCurrentView('landing');
+    console.log('Auth state effect - User:', user?.email, 'Loading:', loading, 'Current view:', currentView);
+    
+    if (!loading) {
+      if (user && currentView === 'landing') {
+        console.log('Authenticated user detected, redirecting to dashboard');
+        setCurrentView('dashboard');
+      } else if (!user && currentView !== 'landing' && currentView !== 'auth') {
+        console.log('Unauthenticated user detected, redirecting to landing');
+        setCurrentView('landing');
+      }
     }
   }, [user, loading, currentView]);
 
@@ -44,19 +49,39 @@ const AppContent = () => {
       
       switch (destination) {
         case 'dashboard':
-          setCurrentView('dashboard');
+          if (user) {
+            setCurrentView('dashboard');
+          } else {
+            setCurrentView('auth');
+          }
           break;
         case 'projects':
-          setCurrentView('projects');
+          if (user) {
+            setCurrentView('projects');
+          } else {
+            setCurrentView('auth');
+          }
           break;
         case 'community':
-          setCurrentView('community');
+          if (user) {
+            setCurrentView('community');
+          } else {
+            setCurrentView('auth');
+          }
           break;
         case 'settings':
-          setCurrentView('settings');
+          if (user) {
+            setCurrentView('settings');
+          } else {
+            setCurrentView('auth');
+          }
           break;
         case 'feedback':
-          setCurrentView('feedback');
+          if (user) {
+            setCurrentView('feedback');
+          } else {
+            setCurrentView('auth');
+          }
           break;
         case 'logout':
           setCurrentView('landing');
@@ -71,29 +96,41 @@ const AppContent = () => {
     return () => {
       window.removeEventListener('navigate', handleNavigation as EventListener);
     };
-  }, []);
+  }, [user]);
 
   const handleGetStarted = () => {
+    console.log('Get started clicked');
     setCurrentView('auth');
   };
 
   const handleLogin = () => {
+    console.log('Login clicked');
     setCurrentView('auth');
   };
 
   const handleAuthSuccess = () => {
+    console.log('Auth success, redirecting to dashboard');
     setCurrentView('dashboard');
   };
 
   const handleBackToLanding = () => {
+    console.log('Back to landing clicked');
     setCurrentView('landing');
   };
 
   const handleCreateNew = () => {
+    if (!user) {
+      setCurrentView('auth');
+      return;
+    }
     setCurrentView('story-input');
   };
 
   const handleBackToDashboard = () => {
+    if (!user) {
+      setCurrentView('auth');
+      return;
+    }
     setCurrentView('dashboard');
   };
 
@@ -103,14 +140,26 @@ const AppContent = () => {
   };
 
   const handleViewProjects = () => {
+    if (!user) {
+      setCurrentView('auth');
+      return;
+    }
     setCurrentView('projects');
   };
 
   const handleViewCommunity = () => {
+    if (!user) {
+      setCurrentView('auth');
+      return;
+    }
     setCurrentView('community');
   };
 
   const handleViewStory = (storyId: string) => {
+    if (!user) {
+      setCurrentView('auth');
+      return;
+    }
     setCurrentStoryId(storyId);
     setCurrentView('story-reader');
   };
