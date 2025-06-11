@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -248,13 +247,13 @@ const AppContent = () => {
       
       case 'creation':
         return (
-          <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 flex items-center justify-center">
+          <div className="min-h-screen bg-gradient-to-br from-sky-50 via-cyan-50 to-emerald-50 flex items-center justify-center">
             <div className="text-center">
               <h1 className="text-4xl font-bold text-gray-900 mb-4">Creation Interface</h1>
               <p className="text-xl text-gray-600">Coming Soon...</p>
               <button 
                 onClick={handleBackToDashboard}
-                className="mt-6 px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-600 to-cyan-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 Back to Dashboard
               </button>

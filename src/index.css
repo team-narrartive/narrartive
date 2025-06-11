@@ -16,7 +16,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 14 88% 58%;
+    --primary: 200 95% 45%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -25,7 +25,7 @@
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
 
-    --accent: 33 95% 52%;
+    --accent: 165 85% 55%;
     --accent-foreground: 0 0% 9%;
 
     --destructive: 0 84.2% 60.2%;
@@ -33,15 +33,15 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 14 88% 58%;
+    --ring: 200 95% 45%;
 
     --radius: 0.75rem;
 
-    /* Custom gradients - Updated to match logo */
-    --gradient-primary: linear-gradient(135deg, #ea580c 0%, #f97316 100%);
-    --gradient-secondary: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    --gradient-accent: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
-    --gradient-background: linear-gradient(135deg, #fef7ed 0%, #fed7aa 100%);
+    /* Custom gradients - Updated to match logo with blue/green theme */
+    --gradient-primary: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+    --gradient-secondary: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    --gradient-accent: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    --gradient-background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
   }
 
   .dark {
@@ -51,19 +51,19 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 14 88% 58%;
+    --primary: 200 95% 45%;
     --primary-foreground: 210 40% 98%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 33 95% 52%;
+    --accent: 165 85% 55%;
     --accent-foreground: 210 40% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 14 88% 58%;
+    --ring: 200 95% 45%;
   }
 }
 
@@ -113,7 +113,7 @@
   }
   
   @keyframes glow {
-    from { box-shadow: 0 0 20px rgba(234, 88, 12, 0.3); }
-    to { box-shadow: 0 0 30px rgba(234, 88, 12, 0.6); }
+    from { box-shadow: 0 0 20px rgba(14, 165, 233, 0.3); }
+    to { box-shadow: 0 0 30px rgba(14, 165, 233, 0.6); }
   }
 }

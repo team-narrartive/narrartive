@@ -42,11 +42,11 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
           {!showSidebar && (
             <div className="flex items-center space-x-2">
               <img 
-                src="/lovable-uploads/22334d6c-7e2a-4a4b-a894-fb416e4fb182.png" 
+                src="/lovable-uploads/b5f17e72-3d78-4e8e-ae1a-ee9e9e5426fc.png" 
                 alt="NarrArtive" 
                 className="w-8 h-8"
               />
-              <span className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 NarrArtive
               </span>
             </div>
@@ -59,7 +59,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
             <input
               type="text"
               placeholder="Search projects..."
-              className="pl-10 pr-4 py-2 bg-white/60 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-transparent"
+              className="pl-10 pr-4 py-2 bg-white/60 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
           

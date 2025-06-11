@@ -48,13 +48,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
           <img 
-            src="/lovable-uploads/22334d6c-7e2a-4a4b-a894-fb416e4fb182.png" 
+            src="/lovable-uploads/b5f17e72-3d78-4e8e-ae1a-ee9e9e5426fc.png" 
             alt="NarrArtive" 
             className="w-8 h-8"
           />
           {isOpen && (
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
                 NarrArtive
               </h1>
               <p className="text-xs text-gray-500">Where stories come to life</p>
@@ -84,8 +84,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
             variant={currentView === item.id ? "default" : "ghost"}
             className={`w-full justify-start space-x-3 ${!isOpen && 'px-3'} ${
               currentView === item.id 
-                ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg' 
-                : 'hover:bg-orange-50'
+                ? 'bg-gradient-to-r from-blue-600 to-cyan-600 text-white shadow-lg' 
+                : 'hover:bg-blue-50'
             }`}
           >
             <item.icon className="w-5 h-5" />

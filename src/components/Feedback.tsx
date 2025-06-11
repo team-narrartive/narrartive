@@ -5,6 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useToast } from '@/hooks/use-toast';
 import { 
   MessageSquare, 
   Star, 
@@ -23,13 +24,66 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
   const [rating, setRating] = useState(0);
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { toast } = useToast();
 
-  const handleSubmitFeedback = () => {
-    console.log('Feedback submitted:', { feedbackType, rating, subject, message });
-    // Here you would typically send to backend
-    setSubject('');
-    setMessage('');
-    setRating(0);
+  const handleSubmitFeedback = async () => {
+    if (!subject || !message) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    
+    try {
+      const feedbackData = {
+        type: feedbackType,
+        rating,
+        subject,
+        message,
+        timestamp: new Date().toISOString(),
+        userAgent: navigator.userAgent,
+      };
+
+      console.log('Submitting feedback:', feedbackData);
+
+      const response = await fetch('https://yzmladsjrirvzzmaendi.supabase.co/functions/v1/send-feedback', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bWxhZHNqcmlydnp6bWFlbmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1OTY4OTcsImV4cCI6MjA2NTE3Mjg5N30.koAb7oH2PX_RcA_tnwA3HguJmv2QvUxbBW-hpREwRqE'
+        },
+        body: JSON.stringify(feedbackData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to submit feedback');
+      }
+
+      toast({
+        title: "Feedback Submitted",
+        description: "Thank you for your feedback! We'll review it shortly.",
+      });
+
+      // Reset form
+      setSubject('');
+      setMessage('');
+      setRating(0);
+      setFeedbackType('general');
+    } catch (error) {
+      console.error('Error submitting feedback:', error);
+      toast({
+        title: "Error",
+        description: "Failed to submit feedback. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const feedbackTypes = [
@@ -56,8 +110,8 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
           <div className="lg:col-span-2">
             <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-purple-600" />
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-blue-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Share Your Feedback</h3>
@@ -76,7 +130,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
                         onClick={() => setFeedbackType(type.id as any)}
                         className={`p-3 rounded-lg border text-center transition-all ${
                           feedbackType === type.id
-                            ? 'border-purple-500 bg-purple-50'
+                            ? 'border-blue-500 bg-blue-50'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -130,11 +184,11 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
 
                 <Button 
                   onClick={handleSubmitFeedback}
-                  disabled={!subject || !message}
-                  className="w-full bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                  disabled={!subject || !message || isSubmitting}
+                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
                 >
                   <Send className="w-4 h-4 mr-2" />
-                  Submit Feedback
+                  {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
                 </Button>
               </div>
             </Card>
