@@ -89,9 +89,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </Card>
       </div>
 
-      {/* Quick Actions with improved layout */}
+      {/* Quick Actions with improved darker colors */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="gradient-primary text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
+        <Card className="bg-gradient-to-br from-emerald-600 to-green-600 text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -106,7 +106,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="gradient-secondary text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
+        <Card className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -123,7 +123,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="gradient-accent text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
+        <Card className="bg-gradient-to-br from-orange-500 to-amber-600 text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
