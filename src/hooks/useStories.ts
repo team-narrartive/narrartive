@@ -58,41 +58,58 @@ export const useLikeStory = () => {
   const { toast } = useToast();
 
   return useMutation({
-    mutationFn: async (storyId: string) => {
-      console.log('Liking story:', storyId);
+    mutationFn: async ({ storyId, shouldLike }: { storyId: string; shouldLike: boolean }) => {
+      console.log('Like/Unlike story:', storyId, 'shouldLike:', shouldLike);
       
-      // Use the database function to increment likes
-      const { data, error } = await supabase.rpc('increment_story_likes', {
-        story_id: storyId
-      });
+      if (shouldLike) {
+        // Only increment in database if we're actually liking
+        const { data, error } = await supabase.rpc('increment_story_likes', {
+          story_id: storyId
+        });
 
-      if (error) {
-        console.error('Error incrementing likes:', error);
-        throw error;
+        if (error) {
+          console.error('Error incrementing likes:', error);
+          throw error;
+        }
+
+        console.log('Like increment result:', data);
+        return { story: data?.[0] || null, action: 'liked' };
+      } else {
+        // For unlike, we just return the current story data without incrementing
+        const { data, error } = await supabase
+          .from('stories')
+          .select('*')
+          .eq('id', storyId)
+          .maybeSingle();
+
+        if (error) {
+          console.error('Error fetching story for unlike:', error);
+          throw error;
+        }
+
+        return { story: data, action: 'unliked' };
       }
-
-      console.log('Like increment result:', data);
-      return data?.[0] || null;
     },
-    onSuccess: (updatedStory) => {
-      if (updatedStory) {
-        console.log('Like success, invalidating queries for story:', updatedStory.id);
+    onSuccess: ({ story, action }) => {
+      if (story) {
+        console.log('Like/Unlike success, updating cache for story:', story.id);
         
-        // Invalidate and refetch all related queries
-        queryClient.invalidateQueries({ queryKey: ['story', updatedStory.id] });
-        queryClient.invalidateQueries({ queryKey: ['stories', 'community'] });
-        queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
+        // Update the individual story query
+        queryClient.setQueryData(['story', story.id], story);
+        
+        // Invalidate and refetch all stories lists to ensure fresh data
+        queryClient.invalidateQueries({ queryKey: ['stories'] });
 
         toast({
-          title: "Story liked! ❤️",
-          description: "Thank you for your support!"
+          title: action === 'liked' ? "Story liked! ❤️" : "Story unliked",
+          description: action === 'liked' ? "Thank you for your support!" : "Like removed"
         });
       }
     },
     onError: (error: any) => {
-      console.error('Like error:', error);
+      console.error('Like/Unlike error:', error);
       toast({
-        title: "Failed to like story",
+        title: "Failed to update like",
         description: error.message || "Please try again",
         variant: "destructive"
       });
@@ -122,12 +139,13 @@ export const useIncrementViews = () => {
     },
     onSuccess: (updatedStory) => {
       if (updatedStory) {
-        console.log('View increment success, invalidating queries for story:', updatedStory.id);
+        console.log('View increment success, updating cache for story:', updatedStory.id);
         
-        // Invalidate and refetch all related queries
-        queryClient.invalidateQueries({ queryKey: ['story', updatedStory.id] });
-        queryClient.invalidateQueries({ queryKey: ['stories', 'community'] });
-        queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
+        // Update the individual story query
+        queryClient.setQueryData(['story', updatedStory.id], updatedStory);
+        
+        // Invalidate and refetch all stories lists to ensure fresh data
+        queryClient.invalidateQueries({ queryKey: ['stories'] });
       }
     },
     onError: (error: any) => {

@@ -26,18 +26,21 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const handleLike = async () => {
     if (!story) return;
     
+    const wasLiked = userLiked;
+    
     // Toggle local like state for immediate UI feedback
     toggleLike(story.id);
     
     try {
-      // Only increment in database if user is "liking" (not unliking)
-      if (!userLiked) {
-        await likeStoryMutation.mutateAsync(story.id);
-      }
+      // Call the mutation with the correct action
+      await likeStoryMutation.mutateAsync({ 
+        storyId: story.id, 
+        shouldLike: !wasLiked // If user had liked it, we're now unliking (false)
+      });
     } catch (error) {
       // Revert local state if database update fails
       toggleLike(story.id);
-      console.error('Error liking story:', error);
+      console.error('Error with like/unlike:', error);
     }
   };
 

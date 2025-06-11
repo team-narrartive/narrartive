@@ -28,26 +28,22 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   const handleLike = async (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
     
-    const wasLiked = isLiked(storyId);
+    const userLiked = isLiked(storyId);
     
-    // Only increment if user wasn't already liked (prevent double-liking)
-    if (!wasLiked) {
-      // Toggle local like state for immediate UI feedback
-      toggleLike(storyId);
-      
-      try {
-        await likeStoryMutation.mutateAsync(storyId);
-        console.log('Like successful for story:', storyId);
-      } catch (error) {
-        // Revert local state if database update fails
-        toggleLike(storyId);
-        console.error('Error liking story:', error);
-      }
-    } else {
-      toast({
-        title: "Already liked! ❤️",
-        description: "You've already liked this story."
+    // Toggle local like state for immediate UI feedback
+    toggleLike(storyId);
+    
+    try {
+      // Call the mutation with the correct action
+      await likeStoryMutation.mutateAsync({ 
+        storyId, 
+        shouldLike: !userLiked // If user had liked it, we're now unliking (false)
       });
+      console.log('Like/Unlike successful for story:', storyId);
+    } catch (error) {
+      // Revert local state if database update fails
+      toggleLike(storyId);
+      console.error('Error with like/unlike:', error);
     }
   };
 
