@@ -47,15 +47,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
       {/* Logo */}
       <div className="p-6 border-b border-gray-200">
         <div className="flex items-center space-x-3">
-          <img 
-            src="/lovable-uploads/b5f17e72-3d78-4e8e-ae1a-ee9e9e5426fc.png" 
-            alt="NarrArtive" 
-            className="w-8 h-8"
-            onError={(e) => {
-              console.error('Logo failed to load:', e);
-              e.currentTarget.style.display = 'none';
-            }}
-          />
+          <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center flex-shrink-0">
+            <span className="text-white font-bold text-sm">N</span>
+          </div>
           {isOpen && (
             <div>
               <h1 className="text-xl font-bold text-primary">

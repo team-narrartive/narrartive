@@ -17,12 +17,12 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
 
   const handleNotificationClick = () => {
     setShowNotifications(!showNotifications);
-    setShowProfile(false); // Close profile if open
+    setShowProfile(false);
   };
 
   const handleProfileClick = () => {
     setShowProfile(!showProfile);
-    setShowNotifications(false); // Close notifications if open
+    setShowNotifications(false);
   };
 
   const handleSettingsClick = () => {
@@ -41,15 +41,9 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
         <div className="flex items-center space-x-4">
           {!showSidebar && (
             <div className="flex items-center space-x-2">
-              <img 
-                src="/lovable-uploads/b5f17e72-3d78-4e8e-ae1a-ee9e9e5426fc.png" 
-                alt="NarrArtive" 
-                className="w-8 h-8"
-                onError={(e) => {
-                  console.error('Logo failed to load:', e);
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                <span className="text-white font-bold text-sm">N</span>
+              </div>
               <span className="text-xl font-bold text-primary">
                 NarrArtive
               </span>
