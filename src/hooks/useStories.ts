@@ -61,48 +61,18 @@ export const useLikeStory = () => {
     mutationFn: async (storyId: string) => {
       console.log('Liking story:', storyId);
       
-      // Use a more direct approach - increment the like_count directly
+      // Use the database function to increment likes
       const { data, error } = await supabase.rpc('increment_story_likes', {
         story_id: storyId
       });
 
       if (error) {
-        console.error('RPC error, falling back to manual update:', error);
-        
-        // Fallback: Get current count and increment
-        const { data: currentStory, error: fetchError } = await supabase
-          .from('stories')
-          .select('like_count')
-          .eq('id', storyId)
-          .maybeSingle();
-
-        if (fetchError) {
-          console.error('Error fetching story for like:', fetchError);
-          throw fetchError;
-        }
-
-        if (!currentStory) {
-          throw new Error('Story not found');
-        }
-
-        const newLikeCount = (currentStory.like_count || 0) + 1;
-
-        const { data: updatedStory, error: updateError } = await supabase
-          .from('stories')
-          .update({ like_count: newLikeCount })
-          .eq('id', storyId)
-          .select('*')
-          .maybeSingle();
-
-        if (updateError) {
-          console.error('Error updating like count:', updateError);
-          throw updateError;
-        }
-
-        return updatedStory;
+        console.error('Error incrementing likes:', error);
+        throw error;
       }
 
-      return data;
+      console.log('Like increment result:', data);
+      return data?.[0] || null;
     },
     onSuccess: (updatedStory) => {
       if (updatedStory) {
@@ -137,48 +107,18 @@ export const useIncrementViews = () => {
     mutationFn: async (storyId: string) => {
       console.log('Incrementing views for story:', storyId);
       
-      // Use RPC function first
+      // Use the database function to increment views
       const { data, error } = await supabase.rpc('increment_story_views', {
         story_id: storyId
       });
 
       if (error) {
-        console.error('RPC error, falling back to manual update:', error);
-        
-        // Fallback: Get current count and increment
-        const { data: currentStory, error: fetchError } = await supabase
-          .from('stories')
-          .select('view_count')
-          .eq('id', storyId)
-          .maybeSingle();
-
-        if (fetchError) {
-          console.error('Error fetching story for view increment:', fetchError);
-          throw fetchError;
-        }
-
-        if (!currentStory) {
-          throw new Error('Story not found');
-        }
-
-        const newViewCount = (currentStory.view_count || 0) + 1;
-
-        const { data: updatedStory, error: updateError } = await supabase
-          .from('stories')
-          .update({ view_count: newViewCount })
-          .eq('id', storyId)
-          .select('*')
-          .maybeSingle();
-
-        if (updateError) {
-          console.error('Error updating view count:', updateError);
-          throw updateError;
-        }
-
-        return updatedStory;
+        console.error('Error incrementing views:', error);
+        throw error;
       }
 
-      return data;
+      console.log('View increment result:', data);
+      return data?.[0] || null;
     },
     onSuccess: (updatedStory) => {
       if (updatedStory) {
