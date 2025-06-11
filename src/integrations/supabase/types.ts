@@ -89,6 +89,24 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_story_likes: {
+        Args: { story_id: string }
+        Returns: {
+          id: string
+          user_id: string
+          title: string
+          description: string
+          story_content: string
+          main_image: string
+          additional_images: string[]
+          view_count: number
+          like_count: number
+          is_public: boolean
+          category: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
       increment_story_likes: {
         Args: { story_id: string }
         Returns: {

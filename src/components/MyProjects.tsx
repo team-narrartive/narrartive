@@ -30,16 +30,18 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   const handleLike = async (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
     
-    const userLiked = isLiked(storyId);
+    const userCurrentlyLikes = isLiked(storyId);
+    console.log('HandleLike called:', storyId, 'userCurrentlyLikes:', userCurrentlyLikes);
     
     // Toggle local like state for immediate UI feedback
     toggleLike(storyId);
     
     try {
-      // Call the mutation with the correct action
+      // Call the mutation - if user currently likes it, we want to unlike (shouldLike = false)
+      // If user doesn't currently like it, we want to like (shouldLike = true)
       await likeStoryMutation.mutateAsync({ 
         storyId, 
-        shouldLike: !userLiked // If user had liked it, we're now unliking (false)
+        shouldLike: !userCurrentlyLikes
       });
       console.log('Like/Unlike successful for story:', storyId);
     } catch (error) {
@@ -73,9 +75,19 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     }
   };
 
-  const handleReadStory = (storyId: string) => {
-    // Increment view count when reading
-    incrementViewsMutation.mutate(storyId);
+  const handleReadStory = async (storyId: string) => {
+    console.log('Reading story:', storyId);
+    
+    // Increment view count when user clicks read
+    try {
+      await incrementViewsMutation.mutateAsync(storyId);
+      console.log('View count incremented successfully for story:', storyId);
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+      // Continue to story view even if view increment fails
+    }
+    
+    // Navigate to story view
     onViewStory(storyId);
   };
 
@@ -179,9 +191,10 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     <Button 
                       onClick={() => handleReadStory(story.id)}
                       className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      disabled={incrementViewsMutation.isPending}
                     >
                       <BookOpen className="h-4 w-4 mr-2" />
-                      Read
+                      {incrementViewsMutation.isPending ? 'Loading...' : 'Read'}
                     </Button>
                     
                     <Button

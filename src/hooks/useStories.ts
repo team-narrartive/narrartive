@@ -59,10 +59,10 @@ export const useLikeStory = () => {
 
   return useMutation({
     mutationFn: async ({ storyId, shouldLike }: { storyId: string; shouldLike: boolean }) => {
-      console.log('Like/Unlike story:', storyId, 'shouldLike:', shouldLike);
+      console.log('Like/Unlike story mutation:', storyId, 'shouldLike:', shouldLike);
       
       if (shouldLike) {
-        // Only increment in database if we're actually liking
+        // Call increment function for liking
         const { data, error } = await supabase.rpc('increment_story_likes', {
           story_id: storyId
         });
@@ -75,29 +75,28 @@ export const useLikeStory = () => {
         console.log('Like increment result:', data);
         return { story: data?.[0] || null, action: 'liked' };
       } else {
-        // For unlike, we just return the current story data without incrementing
-        const { data, error } = await supabase
-          .from('stories')
-          .select('*')
-          .eq('id', storyId)
-          .maybeSingle();
+        // Call decrement function for unliking
+        const { data, error } = await supabase.rpc('decrement_story_likes', {
+          story_id: storyId
+        });
 
         if (error) {
-          console.error('Error fetching story for unlike:', error);
+          console.error('Error decrementing likes:', error);
           throw error;
         }
 
-        return { story: data, action: 'unliked' };
+        console.log('Like decrement result:', data);
+        return { story: data?.[0] || null, action: 'unliked' };
       }
     },
     onSuccess: ({ story, action }) => {
       if (story) {
-        console.log('Like/Unlike success, updating cache for story:', story.id);
+        console.log('Like/Unlike success, updating cache for story:', story.id, 'new like count:', story.like_count);
         
         // Update the individual story query
         queryClient.setQueryData(['story', story.id], story);
         
-        // Invalidate and refetch all stories lists to ensure fresh data
+        // Update all stories lists to reflect the new like count
         queryClient.invalidateQueries({ queryKey: ['stories'] });
 
         toast({
@@ -139,12 +138,12 @@ export const useIncrementViews = () => {
     },
     onSuccess: (updatedStory) => {
       if (updatedStory) {
-        console.log('View increment success, updating cache for story:', updatedStory.id);
+        console.log('View increment success, updating cache for story:', updatedStory.id, 'new view count:', updatedStory.view_count);
         
         // Update the individual story query
         queryClient.setQueryData(['story', updatedStory.id], updatedStory);
         
-        // Invalidate and refetch all stories lists to ensure fresh data
+        // Update all stories lists to reflect the new view count
         queryClient.invalidateQueries({ queryKey: ['stories'] });
       }
     },
