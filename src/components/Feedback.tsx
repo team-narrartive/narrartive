@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   MessageSquare, 
   Star, 
@@ -51,18 +52,15 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
 
       console.log('Submitting feedback:', feedbackData);
 
-      const response = await fetch('https://yzmladsjrirvzzmaendi.supabase.co/functions/v1/send-feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inl6bWxhZHNqcmlydnp6bWFlbmRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1OTY4OTcsImV4cCI6MjA2NTE3Mjg5N30.koAb7oH2PX_RcA_tnwA3HguJmv2QvUxbBW-hpREwRqE'
-        },
-        body: JSON.stringify(feedbackData),
+      const { data, error } = await supabase.functions.invoke('send-feedback', {
+        body: feedbackData,
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to submit feedback');
+      if (error) {
+        throw error;
       }
+
+      console.log('Feedback submitted successfully:', data);
 
       toast({
         title: "Feedback Submitted",
@@ -87,7 +85,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
   };
 
   const feedbackTypes = [
-    { id: 'general', label: 'General Feedback', icon: ThumbsUp, color: 'text-blue-600' },
+    { id: 'general', label: 'General Feedback', icon: ThumbsUp, color: 'text-cyan-600' },
     { id: 'bug', label: 'Bug Report', icon: Bug, color: 'text-red-600' },
     { id: 'feature', label: 'Feature Request', icon: Lightbulb, color: 'text-emerald-600' }
   ];
@@ -110,8 +108,8 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
           <div className="lg:col-span-2">
             <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-100 to-cyan-100 rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-blue-600" />
+                <div className="w-10 h-10 bg-gradient-to-r from-cyan-100 to-sky-100 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-cyan-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Share Your Feedback</h3>
@@ -130,7 +128,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
                         onClick={() => setFeedbackType(type.id as any)}
                         className={`p-3 rounded-lg border text-center transition-all ${
                           feedbackType === type.id
-                            ? 'border-blue-500 bg-blue-50'
+                            ? 'border-cyan-500 bg-cyan-50'
                             : 'border-gray-200 hover:border-gray-300'
                         }`}
                       >
@@ -185,7 +183,7 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
                 <Button 
                   onClick={handleSubmitFeedback}
                   disabled={!subject || !message || isSubmitting}
-                  className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
+                  className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 text-white hover:from-cyan-700 hover:to-sky-700"
                 >
                   <Send className="w-4 h-4 mr-2" />
                   {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
@@ -210,14 +208,14 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
               <h4 className="font-semibold text-gray-900 mb-4">Recent Updates</h4>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-emerald-500 rounded-full mt-2"></div>
                   <div>
                     <p className="font-medium">Enhanced image generation</p>
                     <p className="text-gray-600">Improved AI model for better character visualization</p>
                   </div>
                 </div>
                 <div className="flex items-start space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full mt-2"></div>
+                  <div className="w-2 h-2 bg-cyan-500 rounded-full mt-2"></div>
                   <div>
                     <p className="font-medium">New dashboard layout</p>
                     <p className="text-gray-600">More intuitive navigation and project management</p>
