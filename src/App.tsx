@@ -5,6 +5,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
+import { AuthProvider, useAuth } from './hooks/useAuth';
 import { Landing } from './components/Landing';
 import { Auth } from './components/Auth';
 import { Dashboard } from './components/Dashboard';
@@ -13,14 +14,27 @@ import { Settings } from './components/Settings';
 import { Feedback } from './components/Feedback';
 import { CommunityShowcase } from './components/CommunityShowcase';
 import { MyProjects } from './components/MyProjects';
+import { StoryReader } from './components/StoryReader';
 
 const queryClient = new QueryClient();
 
-type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects';
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader';
 
-const App = () => {
+const AppContent = () => {
   const [currentView, setCurrentView] = useState<View>('landing');
   const [currentStory, setCurrentStory] = useState('');
+  const [currentStoryId, setCurrentStoryId] = useState('');
+  const { user, loading } = useAuth();
+
+  // Redirect authenticated users to dashboard
+  useEffect(() => {
+    if (!loading && user && currentView === 'landing') {
+      setCurrentView('dashboard');
+    }
+    if (!loading && !user && currentView !== 'landing' && currentView !== 'auth') {
+      setCurrentView('landing');
+    }
+  }, [user, loading, currentView]);
 
   // Set up event listeners for navigation
   useEffect(() => {
@@ -96,17 +110,21 @@ const App = () => {
     setCurrentView('community');
   };
 
-  const handleSettings = () => {
-    setCurrentView('settings');
+  const handleViewStory = (storyId: string) => {
+    setCurrentStoryId(storyId);
+    setCurrentView('story-reader');
   };
 
-  const handleFeedback = () => {
-    setCurrentView('feedback');
-  };
-
-  const handleLogout = () => {
-    setCurrentView('landing');
-  };
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   const renderCurrentView = () => {
     switch (currentView) {
@@ -155,7 +173,10 @@ const App = () => {
 
       case 'community':
         return (
-          <CommunityShowcase onBack={handleBackToDashboard} />
+          <CommunityShowcase 
+            onBack={handleBackToDashboard}
+            onViewStory={handleViewStory}
+          />
         );
 
       case 'projects':
@@ -163,6 +184,15 @@ const App = () => {
           <MyProjects 
             onBack={handleBackToDashboard}
             onCreateNew={handleCreateNew}
+            onViewStory={handleViewStory}
+          />
+        );
+
+      case 'story-reader':
+        return (
+          <StoryReader 
+            storyId={currentStoryId}
+            onBack={handleBackToDashboard}
           />
         );
       
@@ -187,15 +217,21 @@ const App = () => {
     }
   };
 
+  return renderCurrentView();
+};
+
+const App = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <div className="min-h-screen">
-          {renderCurrentView()}
-        </div>
-      </TooltipProvider>
+      <AuthProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <div className="min-h-screen">
+            <AppContent />
+          </div>
+        </TooltipProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 };

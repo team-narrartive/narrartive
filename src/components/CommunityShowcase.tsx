@@ -12,16 +12,19 @@ import {
   TrendingUp,
   Clock
 } from 'lucide-react';
-import { getProjectsByStatus } from '../data/projectsStore';
+import { useStories, useLikeStory } from '@/hooks/useStories';
 
 interface CommunityShowcaseProps {
   onBack: () => void;
+  onViewStory: (storyId: string) => void;
 }
 
-export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) => {
-  const communityProjects = getProjectsByStatus('community');
+export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack, onViewStory }) => {
+  const { data: communityProjects = [], isLoading } = useStories('community');
+  const likeStory = useLikeStory();
 
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -31,6 +34,23 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) 
     if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
     return `${Math.ceil(diffDays / 30)} months ago`;
   };
+
+  const handleLike = (storyId: string) => {
+    likeStory.mutate(storyId);
+  };
+
+  if (isLoading) {
+    return (
+      <Layout showSidebar={true} currentView="community">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading community stories...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout showSidebar={true} currentView="community">
@@ -61,7 +81,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) 
             <div className="flex items-center space-x-3">
               <TrendingUp className="w-8 h-8" />
               <div>
-                <p className="text-2xl font-bold">{communityProjects.reduce((acc, p) => acc + p.likes, 0)}</p>
+                <p className="text-2xl font-bold">{communityProjects.reduce((acc, p) => acc + (p.like_count || 0), 0)}</p>
                 <p className="text-emerald-100">Total Likes</p>
               </div>
             </div>
@@ -71,7 +91,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) 
             <div className="flex items-center space-x-3">
               <Eye className="w-8 h-8" />
               <div>
-                <p className="text-2xl font-bold">2.4k</p>
+                <p className="text-2xl font-bold">{communityProjects.reduce((acc, p) => acc + (p.view_count || 0), 0)}</p>
                 <p className="text-orange-100">Total Views</p>
               </div>
             </div>
@@ -83,28 +103,30 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) 
           {communityProjects.map((project) => (
             <Card key={project.id} className="overflow-hidden bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-300">
               {/* Project Image */}
-              <div className="aspect-video relative overflow-hidden">
-                <img 
-                  src={project.images[0]} 
-                  alt={project.name}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-                <div className="absolute top-3 right-3">
-                  <Badge variant="secondary" className="bg-white/80 text-gray-900">
-                    {project.images.length} images
-                  </Badge>
+              {project.main_image && (
+                <div className="aspect-video relative overflow-hidden">
+                  <img 
+                    src={project.main_image} 
+                    alt={project.title}
+                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                  />
+                  <div className="absolute top-3 right-3">
+                    <Badge variant="secondary" className="bg-white/80 text-gray-900">
+                      {(project.additional_images?.length || 0) + 1} images
+                    </Badge>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {/* Project Content */}
               <div className="p-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.name}</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
                 <p className="text-gray-600 text-sm mb-4 line-clamp-2">{project.description}</p>
                 
                 {/* Story Preview */}
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
                   <p className="text-xs text-gray-700 line-clamp-3 italic">
-                    "{project.storyContent.substring(0, 120)}..."
+                    "{project.story_content.substring(0, 120)}..."
                   </p>
                 </div>
 
@@ -112,27 +134,36 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) 
                 <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                   <div className="flex items-center space-x-1">
                     <Clock className="w-4 h-4" />
-                    <span>{formatDate(project.createdAt)}</span>
+                    <span>{formatDate(project.created_at)}</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <div className="flex items-center space-x-1">
                       <Heart className="w-4 h-4" />
-                      <span>{project.likes}</span>
+                      <span>{project.like_count || 0}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Eye className="w-4 h-4" />
-                      <span>{Math.floor(Math.random() * 200) + 50}</span>
+                      <span>{project.view_count || 0}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Action Buttons */}
                 <div className="flex space-x-2">
-                  <Button variant="outline" size="sm" className="flex-1">
+                  <Button 
+                    variant="outline" 
+                    size="sm" 
+                    className="flex-1"
+                    onClick={() => onViewStory(project.id)}
+                  >
                     <BookOpen className="w-4 h-4 mr-1" />
                     Read
                   </Button>
-                  <Button variant="outline" size="sm">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => handleLike(project.id)}
+                  >
                     <Heart className="w-4 h-4" />
                   </Button>
                   <Button variant="outline" size="sm">
@@ -144,12 +175,12 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({ onBack }) 
           ))}
         </div>
 
-        {/* Load More */}
-        <div className="flex justify-center">
-          <Button variant="outline" className="px-8">
-            Load More Stories
-          </Button>
-        </div>
+        {communityProjects.length === 0 && (
+          <Card className="p-12 bg-white/80 backdrop-blur-sm border border-white/20 text-center">
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Community Stories Yet</h3>
+            <p className="text-gray-600">Be the first to share your story with the community!</p>
+          </Card>
+        )}
       </div>
     </Layout>
   );

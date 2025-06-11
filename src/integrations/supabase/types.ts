@@ -9,7 +9,81 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          first_name: string | null
+          id: string
+          last_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          first_name?: string | null
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      stories: {
+        Row: {
+          additional_images: string[] | null
+          category: string | null
+          created_at: string
+          description: string
+          id: string
+          is_public: boolean | null
+          like_count: number | null
+          main_image: string | null
+          story_content: string
+          title: string
+          updated_at: string
+          user_id: string
+          view_count: number | null
+        }
+        Insert: {
+          additional_images?: string[] | null
+          category?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          is_public?: boolean | null
+          like_count?: number | null
+          main_image?: string | null
+          story_content: string
+          title: string
+          updated_at?: string
+          user_id: string
+          view_count?: number | null
+        }
+        Update: {
+          additional_images?: string[] | null
+          category?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          is_public?: boolean | null
+          like_count?: number | null
+          main_image?: string | null
+          story_content?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+          view_count?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

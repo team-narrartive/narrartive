@@ -14,17 +14,19 @@ import {
   Clock,
   Images
 } from 'lucide-react';
-import { getProjectsByStatus } from '../data/projectsStore';
+import { useStories } from '@/hooks/useStories';
 
 interface MyProjectsProps {
   onBack: () => void;
   onCreateNew: () => void;
+  onViewStory: (storyId: string) => void;
 }
 
-export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew }) => {
-  const userProjects = getProjectsByStatus('recent', 'user1'); // Current user's projects
+export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onViewStory }) => {
+  const { data: userProjects = [], isLoading } = useStories('personal');
 
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -44,6 +46,19 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew }) =
     console.log('Delete project:', projectId);
     // This would show a confirmation dialog and delete the project
   };
+
+  if (isLoading) {
+    return (
+      <Layout showSidebar={true} currentView="projects">
+        <div className="flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading your projects...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout showSidebar={true} currentView="projects">
@@ -74,19 +89,19 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew }) =
           </Card>
           <Card className="p-4 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{userProjects.reduce((acc, p) => acc + p.images.length, 0)}</p>
+              <p className="text-2xl font-bold text-gray-900">{userProjects.reduce((acc, p) => acc + ((p.additional_images?.length || 0) + (p.main_image ? 1 : 0)), 0)}</p>
               <p className="text-sm text-gray-600">Images Generated</p>
             </div>
           </Card>
           <Card className="p-4 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{userProjects.reduce((acc, p) => acc + p.likes, 0)}</p>
+              <p className="text-2xl font-bold text-gray-900">{userProjects.reduce((acc, p) => acc + (p.like_count || 0), 0)}</p>
               <p className="text-sm text-gray-600">Total Likes</p>
             </div>
           </Card>
           <Card className="p-4 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="text-center">
-              <p className="text-2xl font-bold text-gray-900">{userProjects.filter(p => p.isPublic).length}</p>
+              <p className="text-2xl font-bold text-gray-900">{userProjects.filter(p => p.is_public).length}</p>
               <p className="text-sm text-gray-600">Public Projects</p>
             </div>
           </Card>
@@ -98,39 +113,41 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew }) =
             {userProjects.map((project) => (
               <Card key={project.id} className="overflow-hidden bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-300">
                 {/* Project Image */}
-                <div className="aspect-video relative overflow-hidden">
-                  <img 
-                    src={project.images[0]} 
-                    alt={project.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute top-3 right-3">
-                    <Badge variant="secondary" className="bg-white/80 text-gray-900">
-                      <Images className="w-3 h-3 mr-1" />
-                      {project.images.length}
-                    </Badge>
-                  </div>
-                  {project.isPublic && (
-                    <div className="absolute top-3 left-3">
-                      <Badge className="bg-green-500/80 text-white">Public</Badge>
+                {project.main_image && (
+                  <div className="aspect-video relative overflow-hidden">
+                    <img 
+                      src={project.main_image} 
+                      alt={project.title}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute top-3 right-3">
+                      <Badge variant="secondary" className="bg-white/80 text-gray-900">
+                        <Images className="w-3 h-3 mr-1" />
+                        {(project.additional_images?.length || 0) + 1}
+                      </Badge>
                     </div>
-                  )}
-                </div>
+                    {project.is_public && (
+                      <div className="absolute top-3 left-3">
+                        <Badge className="bg-green-500/80 text-white">Public</Badge>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Project Content */}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.name}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{project.title}</h3>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-2">{project.description}</p>
                   
                   {/* Project Meta */}
                   <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
                     <div className="flex items-center space-x-1">
                       <Clock className="w-4 h-4" />
-                      <span>{formatDate(project.createdAt)}</span>
+                      <span>{formatDate(project.created_at)}</span>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Heart className="w-4 h-4" />
-                      <span>{project.likes}</span>
+                      <span>{project.like_count || 0}</span>
                     </div>
                   </div>
 
@@ -140,10 +157,10 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew }) =
                       variant="outline" 
                       size="sm" 
                       className="flex-1"
-                      onClick={() => handleEditProject(project.id)}
+                      onClick={() => onViewStory(project.id)}
                     >
                       <Edit3 className="w-4 h-4 mr-1" />
-                      Edit
+                      View
                     </Button>
                     <Button variant="outline" size="sm">
                       <Share2 className="w-4 h-4" />

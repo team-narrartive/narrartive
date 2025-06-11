@@ -13,7 +13,8 @@ import {
   Sparkles,
   ArrowRight 
 } from 'lucide-react';
-import { getProjectsByStatus } from '../data/projectsStore';
+import { useStories } from '@/hooks/useStories';
+import { useAuth } from '@/hooks/useAuth';
 
 interface DashboardProps {
   onCreateNew: () => void;
@@ -26,18 +27,19 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewProjects, 
   onViewCommunity 
 }) => {
-  // Get real project data from the database
-  const recentProjects = getProjectsByStatus('recent', 'user1');
-  const communityProjects = getProjectsByStatus('community');
+  const { user } = useAuth();
+  const { data: recentProjects = [] } = useStories('personal');
+  const { data: communityProjects = [] } = useStories('community');
 
   const stats = [
     { icon: Clock, label: 'Minutes Spent', value: '307', color: 'text-purple-600' },
     { icon: BookOpen, label: 'Projects Completed', value: recentProjects.length.toString(), color: 'text-blue-600' },
-    { icon: Heart, label: 'Likes Received', value: recentProjects.reduce((acc, p) => acc + p.likes, 0).toString(), color: 'text-pink-600' },
+    { icon: Heart, label: 'Likes Received', value: recentProjects.reduce((acc, p) => acc + (p.like_count || 0), 0).toString(), color: 'text-pink-600' },
     { icon: TrendingUp, label: 'Stories Generated', value: (recentProjects.length + Math.floor(Math.random() * 8)).toString(), color: 'text-emerald-600' }
   ];
 
-  const formatDate = (date: Date) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
     const now = new Date();
     const diffTime = Math.abs(now.getTime() - date.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
@@ -57,7 +59,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
           
           <div className="relative z-10">
-            <h1 className="text-3xl font-bold mb-2">Welcome back, Creator! 🎨</h1>
+            <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.email?.split('@')[0] || 'Creator'}! 🎨</h1>
             <p className="text-blue-100 mb-6">Ready to bring another story to life?</p>
             
             <div className="flex flex-col sm:flex-row gap-4">
@@ -153,13 +155,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <div className="space-y-4">
               {recentProjects.slice(0, 3).map((project) => (
                 <div key={project.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-                  <h4 className="font-medium text-gray-900 mb-1">{project.name}</h4>
+                  <h4 className="font-medium text-gray-900 mb-1">{project.title}</h4>
                   <p className="text-sm text-gray-600 mb-2">{project.description}</p>
                   <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{formatDate(project.createdAt)}</span>
+                    <span>{formatDate(project.created_at)}</span>
                     <div className="flex items-center space-x-3">
-                      <span>{project.images.length} images</span>
-                      <span>{project.likes} likes</span>
+                      <span>{(project.additional_images?.length || 0) + (project.main_image ? 1 : 0)} images</span>
+                      <span>{project.like_count || 0} likes</span>
                     </div>
                   </div>
                 </div>
