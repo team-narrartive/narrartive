@@ -61,36 +61,26 @@ export const useLikeStory = () => {
     mutationFn: async (storyId: string) => {
       console.log('Liking story:', storyId);
       
-      // Use RPC to increment like count atomically
-      const { data, error } = await supabase.rpc('increment_like_count', {
-        story_id: storyId
-      });
+      // Get current story data
+      const { data: story, error: fetchError } = await supabase
+        .from('stories')
+        .select('like_count')
+        .eq('id', storyId)
+        .single();
 
-      if (error) {
-        console.error('RPC error:', error);
-        // Fallback to manual increment if RPC doesn't exist
-        const { data: story, error: fetchError } = await supabase
-          .from('stories')
-          .select('like_count')
-          .eq('id', storyId)
-          .single();
+      if (fetchError) throw fetchError;
 
-        if (fetchError) throw fetchError;
+      const newLikeCount = (story.like_count || 0) + 1;
 
-        const newLikeCount = (story.like_count || 0) + 1;
+      const { data: updatedData, error: updateError } = await supabase
+        .from('stories')
+        .update({ like_count: newLikeCount })
+        .eq('id', storyId)
+        .select()
+        .single();
 
-        const { data: updatedData, error: updateError } = await supabase
-          .from('stories')
-          .update({ like_count: newLikeCount })
-          .eq('id', storyId)
-          .select()
-          .single();
-
-        if (updateError) throw updateError;
-        return updatedData;
-      }
-      
-      return data;
+      if (updateError) throw updateError;
+      return updatedData;
     },
     onSuccess: (updatedStory) => {
       console.log('Like success:', updatedStory);
@@ -136,36 +126,26 @@ export const useIncrementViews = () => {
     mutationFn: async (storyId: string) => {
       console.log('Incrementing views for story:', storyId);
       
-      // Use RPC to increment view count atomically
-      const { data, error } = await supabase.rpc('increment_view_count', {
-        story_id: storyId
-      });
+      // Get current story data
+      const { data: story, error: fetchError } = await supabase
+        .from('stories')
+        .select('view_count')
+        .eq('id', storyId)
+        .single();
 
-      if (error) {
-        console.error('RPC error:', error);
-        // Fallback to manual increment if RPC doesn't exist
-        const { data: story, error: fetchError } = await supabase
-          .from('stories')
-          .select('view_count')
-          .eq('id', storyId)
-          .single();
+      if (fetchError) throw fetchError;
 
-        if (fetchError) throw fetchError;
+      const newViewCount = (story.view_count || 0) + 1;
 
-        const newViewCount = (story.view_count || 0) + 1;
+      const { data: updatedData, error: updateError } = await supabase
+        .from('stories')
+        .update({ view_count: newViewCount })
+        .eq('id', storyId)
+        .select()
+        .single();
 
-        const { data: updatedData, error: updateError } = await supabase
-          .from('stories')
-          .update({ view_count: newViewCount })
-          .eq('id', storyId)
-          .select()
-          .single();
-
-        if (updateError) throw updateError;
-        return updatedData;
-      }
-      
-      return data;
+      if (updateError) throw updateError;
+      return updatedData;
     },
     onSuccess: (updatedStory) => {
       console.log('View increment success:', updatedStory);
