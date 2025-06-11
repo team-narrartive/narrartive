@@ -1,20 +1,11 @@
 
 import React from 'react';
-import { Layout } from './Layout';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { 
-  Plus, 
-  Clock, 
-  BookOpen, 
-  Heart, 
-  TrendingUp, 
-  Users, 
-  Sparkles,
-  ArrowRight 
-} from 'lucide-react';
-import { useStories } from '@/hooks/useStories';
 import { useAuth } from '@/hooks/useAuth';
+import { useStories } from '@/hooks/useStories';
+import { Header } from './Header';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { PlusCircle, BookOpen, Users, Heart, Clock } from 'lucide-react';
 
 interface DashboardProps {
   onCreateNew: () => void;
@@ -22,166 +13,174 @@ interface DashboardProps {
   onViewCommunity: () => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ 
-  onCreateNew, 
-  onViewProjects, 
-  onViewCommunity 
+export const Dashboard: React.FC<DashboardProps> = ({
+  onCreateNew,
+  onViewProjects,
+  onViewCommunity
 }) => {
   const { user } = useAuth();
-  const { data: recentProjects = [] } = useStories('personal');
-  const { data: communityProjects = [] } = useStories('community');
+  const { data: userStories } = useStories('personal');
+  const { data: communityStories } = useStories('community');
 
-  const stats = [
-    { icon: Clock, label: 'Minutes Spent', value: '307', color: 'text-purple-600' },
-    { icon: BookOpen, label: 'Projects Completed', value: recentProjects.length.toString(), color: 'text-blue-600' },
-    { icon: Heart, label: 'Likes Received', value: recentProjects.reduce((acc, p) => acc + (p.like_count || 0), 0).toString(), color: 'text-pink-600' },
-    { icon: TrendingUp, label: 'Stories Generated', value: (recentProjects.length + Math.floor(Math.random() * 8)).toString(), color: 'text-emerald-600' }
-  ];
+  // Calculate real metrics from database
+  const totalStories = userStories?.length || 0;
+  const totalLikes = userStories?.reduce((sum, story) => sum + (story.like_count || 0), 0) || 0;
+  const totalViews = userStories?.reduce((sum, story) => sum + (story.view_count || 0), 0) || 0;
+  // Estimate minutes spent based on stories created (rough calculation)
+  const minutesSpent = totalStories * 45; // Assume 45 minutes per story
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
-    if (diffDays === 1) return '1 day ago';
-    if (diffDays < 7) return `${diffDays} days ago`;
-    if (diffDays < 30) return `${Math.ceil(diffDays / 7)} weeks ago`;
-    return `${Math.ceil(diffDays / 30)} months ago`;
-  };
+  const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
 
   return (
-    <Layout showSidebar={true} currentView="dashboard">
-      <div className="space-y-8">
-        {/* Welcome Section */}
-        <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-16 -mt-16"></div>
-          <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full -ml-12 -mb-12"></div>
-          
-          <div className="relative z-10">
-            <h1 className="text-3xl font-bold mb-2">Welcome back, {user?.email?.split('@')[0] || 'Creator'}! 🎨</h1>
-            <p className="text-blue-100 mb-6">Ready to bring another story to life?</p>
-            
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Button 
-                onClick={onCreateNew}
-                className="bg-white text-purple-600 hover:bg-gray-100 px-6 py-3 shadow-lg hover:shadow-xl transition-all duration-300"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                Generate New Story
-              </Button>
-              
-              <Button 
-                onClick={onViewCommunity}
-                variant="outline"
-                className="border-white/30 text-white hover:bg-white/10 px-6 py-3"
-              >
-                <Users className="w-5 h-5 mr-2" />
-                Community Showcase
-              </Button>
-            </div>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+      <Header />
+      
+      <main className="container mx-auto px-4 pt-24 pb-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+            Welcome back, {firstName}! 👋
+          </h1>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Ready to create your next masterpiece? Your creative journey continues here.
+          </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {stats.map((stat, index) => (
-            <Card key={index} className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-300">
-              <div className="flex items-center space-x-4">
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-r from-purple-100 to-blue-100 flex items-center justify-center`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-600">{stat.label}</p>
-                </div>
-              </div>
-            </Card>
-          ))}
+        {/* Stats Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <Card className="bg-white/80 backdrop-blur-sm border-purple-100">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Minutes Spent</CardTitle>
+              <Clock className="h-4 w-4 text-purple-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-purple-600">{minutesSpent}</div>
+              <p className="text-xs text-gray-500">Creating amazing content</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-blue-100">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Stories Generated</CardTitle>
+              <BookOpen className="h-4 w-4 text-blue-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-blue-600">{totalStories}</div>
+              <p className="text-xs text-gray-500">Your creative works</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-pink-100">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Likes Received</CardTitle>
+              <Heart className="h-4 w-4 text-pink-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-pink-600">{totalLikes}</div>
+              <p className="text-xs text-gray-500">Community appreciation</p>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-white/80 backdrop-blur-sm border-green-100">
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium text-gray-600">Total Views</CardTitle>
+              <Users className="h-4 w-4 text-green-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-green-600">{totalViews}</div>
+              <p className="text-xs text-gray-500">Story engagement</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Quick Actions */}
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-gray-900">Quick Actions</h3>
-              <Sparkles className="w-6 h-6 text-purple-600" />
-            </div>
-            
-            <div className="space-y-3">
-              <Button 
-                onClick={onCreateNew}
-                variant="outline" 
-                className="w-full justify-start hover:bg-purple-50 hover:border-purple-200"
-              >
-                <Plus className="w-4 h-4 mr-3" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group" onClick={onCreateNew}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
                 Create New Story
+              </CardTitle>
+              <CardDescription className="text-purple-100">
+                Start crafting your next amazing interactive story
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
+                Get Started →
               </Button>
-              
-              <Button 
-                onClick={onViewProjects}
-                variant="outline" 
-                className="w-full justify-start hover:bg-blue-50 hover:border-blue-200"
-              >
-                <BookOpen className="w-4 h-4 mr-3" />
-                My Projects
-              </Button>
-              
-              <Button 
-                onClick={onViewCommunity}
-                variant="outline" 
-                className="w-full justify-start hover:bg-emerald-50 hover:border-emerald-200"
-              >
-                <Users className="w-4 h-4 mr-3" />
-                Explore Community
-              </Button>
-            </div>
+            </CardContent>
           </Card>
 
-          {/* Recent Projects */}
-          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-semibold text-gray-900">Recent Projects</h3>
-              <Button 
-                onClick={onViewProjects}
-                variant="link" 
-                className="text-purple-600 hover:text-purple-700 p-0"
-              >
-                View All
-                <ArrowRight className="w-4 h-4 ml-1" />
+          <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 cursor-pointer group" onClick={onViewProjects}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                My Projects
+              </CardTitle>
+              <CardDescription className="text-blue-100">
+                View and manage your created stories
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
+                View All ({totalStories}) →
               </Button>
-            </div>
-            
-            <div className="space-y-4">
-              {recentProjects.slice(0, 3).map((project) => (
-                <div key={project.id} className="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-                  <h4 className="font-medium text-gray-900 mb-1">{project.title}</h4>
-                  <p className="text-sm text-gray-600 mb-2">{project.description}</p>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
-                    <span>{formatDate(project.created_at)}</span>
-                    <div className="flex items-center space-x-3">
-                      <span>{(project.additional_images?.length || 0) + (project.main_image ? 1 : 0)} images</span>
-                      <span>{project.like_count || 0} likes</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {recentProjects.length === 0 && (
-                <div className="text-center py-4">
-                  <p className="text-gray-500 text-sm">No projects yet</p>
-                  <Button 
-                    onClick={onCreateNew}
-                    variant="link" 
-                    className="text-purple-600 hover:text-purple-700 text-sm"
-                  >
-                    Create your first project
-                  </Button>
-                </div>
-              )}
-            </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 hover:from-green-600 hover:to-green-700 transition-all duration-300 cursor-pointer group" onClick={onViewCommunity}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3">
+                <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                Community Hub
+              </CardTitle>
+              <CardDescription className="text-green-100">
+                Explore stories from other creators
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
+                Explore ({communityStories?.length || 0}) →
+              </Button>
+            </CardContent>
           </Card>
         </div>
-      </div>
-    </Layout>
+
+        {/* Recent Activity */}
+        {userStories && userStories.length > 0 && (
+          <div className="mt-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Recent Stories</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {userStories.slice(0, 3).map((story) => (
+                <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+                  <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
+                    {story.main_image && (
+                      <img 
+                        src={story.main_image} 
+                        alt={story.title}
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  </div>
+                  <CardHeader>
+                    <CardTitle className="text-lg">{story.title}</CardTitle>
+                    <CardDescription className="text-sm text-gray-600">
+                      {story.description}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex justify-between items-center text-sm text-gray-500">
+                      <span>{story.view_count || 0} views</span>
+                      <span>{story.like_count || 0} likes</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+      </main>
+    </div>
   );
 };
