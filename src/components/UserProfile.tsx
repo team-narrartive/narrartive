@@ -46,8 +46,17 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   const avatarInitials = `${firstName.charAt(0)}${lastName.charAt(0)}`.toUpperCase() || 'U';
   
   const handleLogout = async () => {
-    await signOut();
-    onLogout();
+    console.log('UserProfile: Starting logout process');
+    try {
+      await signOut();
+      console.log('UserProfile: signOut completed, triggering navigation');
+      // Close the profile dropdown first
+      onClose();
+      // Dispatch logout navigation event to ensure app state is updated
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'logout' }));
+    } catch (error) {
+      console.error('UserProfile: Logout error:', error);
+    }
   };
 
   if (!isOpen) return null;

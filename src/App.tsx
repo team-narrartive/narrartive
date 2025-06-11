@@ -84,6 +84,7 @@ const AppContent = () => {
           }
           break;
         case 'logout':
+          console.log('Logout navigation event received, redirecting to landing');
           setCurrentView('landing');
           break;
         default:

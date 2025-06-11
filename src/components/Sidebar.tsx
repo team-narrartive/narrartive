@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/hooks/useAuth';
 import { 
   Home, 
   BookOpen, 
@@ -20,6 +21,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView, onNavigate }) => {
+  const { signOut } = useAuth();
+
   const menuItems = [
     { id: 'dashboard', icon: Home, label: 'Dashboard', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'dashboard' })) },
     { id: 'projects', icon: BookOpen, label: 'My Projects', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'projects' })) },
@@ -28,8 +31,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
     { id: 'feedback', icon: MessageSquare, label: 'Feedback', onClick: () => window.dispatchEvent(new CustomEvent('navigate', { detail: 'feedback' })) },
   ];
 
-  const handleLogout = () => {
-    window.dispatchEvent(new CustomEvent('navigate', { detail: 'logout' }));
+  const handleLogout = async () => {
+    console.log('Sidebar: Starting logout process');
+    try {
+      await signOut();
+      console.log('Sidebar: signOut completed, triggering navigation');
+      window.dispatchEvent(new CustomEvent('navigate', { detail: 'logout' }));
+    } catch (error) {
+      console.error('Sidebar: Logout error:', error);
+    }
   };
 
   return (
