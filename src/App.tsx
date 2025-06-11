@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -84,6 +85,9 @@ const AppContent = () => {
           break;
         case 'logout':
           console.log('Logout navigation event received, redirecting to landing');
+          // Clear any local state
+          setCurrentStory('');
+          setCurrentStoryId('');
           setCurrentView('landing');
           break;
         default:

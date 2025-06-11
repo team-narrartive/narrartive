@@ -50,14 +50,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
           <img 
             src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
             alt="NarrArtive Logo" 
-            className="w-8 h-8 flex-shrink-0"
+            className={`flex-shrink-0 transition-all duration-300 ${isOpen ? 'w-8 h-8' : 'w-10 h-10'}`}
           />
           {isOpen && (
-            <div>
-              <h1 className="text-xl font-bold text-primary">
+            <div className="min-w-0 overflow-hidden">
+              <h1 className="text-xl font-bold text-primary whitespace-nowrap">
                 NarrArtive
               </h1>
-              <p className="text-xs text-gray-500">Where stories come to life</p>
+              <p className="text-xs text-gray-500 whitespace-nowrap">Where stories come to life</p>
             </div>
           )}
         </div>
@@ -82,14 +82,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
             key={item.id}
             onClick={item.onClick}
             variant={currentView === item.id ? "default" : "ghost"}
-            className={`w-full justify-start space-x-3 ${!isOpen && 'px-3'} ${
+            className={`w-full justify-start space-x-3 ${
+              isOpen 
+                ? 'px-4' 
+                : 'px-2 justify-center'
+            } ${
               currentView === item.id 
                 ? 'bg-primary text-primary-foreground shadow-lg' 
                 : 'hover:bg-primary/10'
             }`}
           >
-            <item.icon className="w-5 h-5" />
-            {isOpen && <span>{item.label}</span>}
+            <item.icon className="w-5 h-5 flex-shrink-0" />
+            {isOpen && <span className="min-w-0 truncate">{item.label}</span>}
           </Button>
         ))}
       </nav>
@@ -99,10 +103,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
         <Button
           onClick={handleLogout}
           variant="ghost"
-          className={`w-full justify-start space-x-3 text-red-500 hover:bg-red-50 ${!isOpen && 'px-3'}`}
+          className={`w-full justify-start space-x-3 text-red-500 hover:bg-red-50 ${
+            isOpen 
+              ? 'px-4' 
+              : 'px-2 justify-center'
+          }`}
         >
-          <LogOut className="w-5 h-5" />
-          {isOpen && <span>Log Out</span>}
+          <LogOut className="w-5 h-5 flex-shrink-0" />
+          {isOpen && <span className="min-w-0 truncate">Log Out</span>}
         </Button>
       </div>
     </div>

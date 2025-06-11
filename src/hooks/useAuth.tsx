@@ -44,6 +44,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (event === 'SIGNED_OUT') {
           console.log('User signed out');
+          // Ensure complete cleanup on sign out
+          setSession(null);
+          setUser(null);
           toast({
             title: "Signed out",
             description: "You have been signed out successfully."
@@ -172,6 +175,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('Attempting to sign out user');
     
     try {
+      // Clear local state immediately
+      setUser(null);
+      setSession(null);
+      
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error('Sign out error:', error);
@@ -182,9 +189,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       } else {
         console.log('Sign out successful');
+        // Force clear any remaining session data
+        localStorage.removeItem('supabase.auth.token');
+        sessionStorage.clear();
       }
     } catch (err: any) {
       console.error('Unexpected sign out error:', err);
+      // Even if there's an error, clear the local state
+      setUser(null);
+      setSession(null);
       toast({
         title: "Sign out failed",
         description: err.message || 'An unexpected error occurred during sign out',
