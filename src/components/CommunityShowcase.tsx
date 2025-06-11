@@ -181,7 +181,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute top-4 right-4">
-                    <Badge variant="secondary" className="bg-accent text-white">
+                    <Badge variant="secondary" className="bg-yellow-200 text-gray-800 hover:bg-yellow-300">
                       {story.category || 'Story'}
                     </Badge>
                   </div>

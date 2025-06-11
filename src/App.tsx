@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -15,10 +14,11 @@ import { Feedback } from './components/Feedback';
 import { CommunityShowcase } from './components/CommunityShowcase';
 import { MyProjects } from './components/MyProjects';
 import { StoryReader } from './components/StoryReader';
+import { PasswordReset } from './components/PasswordReset';
 
 const queryClient = new QueryClient();
 
-type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader';
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset';
 
 const AppContent = () => {
   const [currentView, setCurrentView] = useState<View>('landing');
@@ -26,11 +26,26 @@ const AppContent = () => {
   const [currentStoryId, setCurrentStoryId] = useState('');
   const { user, loading } = useAuth();
 
+  // Check for password reset in URL on component mount
+  useEffect(() => {
+    const path = window.location.pathname;
+    const hash = window.location.hash;
+    
+    console.log('Current path:', path, 'Hash:', hash);
+    
+    // Check if this is a password reset link
+    if (path === '/reset-password' || hash.includes('type=recovery')) {
+      console.log('Password reset link detected, showing password reset page');
+      setCurrentView('password-reset');
+      return;
+    }
+  }, []);
+
   // Handle authentication state changes
   useEffect(() => {
     console.log('Auth state effect - User:', user?.email, 'Loading:', loading, 'Current view:', currentView);
     
-    if (!loading) {
+    if (!loading && currentView !== 'password-reset') {
       if (user && currentView === 'landing') {
         console.log('Authenticated user detected, redirecting to dashboard');
         setCurrentView('dashboard');
@@ -168,7 +183,12 @@ const AppContent = () => {
     setCurrentView('story-reader');
   };
 
-  if (loading) {
+  const handleBackToAuth = () => {
+    console.log('Back to auth clicked');
+    setCurrentView('auth');
+  };
+
+  if (loading && currentView !== 'password-reset') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
         <div className="text-center">
@@ -181,6 +201,11 @@ const AppContent = () => {
 
   const renderCurrentView = () => {
     switch (currentView) {
+      case 'password-reset':
+        return (
+          <PasswordReset onBack={handleBackToAuth} />
+        );
+      
       case 'landing':
         return (
           <Landing 
