@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { Layout } from './Layout';
@@ -46,7 +47,6 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
         console.log('Error sharing:', error);
       }
     } else {
-      // Fallback: copy to clipboard
       const shareText = `Check out "${story.title}" - ${story.description}`;
       await navigator.clipboard.writeText(shareText);
       toast({
@@ -57,7 +57,6 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   };
 
   const handleReadStory = (storyId: string) => {
-    // Increment view count when reading
     incrementViewsMutation.mutate(storyId);
     onViewStory(storyId);
   };
@@ -71,8 +70,18 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
       return `${diffInHours}h ago`;
     } else {
       const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d ago`;
+      if (diffInDays === 1) return "1 day ago";
+      if (diffInDays < 7) return `${diffInDays} days ago`;
+      if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} week${Math.floor(diffInDays / 7) > 1 ? 's' : ''} ago`;
+      return `${Math.floor(diffInDays / 30)} month${Math.floor(diffInDays / 30) > 1 ? 's' : ''} ago`;
     }
+  };
+
+  const formatCount = (count: number) => {
+    if (count >= 1000) {
+      return `${(count / 1000).toFixed(1)}k`;
+    }
+    return count.toString();
   };
 
   if (isLoading) {
@@ -140,7 +149,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-1">
                       <Eye className="h-4 w-4" />
-                      {story.view_count || 0}
+                      {formatCount(story.view_count || 0)}
                     </span>
                     <span className="flex items-center gap-1">
                       <Heart className="h-4 w-4" />

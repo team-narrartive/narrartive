@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useStory, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { Layout } from './Layout';
@@ -49,7 +50,6 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
         console.log('Error sharing:', error);
       }
     } else {
-      // Fallback: copy to clipboard
       const shareText = `Check out "${story.title}" - ${story.description}`;
       await navigator.clipboard.writeText(shareText);
       toast({
