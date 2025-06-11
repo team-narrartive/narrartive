@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useStory, useLikeStory } from '@/hooks/useStories';
 import { useLikedStories } from '@/hooks/useLikedStories';
@@ -101,6 +102,41 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
     });
   };
 
+  // Function to split story content into paragraphs and interleave with images
+  const createStoryWithImages = (content: string, images: string[]) => {
+    const paragraphs = content.split('\n\n').filter(p => p.trim());
+    const result = [];
+    
+    for (let i = 0; i < paragraphs.length; i++) {
+      result.push(
+        <div key={`paragraph-${i}`} className="mb-8">
+          <p className="text-lg leading-relaxed text-gray-800 mb-6">
+            {paragraphs[i]}
+          </p>
+        </div>
+      );
+      
+      // Insert image after every 2-3 paragraphs
+      if (images && images.length > 0 && (i + 1) % 2 === 0) {
+        const imageIndex = Math.floor(i / 2) % images.length;
+        result.push(
+          <div key={`image-${i}`} className="my-12">
+            <div className="relative aspect-video bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl overflow-hidden shadow-lg">
+              <img 
+                src={images[imageIndex]} 
+                alt={`Story illustration ${imageIndex + 1}`}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+            </div>
+          </div>
+        );
+      }
+    }
+    
+    return result;
+  };
+
   if (isLoading) {
     return (
       <Layout showSidebar={true} currentView="story-reader">
@@ -141,109 +177,150 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
           </Button>
         </div>
 
-        <article className="bg-white/80 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
-          {/* Header Image */}
+        <article className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+          {/* Hero Image */}
           {story.main_image && (
-            <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
+            <div className="relative aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 overflow-hidden">
               <img 
                 src={story.main_image} 
                 alt={story.title}
                 className="w-full h-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+              
+              {/* Title Overlay */}
+              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                <div className="flex items-center gap-4 mb-4">
+                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+                    {story.category || 'Story'}
+                  </Badge>
+                  <div className="flex items-center gap-1 text-sm">
+                    <Calendar className="h-4 w-4" />
+                    {formatDate(story.created_at)}
+                  </div>
+                </div>
+                
+                <h1 className="text-5xl font-bold mb-4 leading-tight">
+                  {story.title}
+                </h1>
+                
+                <p className="text-xl leading-relaxed mb-6 max-w-3xl">
+                  {story.description}
+                </p>
+
+                {/* Stats and Actions */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-6 text-sm">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      {story.view_count || 0} views
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="h-4 w-4" />
+                      {story.like_count || 0} likes
+                    </span>
+                  </div>
+                  
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleLike}
+                      disabled={likeStoryMutation.isPending}
+                      className={`bg-white/20 border-white/30 text-white hover:bg-white/30 transition-colors ${
+                        userLiked 
+                          ? 'bg-pink-500/30 border-pink-300' 
+                          : ''
+                      }`}
+                    >
+                      <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                      {userLiked ? 'Liked' : 'Like'}
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handleShare}
+                      className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
-          <div className="p-8">
-            {/* Story Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-4 mb-4">
-                <Badge variant="secondary" className="bg-purple-100 text-purple-700">
-                  {story.category || 'Story'}
-                </Badge>
-                <div className="flex items-center gap-1 text-sm text-gray-500">
-                  <Calendar className="h-4 w-4" />
-                  {formatDate(story.created_at)}
-                </div>
-              </div>
-              
-              <h1 className="text-4xl font-bold text-gray-900 mb-4 leading-tight">
-                {story.title}
-              </h1>
-              
-              <p className="text-xl text-gray-600 leading-relaxed mb-6">
-                {story.description}
-              </p>
-
-              {/* Story Stats and Actions */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-6 text-sm text-gray-500">
-                  <span className="flex items-center gap-1">
-                    <Eye className="h-4 w-4" />
-                    {story.view_count || 0} views
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <Heart className="h-4 w-4" />
-                    {story.like_count || 0} likes
-                  </span>
+          {/* Story Content with Integrated Images */}
+          <div className="p-8 lg:p-12">
+            {/* If no hero image, show title here */}
+            {!story.main_image && (
+              <div className="mb-12">
+                <div className="flex items-center gap-4 mb-6">
+                  <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+                    {story.category || 'Story'}
+                  </Badge>
+                  <div className="flex items-center gap-1 text-sm text-gray-500">
+                    <Calendar className="h-4 w-4" />
+                    {formatDate(story.created_at)}
+                  </div>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={handleLike}
-                    disabled={likeStoryMutation.isPending}
-                    className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
-                      userLiked 
-                        ? 'bg-pink-50 text-pink-600 border-pink-200' 
-                        : 'hover:text-pink-600'
-                    }`}
-                  >
-                    <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
-                    {userLiked ? 'Liked' : 'Like'}
-                  </Button>
+                <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                  {story.title}
+                </h1>
+                
+                <p className="text-xl text-gray-600 leading-relaxed mb-8">
+                  {story.description}
+                </p>
+
+                {/* Stats and Actions for non-hero stories */}
+                <div className="flex items-center justify-between mb-8 pb-8 border-b border-gray-200">
+                  <div className="flex items-center gap-6 text-sm text-gray-500">
+                    <span className="flex items-center gap-1">
+                      <Eye className="h-4 w-4" />
+                      {story.view_count || 0} views
+                    </span>
+                    <span className="flex items-center gap-1">
+                      <Heart className="h-4 w-4" />
+                      {story.like_count || 0} likes
+                    </span>
+                  </div>
                   
-                  <Button
-                    variant="outline"
-                    onClick={handleShare}
-                    className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                  >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share
-                  </Button>
-                </div>
-              </div>
-            </div>
-
-            <hr className="border-gray-200 mb-8" />
-
-            {/* Story Content */}
-            <div className="prose prose-lg max-w-none">
-              <div className="text-gray-800 leading-relaxed whitespace-pre-wrap text-lg">
-                {story.story_content}
-              </div>
-            </div>
-
-            {/* Additional Images */}
-            {story.additional_images && story.additional_images.length > 0 && (
-              <div className="mt-12">
-                <h3 className="text-2xl font-bold text-gray-900 mb-6">Story Gallery</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {story.additional_images.map((imageUrl, index) => (
-                    <div key={index} className="aspect-video bg-gray-100 rounded-lg overflow-hidden">
-                      <img 
-                        src={imageUrl} 
-                        alt={`Story image ${index + 1}`}
-                        className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                      />
-                    </div>
-                  ))}
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={handleLike}
+                      disabled={likeStoryMutation.isPending}
+                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
+                        userLiked 
+                          ? 'bg-pink-50 text-pink-600 border-pink-200' 
+                          : 'hover:text-pink-600'
+                      }`}
+                    >
+                      <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                      {userLiked ? 'Liked' : 'Like'}
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      onClick={handleShare}
+                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    >
+                      <Share2 className="h-4 w-4 mr-2" />
+                      Share
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}
 
+            {/* Story Content with Images Integrated */}
+            <div className="prose prose-lg max-w-none">
+              {createStoryWithImages(story.story_content, story.additional_images || [])}
+            </div>
+
             {/* Story Footer */}
-            <div className="mt-12 pt-8 border-t border-gray-200">
+            <div className="mt-16 pt-8 border-t border-gray-200">
               <div className="flex items-center justify-between">
                 <div className="text-sm text-gray-500">
                   Published on {formatDate(story.created_at)}

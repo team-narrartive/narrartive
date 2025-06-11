@@ -62,8 +62,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="absolute top-full right-0 mt-2 w-72 z-50">
-      <Card className="bg-white/95 backdrop-blur-md border border-white/20 shadow-xl">
+    <div className="absolute top-full right-0 mt-2 w-72 z-[100]">
+      <Card className="bg-white/95 backdrop-blur-md border border-white/20 shadow-2xl">
         {/* Header */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">

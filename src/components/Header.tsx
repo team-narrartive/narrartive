@@ -36,7 +36,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-white/20 px-6 py-4">
+    <header className="bg-white/80 backdrop-blur-md border-b border-white/20 px-6 py-4 relative z-40">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {!showSidebar && (
@@ -61,7 +61,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
             />
           </div>
           
-          <div className="relative">
+          <div className="relative z-50">
             <Button 
               variant="ghost" 
               size="sm" 
@@ -77,7 +77,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
             />
           </div>
           
-          <div className="relative">
+          <div className="relative z-50">
             <Button 
               variant="ghost" 
               size="sm"
