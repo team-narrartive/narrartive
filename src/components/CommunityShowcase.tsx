@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
+import { useLikedStories } from '@/hooks/useLikedStories';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,14 +21,24 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   const likeStoryMutation = useLikeStory();
   const incrementViewsMutation = useIncrementViews();
   const { toast } = useToast();
+  const { toggleLike, isLiked } = useLikedStories();
 
   console.log('Community stories:', stories);
 
   const handleLike = async (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
+    
+    // Toggle local like state for immediate UI feedback
+    toggleLike(storyId);
+    
     try {
-      await likeStoryMutation.mutateAsync(storyId);
+      // Only increment in database if user is "liking" (not unliking)
+      if (!isLiked(storyId)) {
+        await likeStoryMutation.mutateAsync(storyId);
+      }
     } catch (error) {
+      // Revert local state if database update fails
+      toggleLike(storyId);
       console.error('Error liking story:', error);
     }
   };
@@ -36,28 +46,54 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   const handleShare = async (e: React.MouseEvent, story: any) => {
     e.stopPropagation();
     
-    if (navigator.share) {
+    const shareData = {
+      title: story.title,
+      text: story.description,
+      url: `${window.location.origin}/?story=${story.id}`
+    };
+    
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       try {
-        await navigator.share({
-          title: story.title,
-          text: story.description,
-          url: window.location.href
+        await navigator.share(shareData);
+        toast({
+          title: "Story shared! 📤",
+          description: "Thanks for spreading the word!"
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.log('Error sharing:', error);
+          fallbackShare(story);
+        }
       }
     } else {
-      const shareText = `Check out "${story.title}" - ${story.description}`;
+      fallbackShare(story);
+    }
+  };
+
+  const fallbackShare = async (story: any) => {
+    try {
+      const shareText = `Check out "${story.title}" - ${story.description}\n\n${window.location.origin}/?story=${story.id}`;
       await navigator.clipboard.writeText(shareText);
       toast({
-        title: "Link copied!",
-        description: "Story details copied to clipboard."
+        title: "Link copied! 📋",
+        description: "Story link copied to clipboard."
+      });
+    } catch (error) {
+      toast({
+        title: "Share failed",
+        description: "Unable to share or copy link.",
+        variant: "destructive"
       });
     }
   };
 
-  const handleReadStory = (storyId: string) => {
-    incrementViewsMutation.mutate(storyId);
+  const handleReadStory = async (storyId: string) => {
+    // Increment view count when user clicks read
+    try {
+      await incrementViewsMutation.mutateAsync(storyId);
+    } catch (error) {
+      console.error('Error incrementing views:', error);
+    }
     onViewStory(storyId);
   };
 
@@ -117,79 +153,88 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
 
       {stories && stories.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {stories.map((story) => (
-            <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group cursor-pointer">
-              <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
-                {story.main_image && (
-                  <img 
-                    src={story.main_image} 
-                    alt={story.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                  />
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="absolute top-4 right-4">
-                  <Badge variant="secondary" className="bg-white/90 text-purple-700">
-                    {story.category || 'Story'}
-                  </Badge>
-                </div>
-              </div>
-              
-              <CardHeader>
-                <CardTitle className="text-xl group-hover:text-purple-600 transition-colors">
-                  {story.title}
-                </CardTitle>
-                <CardDescription className="text-gray-600 line-clamp-2">
-                  {story.description}
-                </CardDescription>
-              </CardHeader>
-              
-              <CardContent>
-                <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
-                  <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {formatCount(story.view_count || 0)}
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
-                      {story.like_count || 0}
-                    </span>
+          {stories.map((story) => {
+            const userLiked = isLiked(story.id);
+            
+            return (
+              <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group cursor-pointer">
+                <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
+                  {story.main_image && (
+                    <img 
+                      src={story.main_image} 
+                      alt={story.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-4 right-4">
+                    <Badge variant="secondary" className="bg-white/90 text-purple-700">
+                      {story.category || 'Story'}
+                    </Badge>
                   </div>
-                  <span>{formatTimeAgo(story.created_at)}</span>
                 </div>
                 
-                <div className="flex gap-2">
-                  <Button 
-                    onClick={() => handleReadStory(story.id)}
-                    className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
-                  >
-                    <BookOpen className="h-4 w-4 mr-2" />
-                    Read
-                  </Button>
+                <CardHeader>
+                  <CardTitle className="text-xl group-hover:text-purple-600 transition-colors">
+                    {story.title}
+                  </CardTitle>
+                  <CardDescription className="text-gray-600 line-clamp-2">
+                    {story.description}
+                  </CardDescription>
+                </CardHeader>
+                
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4 text-sm text-gray-500">
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-4 w-4" />
+                        {formatCount(story.view_count || 0)}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Heart className="h-4 w-4" />
+                        {story.like_count || 0}
+                      </span>
+                    </div>
+                    <span>{formatTimeAgo(story.created_at)}</span>
+                  </div>
                   
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => handleLike(e, story.id)}
-                    disabled={likeStoryMutation.isPending}
-                    className="hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200"
-                  >
-                    <Heart className="h-4 w-4" />
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={(e) => handleShare(e, story)}
-                    className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
-                  >
-                    <Share2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                  <div className="flex gap-2">
+                    <Button 
+                      onClick={() => handleReadStory(story.id)}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                      disabled={incrementViewsMutation.isPending}
+                    >
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Read
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => handleLike(e, story.id)}
+                      disabled={likeStoryMutation.isPending}
+                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
+                        userLiked 
+                          ? 'bg-pink-50 text-pink-600 border-pink-200' 
+                          : 'hover:text-pink-600'
+                      }`}
+                    >
+                      <Heart className={`h-4 w-4 ${userLiked ? 'fill-current' : ''}`} />
+                    </Button>
+                    
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={(e) => handleShare(e, story)}
+                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    >
+                      <Share2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       ) : (
         <div className="text-center py-12">

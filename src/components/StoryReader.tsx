@@ -1,6 +1,6 @@
-
 import React, { useEffect } from 'react';
-import { useStory, useLikeStory, useIncrementViews } from '@/hooks/useStories';
+import { useStory, useLikeStory } from '@/hooks/useStories';
+import { useLikedStories } from '@/hooks/useLikedStories';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -18,20 +18,25 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 }) => {
   const { data: story, isLoading } = useStory(storyId);
   const likeStoryMutation = useLikeStory();
-  const incrementViewsMutation = useIncrementViews();
   const { toast } = useToast();
+  const { toggleLike, isLiked } = useLikedStories();
 
-  // Increment view count when story loads
-  useEffect(() => {
-    if (story) {
-      incrementViewsMutation.mutate(storyId);
-    }
-  }, [story, storyId, incrementViewsMutation]);
+  const userLiked = story ? isLiked(story.id) : false;
 
   const handleLike = async () => {
+    if (!story) return;
+    
+    // Toggle local like state for immediate UI feedback
+    toggleLike(story.id);
+    
     try {
-      await likeStoryMutation.mutateAsync(storyId);
+      // Only increment in database if user is "liking" (not unliking)
+      if (!userLiked) {
+        await likeStoryMutation.mutateAsync(story.id);
+      }
     } catch (error) {
+      // Revert local state if database update fails
+      toggleLike(story.id);
       console.error('Error liking story:', error);
     }
   };
@@ -39,22 +44,45 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const handleShare = async () => {
     if (!story) return;
     
-    if (navigator.share) {
+    const shareData = {
+      title: story.title,
+      text: story.description,
+      url: `${window.location.origin}/?story=${story.id}`
+    };
+    
+    if (navigator.share && navigator.canShare && navigator.canShare(shareData)) {
       try {
-        await navigator.share({
-          title: story.title,
-          text: story.description,
-          url: window.location.href
+        await navigator.share(shareData);
+        toast({
+          title: "Story shared! 📤",
+          description: "Thanks for spreading the word!"
         });
       } catch (error) {
-        console.log('Error sharing:', error);
+        if (error instanceof Error && error.name !== 'AbortError') {
+          console.log('Error sharing:', error);
+          fallbackShare();
+        }
       }
     } else {
-      const shareText = `Check out "${story.title}" - ${story.description}`;
+      fallbackShare();
+    }
+  };
+
+  const fallbackShare = async () => {
+    if (!story) return;
+    
+    try {
+      const shareText = `Check out "${story.title}" - ${story.description}\n\n${window.location.origin}/?story=${story.id}`;
       await navigator.clipboard.writeText(shareText);
       toast({
-        title: "Link copied!",
-        description: "Story details copied to clipboard."
+        title: "Link copied! 📋",
+        description: "Story link copied to clipboard."
+      });
+    } catch (error) {
+      toast({
+        title: "Share failed",
+        description: "Unable to share or copy link.",
+        variant: "destructive"
       });
     }
   };
@@ -160,10 +188,14 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                     variant="outline"
                     onClick={handleLike}
                     disabled={likeStoryMutation.isPending}
-                    className="hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200"
+                    className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
+                      userLiked 
+                        ? 'bg-pink-50 text-pink-600 border-pink-200' 
+                        : 'hover:text-pink-600'
+                    }`}
                   >
-                    <Heart className="h-4 w-4 mr-2" />
-                    Like
+                    <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                    {userLiked ? 'Liked' : 'Like'}
                   </Button>
                   
                   <Button
@@ -217,9 +249,13 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                     variant="outline"
                     onClick={handleLike}
                     disabled={likeStoryMutation.isPending}
-                    className="hover:bg-pink-50 hover:text-pink-600 hover:border-pink-200"
+                    className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
+                      userLiked 
+                        ? 'bg-pink-50 text-pink-600 border-pink-200' 
+                        : 'hover:text-pink-600'
+                    }`}
                   >
-                    <Heart className="h-4 w-4 mr-2" />
+                    <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
                     {story.like_count || 0} Likes
                   </Button>
                   

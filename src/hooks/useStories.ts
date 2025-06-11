@@ -1,3 +1,4 @@
+
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -58,7 +59,7 @@ export const useLikeStory = () => {
 
   return useMutation({
     mutationFn: async (storyId: string) => {
-      // First get current like count
+      // Get current story data
       const { data: story, error: fetchError } = await supabase
         .from('stories')
         .select('like_count')
@@ -67,18 +68,40 @@ export const useLikeStory = () => {
 
       if (fetchError) throw fetchError;
 
-      // Increment like count
-      const { error } = await supabase
+      const newLikeCount = (story.like_count || 0) + 1;
+
+      // Update like count in database
+      const { data, error } = await supabase
         .from('stories')
-        .update({ like_count: (story.like_count || 0) + 1 })
-        .eq('id', storyId);
+        .update({ like_count: newLikeCount })
+        .eq('id', storyId)
+        .select()
+        .single();
 
       if (error) throw error;
+      return data;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['stories'] });
+    onSuccess: (updatedStory) => {
+      // Update all relevant queries with the new data
+      queryClient.setQueryData(['story', updatedStory.id], updatedStory);
+      
+      // Update stories lists
+      queryClient.setQueryData(['stories', 'community'], (oldData: Story[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(story => 
+          story.id === updatedStory.id ? updatedStory : story
+        );
+      });
+
+      queryClient.setQueryData(['stories', 'personal'], (oldData: Story[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(story => 
+          story.id === updatedStory.id ? updatedStory : story
+        );
+      });
+
       toast({
-        title: "Story liked!",
+        title: "Story liked! ❤️",
         description: "Thank you for your support!"
       });
     },
@@ -93,9 +116,11 @@ export const useLikeStory = () => {
 };
 
 export const useIncrementViews = () => {
+  const queryClient = useQueryClient();
+
   return useMutation({
     mutationFn: async (storyId: string) => {
-      // Get current view count
+      // Get current story data
       const { data: story, error: fetchError } = await supabase
         .from('stories')
         .select('view_count')
@@ -104,13 +129,37 @@ export const useIncrementViews = () => {
 
       if (fetchError) throw fetchError;
 
-      // Increment view count
-      const { error } = await supabase
+      const newViewCount = (story.view_count || 0) + 1;
+
+      // Update view count in database
+      const { data, error } = await supabase
         .from('stories')
-        .update({ view_count: (story.view_count || 0) + 1 })
-        .eq('id', storyId);
+        .update({ view_count: newViewCount })
+        .eq('id', storyId)
+        .select()
+        .single();
 
       if (error) throw error;
+      return data;
+    },
+    onSuccess: (updatedStory) => {
+      // Update all relevant queries with the new data
+      queryClient.setQueryData(['story', updatedStory.id], updatedStory);
+      
+      // Update stories lists
+      queryClient.setQueryData(['stories', 'community'], (oldData: Story[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(story => 
+          story.id === updatedStory.id ? updatedStory : story
+        );
+      });
+
+      queryClient.setQueryData(['stories', 'personal'], (oldData: Story[] | undefined) => {
+        if (!oldData) return oldData;
+        return oldData.map(story => 
+          story.id === updatedStory.id ? updatedStory : story
+        );
+      });
     }
   });
 };
