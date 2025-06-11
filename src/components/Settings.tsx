@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { Layout } from './Layout';
@@ -90,8 +91,8 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
           {/* Profile Settings */}
           <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg flex items-center justify-center">
-                <User className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">Profile Settings</h3>
@@ -126,8 +127,8 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
           {/* Notification Settings */}
           <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg flex items-center justify-center">
-                <Bell className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                <Bell className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">Notifications</h3>
@@ -157,8 +158,8 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
           {/* Appearance Settings */}
           <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg flex items-center justify-center">
-                <Palette className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                <Palette className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">Appearance</h3>
@@ -180,8 +181,8 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
           {/* Data Management */}
           <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-r from-purple-100 to-blue-100 rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-purple-600" />
+              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
               </div>
               <div>
                 <h3 className="text-xl font-semibold text-gray-900">Data Management</h3>
@@ -203,7 +204,7 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <Button onClick={handleSaveSettings} className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-8">
+            <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8">
               <Save className="w-4 h-4 mr-2" />
               Save Changes
             </Button>

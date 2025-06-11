@@ -41,9 +41,11 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <header className="px-6 py-6">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-lg">N</span>
-              </div>
+              <img 
+                src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                alt="NarrArtive Logo" 
+                className="w-10 h-10"
+              />
               <div>
                 <h1 className="text-2xl font-bold text-primary">
                   NarrArtive
@@ -166,9 +168,11 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <footer className="px-6 py-12 border-t border-gray-200">
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">N</span>
-              </div>
+              <img 
+                src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                alt="NarrArtive Logo" 
+                className="w-8 h-8"
+              />
               <span className="text-xl font-bold text-primary">
                 NarrArtive
               </span>

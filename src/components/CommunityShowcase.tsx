@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { useLikedStories } from '@/hooks/useLikedStories';
@@ -137,7 +138,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
       <Layout showSidebar={true} currentView="community">
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading community stories...</p>
           </div>
         </div>
@@ -170,7 +171,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
             
             return (
               <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group cursor-pointer">
-                <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
+                <div className="aspect-video gradient-primary relative overflow-hidden">
                   {story.main_image && (
                     <img 
                       src={story.main_image} 
@@ -180,14 +181,14 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute top-4 right-4">
-                    <Badge variant="secondary" className="bg-white/90 text-purple-700">
+                    <Badge variant="secondary" className="bg-accent text-white">
                       {story.category || 'Story'}
                     </Badge>
                   </div>
                 </div>
                 
                 <CardHeader>
-                  <CardTitle className="text-xl group-hover:text-purple-600 transition-colors">
+                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
                     {story.title}
                   </CardTitle>
                   <CardDescription className="text-gray-600 line-clamp-2">
@@ -213,7 +214,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   <div className="flex gap-2">
                     <Button 
                       onClick={() => handleReadStory(story.id)}
-                      className="flex-1 bg-purple-600 hover:bg-purple-700 text-white"
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                       disabled={incrementViewsMutation.isPending}
                     >
                       <BookOpen className="h-4 w-4 mr-2" />
@@ -238,7 +239,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                       variant="outline"
                       size="sm"
                       onClick={(e) => handleShare(e, story)}
-                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                      className="hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                     >
                       <Share2 className="h-4 w-4" />
                     </Button>
@@ -250,8 +251,8 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="h-12 w-12 text-purple-600" />
+          <div className="w-24 h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="h-12 w-12 text-white" />
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No Stories Yet</h3>
           <p className="text-gray-600 max-w-md mx-auto">
