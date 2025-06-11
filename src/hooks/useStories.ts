@@ -45,10 +45,10 @@ export const useStory = (id: string) => {
         .from('stories')
         .select('*')
         .eq('id', id)
-        .single();
+        .maybeSingle();
       
       if (error) throw error;
-      return data as Story;
+      return data as Story | null;
     }
   });
 };
@@ -61,55 +61,63 @@ export const useLikeStory = () => {
     mutationFn: async (storyId: string) => {
       console.log('Liking story:', storyId);
       
-      // First get the current story
-      const { data: currentStory, error: fetchError } = await supabase
-        .from('stories')
-        .select('like_count')
-        .eq('id', storyId)
-        .maybeSingle();
+      // Use a more direct approach - increment the like_count directly
+      const { data, error } = await supabase.rpc('increment_story_likes', {
+        story_id: storyId
+      });
 
-      if (fetchError) {
-        console.error('Error fetching story for like:', fetchError);
-        throw fetchError;
+      if (error) {
+        console.error('RPC error, falling back to manual update:', error);
+        
+        // Fallback: Get current count and increment
+        const { data: currentStory, error: fetchError } = await supabase
+          .from('stories')
+          .select('like_count')
+          .eq('id', storyId)
+          .maybeSingle();
+
+        if (fetchError) {
+          console.error('Error fetching story for like:', fetchError);
+          throw fetchError;
+        }
+
+        if (!currentStory) {
+          throw new Error('Story not found');
+        }
+
+        const newLikeCount = (currentStory.like_count || 0) + 1;
+
+        const { data: updatedStory, error: updateError } = await supabase
+          .from('stories')
+          .update({ like_count: newLikeCount })
+          .eq('id', storyId)
+          .select('*')
+          .maybeSingle();
+
+        if (updateError) {
+          console.error('Error updating like count:', updateError);
+          throw updateError;
+        }
+
+        return updatedStory;
       }
 
-      if (!currentStory) {
-        throw new Error('Story not found');
-      }
-
-      const currentLikeCount = currentStory.like_count || 0;
-      const newLikeCount = currentLikeCount + 1;
-
-      console.log('Updating like count from', currentLikeCount, 'to', newLikeCount);
-
-      // Update the like count
-      const { data: updatedStory, error: updateError } = await supabase
-        .from('stories')
-        .update({ like_count: newLikeCount })
-        .eq('id', storyId)
-        .select('*')
-        .single();
-
-      if (updateError) {
-        console.error('Error updating like count:', updateError);
-        throw updateError;
-      }
-
-      console.log('Like update successful:', updatedStory);
-      return updatedStory;
+      return data;
     },
     onSuccess: (updatedStory) => {
-      console.log('Like success, invalidating queries for story:', updatedStory.id);
-      
-      // Invalidate and refetch all related queries
-      queryClient.invalidateQueries({ queryKey: ['story', updatedStory.id] });
-      queryClient.invalidateQueries({ queryKey: ['stories', 'community'] });
-      queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
+      if (updatedStory) {
+        console.log('Like success, invalidating queries for story:', updatedStory.id);
+        
+        // Invalidate and refetch all related queries
+        queryClient.invalidateQueries({ queryKey: ['story', updatedStory.id] });
+        queryClient.invalidateQueries({ queryKey: ['stories', 'community'] });
+        queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
 
-      toast({
-        title: "Story liked! ❤️",
-        description: "Thank you for your support!"
-      });
+        toast({
+          title: "Story liked! ❤️",
+          description: "Thank you for your support!"
+        });
+      }
     },
     onError: (error: any) => {
       console.error('Like error:', error);
@@ -129,50 +137,58 @@ export const useIncrementViews = () => {
     mutationFn: async (storyId: string) => {
       console.log('Incrementing views for story:', storyId);
       
-      // First get the current story
-      const { data: currentStory, error: fetchError } = await supabase
-        .from('stories')
-        .select('view_count')
-        .eq('id', storyId)
-        .maybeSingle();
+      // Use RPC function first
+      const { data, error } = await supabase.rpc('increment_story_views', {
+        story_id: storyId
+      });
 
-      if (fetchError) {
-        console.error('Error fetching story for view increment:', fetchError);
-        throw fetchError;
+      if (error) {
+        console.error('RPC error, falling back to manual update:', error);
+        
+        // Fallback: Get current count and increment
+        const { data: currentStory, error: fetchError } = await supabase
+          .from('stories')
+          .select('view_count')
+          .eq('id', storyId)
+          .maybeSingle();
+
+        if (fetchError) {
+          console.error('Error fetching story for view increment:', fetchError);
+          throw fetchError;
+        }
+
+        if (!currentStory) {
+          throw new Error('Story not found');
+        }
+
+        const newViewCount = (currentStory.view_count || 0) + 1;
+
+        const { data: updatedStory, error: updateError } = await supabase
+          .from('stories')
+          .update({ view_count: newViewCount })
+          .eq('id', storyId)
+          .select('*')
+          .maybeSingle();
+
+        if (updateError) {
+          console.error('Error updating view count:', updateError);
+          throw updateError;
+        }
+
+        return updatedStory;
       }
 
-      if (!currentStory) {
-        throw new Error('Story not found');
-      }
-
-      const currentViewCount = currentStory.view_count || 0;
-      const newViewCount = currentViewCount + 1;
-
-      console.log('Updating view count from', currentViewCount, 'to', newViewCount);
-
-      // Update the view count
-      const { data: updatedStory, error: updateError } = await supabase
-        .from('stories')
-        .update({ view_count: newViewCount })
-        .eq('id', storyId)
-        .select('*')
-        .single();
-
-      if (updateError) {
-        console.error('Error updating view count:', updateError);
-        throw updateError;
-      }
-
-      console.log('View increment successful:', updatedStory);
-      return updatedStory;
+      return data;
     },
     onSuccess: (updatedStory) => {
-      console.log('View increment success, invalidating queries for story:', updatedStory.id);
-      
-      // Invalidate and refetch all related queries
-      queryClient.invalidateQueries({ queryKey: ['story', updatedStory.id] });
-      queryClient.invalidateQueries({ queryKey: ['stories', 'community'] });
-      queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
+      if (updatedStory) {
+        console.log('View increment success, invalidating queries for story:', updatedStory.id);
+        
+        // Invalidate and refetch all related queries
+        queryClient.invalidateQueries({ queryKey: ['story', updatedStory.id] });
+        queryClient.invalidateQueries({ queryKey: ['stories', 'community'] });
+        queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
+      }
     },
     onError: (error: any) => {
       console.error('View increment error:', error);
