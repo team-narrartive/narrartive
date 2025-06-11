@@ -30,18 +30,24 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
     
     const wasLiked = isLiked(storyId);
     
-    // Toggle local like state for immediate UI feedback
-    toggleLike(storyId);
-    
-    try {
-      // Only increment in database if user is "liking" (not unliking)
-      if (!wasLiked) {
-        await likeStoryMutation.mutateAsync(storyId);
-      }
-    } catch (error) {
-      // Revert local state if database update fails
+    // Only increment if user wasn't already liked (prevent double-liking)
+    if (!wasLiked) {
+      // Toggle local like state for immediate UI feedback
       toggleLike(storyId);
-      console.error('Error liking story:', error);
+      
+      try {
+        await likeStoryMutation.mutateAsync(storyId);
+        console.log('Like successful for story:', storyId);
+      } catch (error) {
+        // Revert local state if database update fails
+        toggleLike(storyId);
+        console.error('Error liking story:', error);
+      }
+    } else {
+      toast({
+        title: "Already liked! ❤️",
+        description: "You've already liked this story."
+      });
     }
   };
 
@@ -95,9 +101,10 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
     // Increment view count when user clicks read
     try {
       await incrementViewsMutation.mutateAsync(storyId);
-      console.log('View count incremented successfully');
+      console.log('View count incremented successfully for story:', storyId);
     } catch (error) {
       console.error('Error incrementing views:', error);
+      // Continue to story view even if view increment fails
     }
     
     // Navigate to story view
@@ -212,7 +219,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                       disabled={incrementViewsMutation.isPending}
                     >
                       <BookOpen className="h-4 w-4 mr-2" />
-                      Read
+                      {incrementViewsMutation.isPending ? 'Loading...' : 'Read'}
                     </Button>
                     
                     <Button
