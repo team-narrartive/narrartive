@@ -188,40 +188,44 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
               
-              {/* Title Overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                <div className="flex items-center gap-4 mb-4">
-                  <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
-                    {story.category || 'Story'}
-                  </Badge>
-                  <div className="flex items-center gap-1 text-sm">
-                    <Calendar className="h-4 w-4" />
-                    {formatDate(story.created_at)}
-                  </div>
-                </div>
-                
-                <h1 className="text-5xl font-bold mb-4 leading-tight">
-                  {story.title}
-                </h1>
-                
-                <p className="text-xl leading-relaxed mb-6 max-w-3xl">
-                  {story.description}
-                </p>
+              {/* Title Overlay with improved layout */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 text-white">
+                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+                  {/* Left side - Title and metadata */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-4 mb-4">
+                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30 flex-shrink-0">
+                        {story.category || 'Story'}
+                      </Badge>
+                      <div className="flex items-center gap-1 text-sm flex-shrink-0">
+                        <Calendar className="h-4 w-4" />
+                        {formatDate(story.created_at)}
+                      </div>
+                    </div>
+                    
+                    <h1 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight break-words">
+                      {story.title}
+                    </h1>
+                    
+                    <p className="text-lg lg:text-xl leading-relaxed mb-4 lg:mb-6 break-words">
+                      {story.description}
+                    </p>
 
-                {/* Stats and Actions */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-6 text-sm">
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
-                      {story.view_count || 0} views
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
-                      {story.like_count || 0} likes
-                    </span>
+                    {/* Stats */}
+                    <div className="flex items-center gap-6 text-sm">
+                      <span className="flex items-center gap-1">
+                        <Eye className="h-4 w-4" />
+                        {story.view_count || 0} views
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Heart className="h-4 w-4" />
+                        {story.like_count || 0} likes
+                      </span>
+                    </div>
                   </div>
                   
-                  <div className="flex gap-2">
+                  {/* Right side - Action buttons */}
+                  <div className="flex gap-2 flex-shrink-0">
                     <Button
                       variant="outline"
                       onClick={handleLike}

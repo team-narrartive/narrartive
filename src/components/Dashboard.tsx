@@ -89,53 +89,53 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </Card>
       </div>
 
-      {/* Quick Actions */}
+      {/* Quick Actions with improved layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group" onClick={onCreateNew}>
-          <CardHeader>
+        <Card className="bg-gradient-to-br from-purple-500 to-purple-600 text-white border-0 hover:from-purple-600 hover:to-purple-700 transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
+          <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
               Create New Story
             </CardTitle>
-            <CardDescription className="text-purple-100">
+            <CardDescription className="text-purple-100 flex-1">
               Start crafting your next amazing interactive story
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
               Get Started →
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 cursor-pointer group" onClick={onViewProjects}>
-          <CardHeader>
+        <Card className="bg-gradient-to-br from-blue-500 to-blue-600 text-white border-0 hover:from-blue-600 hover:to-blue-700 transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
+          <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
               My Projects
             </CardTitle>
-            <CardDescription className="text-blue-100">
+            <CardDescription className="text-blue-100 flex-1">
               View and manage your created stories
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
               View All ({totalStories}) →
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 hover:from-green-600 hover:to-green-700 transition-all duration-300 cursor-pointer group" onClick={onViewCommunity}>
-          <CardHeader>
+        <Card className="bg-gradient-to-br from-green-500 to-green-600 text-white border-0 hover:from-green-600 hover:to-green-700 transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
+          <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
               Community Hub
             </CardTitle>
-            <CardDescription className="text-green-100">
+            <CardDescription className="text-green-100 flex-1">
               Explore stories from other creators
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
               Explore ({communityStories?.length || 0}) →
             </Button>
