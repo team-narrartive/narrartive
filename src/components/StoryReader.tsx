@@ -1,7 +1,6 @@
-
 import React, { useEffect } from 'react';
 import { useStory, useLikeStory, useIncrementViews } from '@/hooks/useStories';
-import { Header } from './Header';
+import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Heart, Eye, Share2, Calendar } from 'lucide-react';
@@ -71,35 +70,37 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading story...</p>
+      <Layout showSidebar={true} currentView="story-reader">
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <p className="text-gray-600">Loading story...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   if (!story) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50 flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Story Not Found</h2>
-          <p className="text-gray-600 mb-6">The story you're looking for doesn't exist or has been removed.</p>
-          <Button onClick={onBack} className="bg-purple-600 hover:bg-purple-700 text-white">
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Go Back
-          </Button>
+      <Layout showSidebar={true} currentView="story-reader">
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Story Not Found</h2>
+            <p className="text-gray-600 mb-6">The story you're looking for doesn't exist or has been removed.</p>
+            <Button onClick={onBack} className="bg-purple-600 hover:bg-purple-700 text-white">
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Go Back
+            </Button>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-purple-50 to-blue-50">
-      <Header />
-      
-      <main className="container mx-auto px-4 pt-24 pb-12 max-w-4xl">
+    <Layout showSidebar={true} currentView="story-reader">
+      <div className="max-w-4xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
           <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
             <ArrowLeft className="h-4 w-4" />
@@ -235,7 +236,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
             </div>
           </div>
         </article>
-      </main>
-    </div>
+      </div>
+    </Layout>
   );
 };

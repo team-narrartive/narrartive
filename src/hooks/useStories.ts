@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -13,6 +12,8 @@ export const useStories = (status?: 'personal' | 'community') => {
   return useQuery({
     queryKey: ['stories', status, user?.id],
     queryFn: async () => {
+      console.log('Fetching stories with status:', status, 'user:', user?.id);
+      
       let query = supabase.from('stories').select('*');
       
       if (status === 'personal' && user) {
@@ -23,7 +24,12 @@ export const useStories = (status?: 'personal' | 'community') => {
       
       const { data, error } = await query.order('created_at', { ascending: false });
       
-      if (error) throw error;
+      console.log('Stories query result:', { data, error, status });
+      
+      if (error) {
+        console.error('Error fetching stories:', error);
+        throw error;
+      }
       return data as Story[];
     },
     enabled: !!user
