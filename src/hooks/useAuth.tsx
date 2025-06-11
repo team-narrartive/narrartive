@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -29,18 +28,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
+        console.log('Full session object:', session);
+        console.log('User metadata:', session?.user?.user_metadata);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
 
         if (event === 'SIGNED_IN') {
+          console.log('User successfully signed in:', session?.user?.email);
           toast({
             title: "Welcome back!",
-            description: "You have been successfully signed in."
+            description: `Signed in as ${session?.user?.email}`
           });
         }
 
         if (event === 'SIGNED_OUT') {
+          console.log('User signed out');
           toast({
             title: "Signed out",
             description: "You have been signed out successfully."
@@ -56,7 +59,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (error) {
           console.error('Error getting session:', error);
         } else {
-          console.log('Initial session:', session?.user?.email || 'No session');
+          console.log('Initial session check:', session?.user?.email || 'No session');
+          console.log('Initial session object:', session);
+          if (session?.user) {
+            console.log('User metadata from initial session:', session.user.user_metadata);
+          }
           setSession(session);
           setUser(session?.user ?? null);
         }
@@ -133,6 +140,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       console.log('Sign in response:', { data, error });
+      if (data.user) {
+        console.log('Sign in user metadata:', data.user.user_metadata);
+      }
 
       if (error) {
         console.error('Sign in error:', error);
@@ -245,3 +255,5 @@ export const useAuth = () => {
   }
   return context;
 };
+
+export default AuthProvider;
