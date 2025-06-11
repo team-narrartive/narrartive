@@ -28,12 +28,14 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   const handleLike = async (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
     
+    const wasLiked = isLiked(storyId);
+    
     // Toggle local like state for immediate UI feedback
     toggleLike(storyId);
     
     try {
       // Only increment in database if user is "liking" (not unliking)
-      if (!isLiked(storyId)) {
+      if (!wasLiked) {
         await likeStoryMutation.mutateAsync(storyId);
       }
     } catch (error) {
@@ -88,12 +90,17 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   };
 
   const handleReadStory = async (storyId: string) => {
+    console.log('Reading story:', storyId);
+    
     // Increment view count when user clicks read
     try {
       await incrementViewsMutation.mutateAsync(storyId);
+      console.log('View count incremented successfully');
     } catch (error) {
       console.error('Error incrementing views:', error);
     }
+    
+    // Navigate to story view
     onViewStory(storyId);
   };
 

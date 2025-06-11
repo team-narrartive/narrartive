@@ -59,29 +59,42 @@ export const useLikeStory = () => {
 
   return useMutation({
     mutationFn: async (storyId: string) => {
-      // Get current story data
-      const { data: story, error: fetchError } = await supabase
-        .from('stories')
-        .select('like_count')
-        .eq('id', storyId)
-        .single();
+      console.log('Liking story:', storyId);
+      
+      // Use RPC to increment like count atomically
+      const { data, error } = await supabase.rpc('increment_like_count', {
+        story_id: storyId
+      });
 
-      if (fetchError) throw fetchError;
+      if (error) {
+        console.error('RPC error:', error);
+        // Fallback to manual increment if RPC doesn't exist
+        const { data: story, error: fetchError } = await supabase
+          .from('stories')
+          .select('like_count')
+          .eq('id', storyId)
+          .single();
 
-      const newLikeCount = (story.like_count || 0) + 1;
+        if (fetchError) throw fetchError;
 
-      // Update like count in database
-      const { data, error } = await supabase
-        .from('stories')
-        .update({ like_count: newLikeCount })
-        .eq('id', storyId)
-        .select()
-        .single();
+        const newLikeCount = (story.like_count || 0) + 1;
 
-      if (error) throw error;
+        const { data: updatedData, error: updateError } = await supabase
+          .from('stories')
+          .update({ like_count: newLikeCount })
+          .eq('id', storyId)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        return updatedData;
+      }
+      
       return data;
     },
     onSuccess: (updatedStory) => {
+      console.log('Like success:', updatedStory);
+      
       // Update all relevant queries with the new data
       queryClient.setQueryData(['story', updatedStory.id], updatedStory);
       
@@ -106,6 +119,7 @@ export const useLikeStory = () => {
       });
     },
     onError: (error: any) => {
+      console.error('Like error:', error);
       toast({
         title: "Failed to like story",
         description: error.message,
@@ -120,29 +134,42 @@ export const useIncrementViews = () => {
 
   return useMutation({
     mutationFn: async (storyId: string) => {
-      // Get current story data
-      const { data: story, error: fetchError } = await supabase
-        .from('stories')
-        .select('view_count')
-        .eq('id', storyId)
-        .single();
+      console.log('Incrementing views for story:', storyId);
+      
+      // Use RPC to increment view count atomically
+      const { data, error } = await supabase.rpc('increment_view_count', {
+        story_id: storyId
+      });
 
-      if (fetchError) throw fetchError;
+      if (error) {
+        console.error('RPC error:', error);
+        // Fallback to manual increment if RPC doesn't exist
+        const { data: story, error: fetchError } = await supabase
+          .from('stories')
+          .select('view_count')
+          .eq('id', storyId)
+          .single();
 
-      const newViewCount = (story.view_count || 0) + 1;
+        if (fetchError) throw fetchError;
 
-      // Update view count in database
-      const { data, error } = await supabase
-        .from('stories')
-        .update({ view_count: newViewCount })
-        .eq('id', storyId)
-        .select()
-        .single();
+        const newViewCount = (story.view_count || 0) + 1;
 
-      if (error) throw error;
+        const { data: updatedData, error: updateError } = await supabase
+          .from('stories')
+          .update({ view_count: newViewCount })
+          .eq('id', storyId)
+          .select()
+          .single();
+
+        if (updateError) throw updateError;
+        return updatedData;
+      }
+      
       return data;
     },
     onSuccess: (updatedStory) => {
+      console.log('View increment success:', updatedStory);
+      
       // Update all relevant queries with the new data
       queryClient.setQueryData(['story', updatedStory.id], updatedStory);
       
@@ -160,6 +187,9 @@ export const useIncrementViews = () => {
           story.id === updatedStory.id ? updatedStory : story
         );
       });
+    },
+    onError: (error: any) => {
+      console.error('View increment error:', error);
     }
   });
 };
