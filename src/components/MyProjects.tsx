@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { useLikedStories } from '@/hooks/useLikedStories';
@@ -109,7 +110,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       <Layout showSidebar={true} currentView="projects">
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
-            <div className="w-8 h-8 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading your projects...</p>
           </div>
         </div>
@@ -125,7 +126,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
           Back to Dashboard
         </Button>
         
-        <Button onClick={onCreateNew} className="bg-purple-600 hover:bg-purple-700 text-white flex items-center gap-2">
+        <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2">
           <PlusCircle className="h-4 w-4" />
           Create New Story
         </Button>
@@ -147,7 +148,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
             
             return (
               <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="aspect-video bg-gradient-to-br from-blue-100 to-purple-100 relative overflow-hidden">
+                <div className="aspect-video gradient-primary relative overflow-hidden">
                   {story.main_image && (
                     <img 
                       src={story.main_image} 
@@ -157,14 +158,14 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute top-4 right-4">
-                    <Badge variant={story.is_public ? "default" : "secondary"} className={story.is_public ? "bg-green-500" : "bg-gray-500"}>
+                    <Badge variant={story.is_public ? "default" : "secondary"} className={story.is_public ? "bg-accent" : "bg-gray-500"}>
                       {story.is_public ? 'Public' : 'Private'}
                     </Badge>
                   </div>
                 </div>
                 
                 <CardHeader>
-                  <CardTitle className="text-xl group-hover:text-blue-600 transition-colors">
+                  <CardTitle className="text-xl group-hover:text-primary transition-colors">
                     {story.title}
                   </CardTitle>
                   <CardDescription className="text-gray-600 line-clamp-2">
@@ -190,7 +191,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                   <div className="flex gap-2">
                     <Button 
                       onClick={() => handleReadStory(story.id)}
-                      className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                       disabled={incrementViewsMutation.isPending}
                     >
                       <BookOpen className="h-4 w-4 mr-2" />
@@ -215,7 +216,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                       variant="outline"
                       size="sm"
                       onClick={(e) => handleShare(e, story)}
-                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                      className="hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                     >
                       <Share2 className="h-4 w-4" />
                     </Button>
@@ -227,14 +228,14 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
         </div>
       ) : (
         <div className="text-center py-12">
-          <div className="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="h-12 w-12 text-blue-600" />
+          <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <BookOpen className="h-12 w-12 text-primary" />
           </div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">No Stories Yet</h3>
           <p className="text-gray-600 max-w-md mx-auto mb-6">
             You haven't created any stories yet. Start your creative journey by creating your first interactive story!
           </p>
-          <Button onClick={onCreateNew} className="bg-blue-600 hover:bg-blue-700 text-white">
+          <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <PlusCircle className="h-4 w-4 mr-2" />
             Create Your First Story
           </Button>

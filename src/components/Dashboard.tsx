@@ -55,13 +55,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border-sky-100">
+        <Card className="bg-white/80 backdrop-blur-sm border-primary/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Stories Generated</CardTitle>
-            <BookOpen className="h-4 w-4 text-sky-500" />
+            <BookOpen className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-sky-500">{totalStories}</div>
+            <div className="text-2xl font-bold text-primary">{totalStories}</div>
             <p className="text-xs text-gray-500">Your creative works</p>
           </CardContent>
         </Card>
@@ -77,13 +77,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border-emerald-100">
+        <Card className="bg-white/80 backdrop-blur-sm border-accent/30">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium text-gray-600">Total Views</CardTitle>
-            <Users className="h-4 w-4 text-emerald-500" />
+            <Users className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-emerald-500">{totalViews}</div>
+            <div className="text-2xl font-bold text-accent">{totalViews}</div>
             <p className="text-xs text-gray-500">Story engagement</p>
           </CardContent>
         </Card>
@@ -91,13 +91,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Quick Actions with improved layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="bg-gradient-to-br from-slate-400 to-slate-500 text-white border-0 hover:from-slate-500 hover:to-slate-600 transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
+        <Card className="gradient-primary text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
               Create New Story
             </CardTitle>
-            <CardDescription className="text-slate-100 flex-1 py-[10px]">Start crafting your next amazing interactive story</CardDescription>
+            <CardDescription className="text-white/90 flex-1 py-[10px]">Start crafting your next amazing interactive story</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
@@ -106,13 +106,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-sky-400 to-sky-500 text-white border-0 hover:from-sky-500 hover:to-sky-600 transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
+        <Card className="gradient-secondary text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
               My Projects
             </CardTitle>
-            <CardDescription className="text-sky-100 flex-1 py-[10px]">
+            <CardDescription className="text-white/90 flex-1 py-[10px]">
               View and manage your created stories
             </CardDescription>
           </CardHeader>
@@ -123,13 +123,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-emerald-400 to-emerald-500 text-white border-0 hover:from-emerald-500 hover:to-emerald-600 transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
+        <Card className="gradient-accent text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
               Community Hub
             </CardTitle>
-            <CardDescription className="text-emerald-100 flex-1 py-[10px]">
+            <CardDescription className="text-white/90 flex-1 py-[10px]">
               Explore stories from other creators
             </CardDescription>
           </CardHeader>
@@ -148,7 +148,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {userStories.slice(0, 3).map((story) => (
               <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
-                <div className="aspect-video bg-gradient-to-br from-sky-100 to-emerald-100 relative overflow-hidden">
+                <div className="aspect-video gradient-primary relative overflow-hidden">
                   {story.main_image && (
                     <img 
                       src={story.main_image} 

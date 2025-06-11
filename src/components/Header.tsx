@@ -45,8 +45,12 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
                 src="/lovable-uploads/b5f17e72-3d78-4e8e-ae1a-ee9e9e5426fc.png" 
                 alt="NarrArtive" 
                 className="w-8 h-8"
+                onError={(e) => {
+                  console.error('Logo failed to load:', e);
+                  e.currentTarget.style.display = 'none';
+                }}
               />
-              <span className="text-xl font-bold bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text text-transparent">
+              <span className="text-xl font-bold text-primary">
                 NarrArtive
               </span>
             </div>
@@ -59,7 +63,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
             <input
               type="text"
               placeholder="Search projects..."
-              className="pl-10 pr-4 py-2 bg-white/60 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent"
+              className="pl-10 pr-4 py-2 bg-white/60 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </div>
           

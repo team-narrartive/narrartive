@@ -51,10 +51,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
             src="/lovable-uploads/b5f17e72-3d78-4e8e-ae1a-ee9e9e5426fc.png" 
             alt="NarrArtive" 
             className="w-8 h-8"
+            onError={(e) => {
+              console.error('Logo failed to load:', e);
+              e.currentTarget.style.display = 'none';
+            }}
           />
           {isOpen && (
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-sky-500 to-emerald-500 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold text-primary">
                 NarrArtive
               </h1>
               <p className="text-xs text-gray-500">Where stories come to life</p>
@@ -84,8 +88,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
             variant={currentView === item.id ? "default" : "ghost"}
             className={`w-full justify-start space-x-3 ${!isOpen && 'px-3'} ${
               currentView === item.id 
-                ? 'bg-gradient-to-r from-sky-400 to-emerald-400 text-white shadow-lg' 
-                : 'hover:bg-sky-50'
+                ? 'bg-primary text-primary-foreground shadow-lg' 
+                : 'hover:bg-primary/10'
             }`}
           >
             <item.icon className="w-5 h-5" />
