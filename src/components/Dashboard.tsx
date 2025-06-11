@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStories } from '@/hooks/useStories';
@@ -6,21 +5,25 @@ import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PlusCircle, BookOpen, Users, Heart, Clock } from 'lucide-react';
-
 interface DashboardProps {
   onCreateNew: () => void;
   onViewProjects: () => void;
   onViewCommunity: () => void;
 }
-
 export const Dashboard: React.FC<DashboardProps> = ({
   onCreateNew,
   onViewProjects,
   onViewCommunity
 }) => {
-  const { user } = useAuth();
-  const { data: userStories } = useStories('personal');
-  const { data: communityStories } = useStories('community');
+  const {
+    user
+  } = useAuth();
+  const {
+    data: userStories
+  } = useStories('personal');
+  const {
+    data: communityStories
+  } = useStories('community');
 
   // Calculate real metrics from database
   const totalStories = userStories?.length || 0;
@@ -30,9 +33,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const minutesSpent = totalStories * 45; // Assume 45 minutes per story
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
-
-  return (
-    <Layout showSidebar={true} currentView="dashboard">
+  return <Layout showSidebar={true} currentView="dashboard">
       <div className="text-center mb-12">
         <h1 className="text-4xl font-bold text-gray-900 mb-4">
           Welcome back, {firstName}! 👋
@@ -97,9 +98,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
               Create New Story
             </CardTitle>
-            <CardDescription className="text-purple-100 flex-1">
-              Start crafting your next amazing interactive story
-            </CardDescription>
+            <CardDescription className="text-purple-100 flex-1 py-[10px]">Start crafting your next amazing interactive story</CardDescription>
           </CardHeader>
           <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
@@ -114,7 +113,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
               My Projects
             </CardTitle>
-            <CardDescription className="text-blue-100 flex-1">
+            <CardDescription className="text-blue-100 flex-1 py-[10px]">
               View and manage your created stories
             </CardDescription>
           </CardHeader>
@@ -131,7 +130,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
               <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
               Community Hub
             </CardTitle>
-            <CardDescription className="text-green-100 flex-1">
+            <CardDescription className="text-green-100 flex-1 py-[10px]">
               Explore stories from other creators
             </CardDescription>
           </CardHeader>
@@ -144,20 +143,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
       </div>
 
       {/* Recent Activity */}
-      {userStories && userStories.length > 0 && (
-        <div className="mt-12">
+      {userStories && userStories.length > 0 && <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Recent Stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {userStories.slice(0, 3).map((story) => (
-              <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+            {userStories.slice(0, 3).map(story => <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                 <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
-                  {story.main_image && (
-                    <img 
-                      src={story.main_image} 
-                      alt={story.title}
-                      className="w-full h-full object-cover"
-                    />
-                  )}
+                  {story.main_image && <img src={story.main_image} alt={story.title} className="w-full h-full object-cover" />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <CardHeader>
@@ -172,11 +163,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     <span>{story.like_count || 0} likes</span>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
-        </div>
-      )}
-    </Layout>
-  );
+        </div>}
+    </Layout>;
 };
