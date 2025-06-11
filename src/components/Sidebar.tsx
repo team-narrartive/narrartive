@@ -54,7 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
           />
           {isOpen && (
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+              <h1 className="text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 bg-clip-text text-transparent">
                 NarrArtive
               </h1>
               <p className="text-xs text-gray-500">Where stories come to life</p>
@@ -84,8 +84,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
             variant={currentView === item.id ? "default" : "ghost"}
             className={`w-full justify-start space-x-3 ${!isOpen && 'px-3'} ${
               currentView === item.id 
-                ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white shadow-lg' 
-                : 'hover:bg-purple-50'
+                ? 'bg-gradient-to-r from-orange-600 to-amber-600 text-white shadow-lg' 
+                : 'hover:bg-orange-50'
             }`}
           >
             <item.icon className="w-5 h-5" />
