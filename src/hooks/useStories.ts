@@ -33,7 +33,9 @@ export const useStories = (status?: 'personal' | 'community') => {
       }
       return data as Story[];
     },
-    enabled: !!user
+    enabled: !!user,
+    staleTime: 30000, // Keep data fresh for 30 seconds
+    refetchInterval: 60000 // Refetch every minute to keep counts updated
   });
 };
 
@@ -54,7 +56,9 @@ export const useStory = (id: string) => {
       }
       console.log('Single story result:', data);
       return data as Story | null;
-    }
+    },
+    staleTime: 30000,
+    enabled: !!id
   });
 };
 
@@ -94,21 +98,32 @@ export const useLikeStory = () => {
         return { story: data?.[0] || null, action: 'unliked' };
       }
     },
-    onSuccess: ({ story, action }) => {
-      console.log('useLikeStory onSuccess:', { story, action });
+    onSuccess: ({ story, action }, { storyId }) => {
+      console.log('useLikeStory onSuccess:', { story, action, storyId });
+      
       if (story) {
         console.log('Updating cache for story:', story.id, 'new like count:', story.like_count);
         
         // Update the individual story query
         queryClient.setQueryData(['story', story.id], story);
         
-        // Update all stories lists to reflect the new like count
-        queryClient.invalidateQueries({ queryKey: ['stories'] });
+        // Update stories in all lists by modifying each cached query
+        queryClient.setQueriesData(
+          { queryKey: ['stories'] },
+          (oldData: Story[] | undefined) => {
+            if (!oldData) return oldData;
+            return oldData.map(s => s.id === story.id ? story : s);
+          }
+        );
 
         toast({
           title: action === 'liked' ? "Story liked! ❤️" : "Story unliked",
           description: action === 'liked' ? "Thank you for your support!" : "Like removed"
         });
+      } else {
+        // If no story returned, force refetch to get updated data
+        queryClient.invalidateQueries({ queryKey: ['stories'] });
+        queryClient.invalidateQueries({ queryKey: ['story', storyId] });
       }
     },
     onError: (error: any) => {
@@ -142,16 +157,27 @@ export const useIncrementViews = () => {
       console.log('View increment result:', data);
       return data?.[0] || null;
     },
-    onSuccess: (updatedStory) => {
+    onSuccess: (updatedStory, storyId) => {
       console.log('useIncrementViews onSuccess:', updatedStory);
+      
       if (updatedStory) {
         console.log('Updating cache for story views:', updatedStory.id, 'new view count:', updatedStory.view_count);
         
         // Update the individual story query
         queryClient.setQueryData(['story', updatedStory.id], updatedStory);
         
-        // Update all stories lists to reflect the new view count
+        // Update stories in all lists
+        queryClient.setQueriesData(
+          { queryKey: ['stories'] },
+          (oldData: Story[] | undefined) => {
+            if (!oldData) return oldData;
+            return oldData.map(s => s.id === updatedStory.id ? updatedStory : s);
+          }
+        );
+      } else {
+        // Force refetch if no data returned
         queryClient.invalidateQueries({ queryKey: ['stories'] });
+        queryClient.invalidateQueries({ queryKey: ['story', storyId] });
       }
     },
     onError: (error: any) => {

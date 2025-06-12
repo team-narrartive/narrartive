@@ -1,3 +1,4 @@
+
 import React, { useEffect } from 'react';
 import { useStory, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { useLikedStories } from '@/hooks/useLikedStories';
@@ -20,20 +21,20 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const likeStoryMutation = useLikeStory();
   const incrementViewsMutation = useIncrementViews();
   const { toast } = useToast();
-  const { toggleLike, isLiked } = useLikedStories();
+  const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
 
-  const userLiked = story ? isLiked(story.id) : false;
+  const userLiked = story && !likesLoading ? isLiked(story.id) : false;
 
-  // Increment view count when story loads
+  // Increment view count when story loads (only once)
   useEffect(() => {
     if (story && !incrementViewsMutation.isPending) {
       console.log('StoryReader: Incrementing views for story:', story.id);
       incrementViewsMutation.mutate(story.id);
     }
-  }, [story?.id, incrementViewsMutation]);
+  }, [story?.id]); // Only depend on story ID to avoid multiple calls
 
   const handleLike = async () => {
-    if (!story) return;
+    if (!story || likesLoading || likeStoryMutation.isPending) return;
     
     const userCurrentlyLikes = userLiked;
     console.log('StoryReader HandleLike called:', story.id, 'userCurrentlyLikes:', userCurrentlyLikes);
@@ -118,8 +119,8 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
     
     for (let i = 0; i < paragraphs.length; i++) {
       result.push(
-        <div key={`paragraph-${i}`} className="mb-8">
-          <p className="text-lg leading-relaxed text-gray-800 mb-6">
+        <div key={`paragraph-${i}`} className="mb-6 md:mb-8">
+          <p className="text-base md:text-lg leading-relaxed text-gray-800 mb-4 md:mb-6">
             {paragraphs[i]}
           </p>
         </div>
@@ -129,7 +130,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
       if (images && images.length > 0 && (i + 1) % 2 === 0) {
         const imageIndex = Math.floor(i / 2) % images.length;
         result.push(
-          <div key={`image-${i}`} className="my-12">
+          <div key={`image-${i}`} className="my-8 md:my-12">
             <div className="relative aspect-video bg-gradient-to-br from-purple-100 to-blue-100 rounded-xl overflow-hidden shadow-lg">
               <img 
                 src={images[imageIndex]} 
@@ -146,7 +147,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
     return result;
   };
 
-  if (isLoading) {
+  if (isLoading || likesLoading) {
     return (
       <Layout showSidebar={true} currentView="story-reader">
         <div className="flex items-center justify-center min-h-96">
@@ -162,10 +163,10 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   if (!story) {
     return (
       <Layout showSidebar={true} currentView="story-reader">
-        <div className="flex items-center justify-center min-h-96">
+        <div className="flex items-center justify-center min-h-96 px-4">
           <div className="text-center">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Story Not Found</h2>
-            <p className="text-gray-600 mb-6">The story you're looking for doesn't exist or has been removed.</p>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4">Story Not Found</h2>
+            <p className="text-gray-600 mb-6 text-sm md:text-base">The story you're looking for doesn't exist or has been removed.</p>
             <Button onClick={onBack} className="bg-purple-600 hover:bg-purple-700 text-white">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Go Back
@@ -178,18 +179,19 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 
   return (
     <Layout showSidebar={true} currentView="story-reader">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Button variant="outline" onClick={onBack} className="flex items-center gap-2">
+      <div className="max-w-4xl mx-auto px-4 md:px-0">
+        <div className="flex items-center gap-4 mb-6 md:mb-8">
+          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 text-sm md:text-base">
             <ArrowLeft className="h-4 w-4" />
-            Back
+            <span className="hidden sm:inline">Back</span>
+            <span className="sm:hidden">Back</span>
           </Button>
         </div>
 
         <article className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
           {/* Hero Image */}
           {story.main_image && (
-            <div className="relative aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 overflow-hidden">
+            <div className="relative aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 overflow-hidden">
               <img 
                 src={story.main_image} 
                 alt={story.title}
@@ -197,65 +199,65 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
               
-              {/* Title Overlay with improved layout */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 lg:p-8 text-white">
-                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
-                  {/* Left side - Title and metadata */}
+              {/* Title Overlay with improved mobile layout */}
+              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 text-white">
+                <div className="flex flex-col gap-4 md:gap-6">
+                  {/* Metadata and title */}
                   <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-4 mb-4">
-                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30 flex-shrink-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3 md:mb-4">
+                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30 flex-shrink-0 w-fit text-xs md:text-sm">
                         {story.category || 'Story'}
                       </Badge>
-                      <div className="flex items-center gap-1 text-sm flex-shrink-0">
-                        <Calendar className="h-4 w-4" />
+                      <div className="flex items-center gap-1 text-xs md:text-sm flex-shrink-0">
+                        <Calendar className="h-3 w-3 md:h-4 md:w-4" />
                         {formatDate(story.created_at)}
                       </div>
                     </div>
                     
-                    <h1 className="text-3xl lg:text-5xl font-bold mb-4 leading-tight break-words">
+                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-2 md:mb-4 leading-tight break-words">
                       {story.title}
                     </h1>
                     
-                    <p className="text-lg lg:text-xl leading-relaxed mb-4 lg:mb-6 break-words">
+                    <p className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mb-3 md:mb-4 lg:mb-6 break-words">
                       {story.description}
                     </p>
 
                     {/* Stats */}
-                    <div className="flex items-center gap-6 text-sm">
+                    <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm mb-4 md:mb-0">
                       <span className="flex items-center gap-1">
-                        <Eye className="h-4 w-4" />
+                        <Eye className="h-3 w-3 md:h-4 md:w-4" />
                         {story.view_count || 0} views
                       </span>
                       <span className="flex items-center gap-1">
-                        <Heart className="h-4 w-4" />
+                        <Heart className="h-3 w-3 md:h-4 md:w-4" />
                         {story.like_count || 0} likes
                       </span>
                     </div>
                   </div>
                   
-                  {/* Right side - Action buttons */}
+                  {/* Action buttons */}
                   <div className="flex gap-2 flex-shrink-0">
                     <Button
                       variant="outline"
                       onClick={handleLike}
-                      disabled={likeStoryMutation.isPending}
-                      className={`bg-white/20 border-white/30 text-white hover:bg-white/30 transition-colors ${
+                      disabled={likeStoryMutation.isPending || likesLoading}
+                      className={`bg-white/20 border-white/30 text-white hover:bg-white/30 transition-colors text-xs md:text-sm h-8 md:h-10 ${
                         userLiked 
                           ? 'bg-pink-500/30 border-pink-300' 
                           : ''
                       }`}
                     >
-                      <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
-                      {userLiked ? 'Liked' : 'Like'}
+                      <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                      <span className="hidden sm:inline">{userLiked ? 'Liked' : 'Like'}</span>
                     </Button>
                     
                     <Button
                       variant="outline"
                       onClick={handleShare}
-                      className="bg-white/20 border-white/30 text-white hover:bg-white/30"
+                      className="bg-white/20 border-white/30 text-white hover:bg-white/30 text-xs md:text-sm h-8 md:h-10"
                     >
-                      <Share2 className="h-4 w-4 mr-2" />
-                      Share
+                      <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                      <span className="hidden sm:inline">Share</span>
                     </Button>
                   </div>
                 </div>
@@ -264,37 +266,37 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
           )}
 
           {/* Story Content with Integrated Images */}
-          <div className="p-8 lg:p-12">
+          <div className="p-4 md:p-8 lg:p-12">
             {/* If no hero image, show title here */}
             {!story.main_image && (
-              <div className="mb-12">
-                <div className="flex items-center gap-4 mb-6">
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-700">
+              <div className="mb-8 md:mb-12">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4 md:mb-6">
+                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 w-fit text-xs md:text-sm">
                     {story.category || 'Story'}
                   </Badge>
-                  <div className="flex items-center gap-1 text-sm text-gray-500">
-                    <Calendar className="h-4 w-4" />
+                  <div className="flex items-center gap-1 text-xs md:text-sm text-gray-500">
+                    <Calendar className="h-3 w-3 md:h-4 md:w-4" />
                     {formatDate(story.created_at)}
                   </div>
                 </div>
                 
-                <h1 className="text-4xl font-bold text-gray-900 mb-6 leading-tight">
+                <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
                   {story.title}
                 </h1>
                 
-                <p className="text-xl text-gray-600 leading-relaxed mb-8">
+                <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-6 md:mb-8">
                   {story.description}
                 </p>
 
                 {/* Stats and Actions for non-hero stories */}
-                <div className="flex items-center justify-between mb-8 pb-8 border-b border-gray-200">
-                  <div className="flex items-center gap-6 text-sm text-gray-500">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 pb-6 md:pb-8 border-b border-gray-200">
+                  <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm text-gray-500">
                     <span className="flex items-center gap-1">
-                      <Eye className="h-4 w-4" />
+                      <Eye className="h-3 w-3 md:h-4 md:w-4" />
                       {story.view_count || 0} views
                     </span>
                     <span className="flex items-center gap-1">
-                      <Heart className="h-4 w-4" />
+                      <Heart className="h-3 w-3 md:h-4 md:w-4" />
                       {story.like_count || 0} likes
                     </span>
                   </div>
@@ -303,23 +305,23 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                     <Button
                       variant="outline"
                       onClick={handleLike}
-                      disabled={likeStoryMutation.isPending}
-                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
+                      disabled={likeStoryMutation.isPending || likesLoading}
+                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors text-xs md:text-sm h-8 md:h-10 ${
                         userLiked 
                           ? 'bg-pink-50 text-pink-600 border-pink-200' 
                           : 'hover:text-pink-600'
                       }`}
                     >
-                      <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                      <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
                       {userLiked ? 'Liked' : 'Like'}
                     </Button>
                     
                     <Button
                       variant="outline"
                       onClick={handleShare}
-                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                      className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-xs md:text-sm h-8 md:h-10"
                     >
-                      <Share2 className="h-4 w-4 mr-2" />
+                      <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
                       Share
                     </Button>
                   </div>
@@ -328,14 +330,14 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
             )}
 
             {/* Story Content with Images Integrated */}
-            <div className="prose prose-lg max-w-none">
+            <div className="prose prose-sm md:prose-lg max-w-none">
               {createStoryWithImages(story.story_content, story.additional_images || [])}
             </div>
 
             {/* Story Footer */}
-            <div className="mt-16 pt-8 border-t border-gray-200">
-              <div className="flex items-center justify-between">
-                <div className="text-sm text-gray-500">
+            <div className="mt-12 md:mt-16 pt-6 md:pt-8 border-t border-gray-200">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="text-xs md:text-sm text-gray-500">
                   Published on {formatDate(story.created_at)}
                 </div>
                 
@@ -343,24 +345,25 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                   <Button
                     variant="outline"
                     onClick={handleLike}
-                    disabled={likeStoryMutation.isPending}
-                    className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
+                    disabled={likeStoryMutation.isPending || likesLoading}
+                    className={`hover:bg-pink-50 hover:border-pink-200 transition-colors text-xs md:text-sm h-8 md:h-10 ${
                       userLiked 
                         ? 'bg-pink-50 text-pink-600 border-pink-200' 
                         : 'hover:text-pink-600'
                     }`}
                   >
-                    <Heart className={`h-4 w-4 mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                    <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
                     {story.like_count || 0} Likes
                   </Button>
                   
                   <Button
                     variant="outline"
                     onClick={handleShare}
-                    className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200"
+                    className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-xs md:text-sm h-8 md:h-10"
                   >
-                    <Share2 className="h-4 w-4 mr-2" />
-                    Share Story
+                    <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                    <span className="hidden sm:inline">Share Story</span>
+                    <span className="sm:hidden">Share</span>
                   </Button>
                 </div>
               </div>
