@@ -104,10 +104,21 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               {/* Demo Image Placeholder */}
               <div className="relative max-w-4xl mx-auto">
                 <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
-                  <div className="aspect-video gradient-primary rounded-xl flex items-center justify-center">
-                    <div className="text-center">
-                      <Sparkles className="w-16 h-16 text-white mx-auto mb-4" />
-                      <p className="text-white font-medium">Interactive Demo Coming Soon</p>
+                  <div 
+                    className="aspect-video rounded-xl flex items-center justify-center relative overflow-hidden"
+                    style={{
+                      backgroundImage: `url('/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png')`,
+                      backgroundSize: 'contain',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center',
+                      backgroundColor: 'rgba(125, 211, 252, 0.1)'
+                    }}
+                  >
+                    {/* Overlay for better text readability */}
+                    <div className="absolute inset-0 bg-primary/20 backdrop-blur-[1px]"></div>
+                    <div className="text-center relative z-10">
+                      <Sparkles className="w-16 h-16 text-primary mx-auto mb-4 drop-shadow-lg" />
+                      <p className="text-primary font-bold text-lg drop-shadow-md">Interactive Demo Coming Soon</p>
                     </div>
                   </div>
                 </div>
