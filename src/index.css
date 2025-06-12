@@ -70,40 +70,41 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: Graphik, sans-serif !important;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 
-  /* Apply Graphik font to all text elements globally */
+  /* Apply Graphik font to all text elements globally with !important */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 
   p, span, div, label, input, textarea, button, a {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 
   /* Ensure all UI components use Graphik */
   .ui-text, .component-text, .modal-text, .popup-text {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 
   /* Apply to form elements specifically */
   input, textarea, select, option {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 
   /* Apply to navigation and menu elements */
   nav, menu, .nav-item, .menu-item {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 
   /* Apply to all interactive elements */
   button, .button, .btn {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 }
 
@@ -146,8 +147,8 @@
     to { box-shadow: 0 0 30px rgba(125, 211, 252, 0.6); }
   }
 
-  /* Font utility classes for Graphik */
+  /* Font utility classes for Graphik with !important */
   .font-graphik {
-    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+    font-family: Graphik, sans-serif !important;
   }
 }
