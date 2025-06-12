@@ -41,13 +41,18 @@ export const useStory = (id: string) => {
   return useQuery({
     queryKey: ['story', id],
     queryFn: async () => {
+      console.log('Fetching single story:', id);
       const { data, error } = await supabase
         .from('stories')
         .select('*')
         .eq('id', id)
         .maybeSingle();
       
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching story:', error);
+        throw error;
+      }
+      console.log('Single story result:', data);
       return data as Story | null;
     }
   });
@@ -59,7 +64,7 @@ export const useLikeStory = () => {
 
   return useMutation({
     mutationFn: async ({ storyId, shouldLike }: { storyId: string; shouldLike: boolean }) => {
-      console.log('Like/Unlike story mutation:', storyId, 'shouldLike:', shouldLike);
+      console.log('useLikeStory mutation:', storyId, 'shouldLike:', shouldLike);
       
       if (shouldLike) {
         // Call increment function for liking
@@ -90,8 +95,9 @@ export const useLikeStory = () => {
       }
     },
     onSuccess: ({ story, action }) => {
+      console.log('useLikeStory onSuccess:', { story, action });
       if (story) {
-        console.log('Like/Unlike success, updating cache for story:', story.id, 'new like count:', story.like_count);
+        console.log('Updating cache for story:', story.id, 'new like count:', story.like_count);
         
         // Update the individual story query
         queryClient.setQueryData(['story', story.id], story);
@@ -106,7 +112,7 @@ export const useLikeStory = () => {
       }
     },
     onError: (error: any) => {
-      console.error('Like/Unlike error:', error);
+      console.error('useLikeStory error:', error);
       toast({
         title: "Failed to update like",
         description: error.message || "Please try again",
@@ -121,7 +127,7 @@ export const useIncrementViews = () => {
 
   return useMutation({
     mutationFn: async (storyId: string) => {
-      console.log('Incrementing views for story:', storyId);
+      console.log('useIncrementViews mutation for story:', storyId);
       
       // Use the database function to increment views
       const { data, error } = await supabase.rpc('increment_story_views', {
@@ -137,8 +143,9 @@ export const useIncrementViews = () => {
       return data?.[0] || null;
     },
     onSuccess: (updatedStory) => {
+      console.log('useIncrementViews onSuccess:', updatedStory);
       if (updatedStory) {
-        console.log('View increment success, updating cache for story:', updatedStory.id, 'new view count:', updatedStory.view_count);
+        console.log('Updating cache for story views:', updatedStory.id, 'new view count:', updatedStory.view_count);
         
         // Update the individual story query
         queryClient.setQueryData(['story', updatedStory.id], updatedStory);
@@ -148,7 +155,7 @@ export const useIncrementViews = () => {
       }
     },
     onError: (error: any) => {
-      console.error('View increment error:', error);
+      console.error('useIncrementViews error:', error);
       // Don't show toast for view errors as they're silent
     }
   });

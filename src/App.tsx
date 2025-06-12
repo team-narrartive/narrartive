@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -24,6 +25,7 @@ const AppContent = () => {
   const [currentView, setCurrentView] = useState<View>('landing');
   const [currentStory, setCurrentStory] = useState('');
   const [currentStoryId, setCurrentStoryId] = useState('');
+  const [previousView, setPreviousView] = useState<View>('dashboard'); // Track where user came from
   const { user, loading } = useAuth();
 
   // Check for password reset in URL on component mount
@@ -163,6 +165,7 @@ const AppContent = () => {
       setCurrentView('auth');
       return;
     }
+    setPreviousView('dashboard');
     setCurrentView('projects');
   };
 
@@ -171,6 +174,7 @@ const AppContent = () => {
       setCurrentView('auth');
       return;
     }
+    setPreviousView('dashboard');
     setCurrentView('community');
   };
 
@@ -179,8 +183,18 @@ const AppContent = () => {
       setCurrentView('auth');
       return;
     }
+    setPreviousView(currentView); // Remember where we came from
     setCurrentStoryId(storyId);
     setCurrentView('story-reader');
+  };
+
+  const handleBackFromStoryReader = () => {
+    if (!user) {
+      setCurrentView('auth');
+      return;
+    }
+    // Go back to where we came from
+    setCurrentView(previousView);
   };
 
   const handleBackToAuth = () => {
@@ -270,7 +284,7 @@ const AppContent = () => {
         return (
           <StoryReader 
             storyId={currentStoryId}
-            onBack={handleBackToDashboard}
+            onBack={handleBackFromStoryReader}
           />
         );
       

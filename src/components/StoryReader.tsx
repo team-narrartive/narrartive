@@ -1,6 +1,5 @@
-
 import React, { useEffect } from 'react';
-import { useStory, useLikeStory } from '@/hooks/useStories';
+import { useStory, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { useLikedStories } from '@/hooks/useLikedStories';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
@@ -19,10 +18,19 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 }) => {
   const { data: story, isLoading } = useStory(storyId);
   const likeStoryMutation = useLikeStory();
+  const incrementViewsMutation = useIncrementViews();
   const { toast } = useToast();
   const { toggleLike, isLiked } = useLikedStories();
 
   const userLiked = story ? isLiked(story.id) : false;
+
+  // Increment view count when story loads
+  useEffect(() => {
+    if (story && !incrementViewsMutation.isPending) {
+      console.log('StoryReader: Incrementing views for story:', story.id);
+      incrementViewsMutation.mutate(story.id);
+    }
+  }, [story?.id, incrementViewsMutation]);
 
   const handleLike = async () => {
     if (!story) return;
@@ -40,10 +48,11 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
         storyId: story.id, 
         shouldLike: !userCurrentlyLikes
       });
+      console.log('StoryReader: Like/Unlike successful for story:', story.id);
     } catch (error) {
       // Revert local state if database update fails
       toggleLike(story.id);
-      console.error('Error with like/unlike:', error);
+      console.error('StoryReader: Error with like/unlike:', error);
     }
   };
 
