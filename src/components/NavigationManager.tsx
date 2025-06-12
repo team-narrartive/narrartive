@@ -1,11 +1,12 @@
 
 import { useEffect } from 'react';
-import { useAuth } from '@/hooks/useAuth';
+
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset';
 
 interface NavigationManagerProps {
   user: any;
   currentView: string;
-  setCurrentView: (view: string) => void;
+  setCurrentView: (view: View) => void;
   setCurrentStory: (story: string) => void;
   setCurrentStoryId: (id: string) => void;
 }
