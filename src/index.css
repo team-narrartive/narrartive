@@ -74,7 +74,36 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Apply Graphik font to all text elements globally */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+  }
+
+  p, span, div, label, input, textarea, button, a {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Ensure all UI components use Graphik */
+  .ui-text, .component-text, .modal-text, .popup-text {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Apply to form elements specifically */
+  input, textarea, select, option {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Apply to navigation and menu elements */
+  nav, menu, .nav-item, .menu-item {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
+  }
+
+  /* Apply to all interactive elements */
+  button, .button, .btn {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
   }
 }
 
@@ -115,5 +144,10 @@
   @keyframes glow {
     from { box-shadow: 0 0 20px rgba(125, 211, 252, 0.3); }
     to { box-shadow: 0 0 30px rgba(125, 211, 252, 0.6); }
+  }
+
+  /* Font utility classes for Graphik */
+  .font-graphik {
+    font-family: 'Graphik', system-ui, -apple-system, sans-serif;
   }
 }
