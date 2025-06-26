@@ -87,7 +87,7 @@ serve(async (req) => {
         });
 
         const data = await response.json();
-        console.log(`OpenAI API response for image ${i + 1}:`, { status: response.status, ok: response.ok, data });
+        console.log(`OpenAI API response for image ${i + 1}:`, { status: response.status, ok: response.ok });
         
         if (!response.ok) {
           const errorMessage = data.error?.message || `API call failed with status ${response.status}`;
@@ -96,11 +96,29 @@ serve(async (req) => {
           continue;
         }
 
-        if (data.data && data.data[0] && data.data[0].url) {
-          images.push(data.data[0].url);
-          console.log(`Successfully generated image ${i + 1}/${numImages}`);
+        // Handle both URL and base64 responses
+        if (data.data && data.data[0]) {
+          const imageData = data.data[0];
+          let imageUrl = '';
+          
+          if (imageData.url) {
+            // Standard URL response
+            imageUrl = imageData.url;
+          } else if (imageData.b64_json) {
+            // Base64 response - convert to data URL
+            imageUrl = `data:image/png;base64,${imageData.b64_json}`;
+          }
+          
+          if (imageUrl) {
+            images.push(imageUrl);
+            console.log(`Successfully generated image ${i + 1}/${numImages}`);
+          } else {
+            const errorMessage = 'No image URL or base64 data in response';
+            console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
+            errors.push(`Image ${i + 1}: ${errorMessage}`);
+          }
         } else {
-          const errorMessage = 'No image URL in response';
+          const errorMessage = 'No image data in response';
           console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
           errors.push(`Image ${i + 1}: ${errorMessage}`);
         }

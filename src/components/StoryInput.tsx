@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CharacterSidebar } from './CharacterSidebar';
 import { GeneratedImages } from './GeneratedImages';
-import { ArrowLeft, Sparkles, FileText, Users, Image } from 'lucide-react';
+import { ArrowLeft, Sparkles, FileText, Users, Image, AlertCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -28,6 +28,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   const [isExtractingCharacters, setIsExtractingCharacters] = useState(false);
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [hasGeneratedWidgets, setHasGeneratedWidgets] = useState(false);
+  const [imageGenerationError, setImageGenerationError] = useState<string | null>(null);
   const { toast } = useToast();
 
   const handleExtractCharacters = async () => {
@@ -93,6 +94,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
     console.log('Starting image generation...');
     setIsGeneratingImages(true);
+    setImageGenerationError(null); // Clear previous error when starting new generation
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-images', {
@@ -111,6 +113,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
       if (data.error) {
         console.error('Function returned error:', data.error);
+        setImageGenerationError(data.error);
         throw new Error(data.error);
       }
 
@@ -124,9 +127,11 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       });
     } catch (error: any) {
       console.error('Error generating images:', error);
+      const errorMessage = error.message || "Failed to generate images from your story.";
+      setImageGenerationError(errorMessage);
       toast({
         title: "Image generation failed",
-        description: error.message || "Failed to generate images from your story.",
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -172,6 +177,20 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
               <p className="text-gray-600">Step 1 of 3: Enter your story</p>
             </div>
           </div>
+
+          {/* Persistent Error Message */}
+          {imageGenerationError && (
+            <Card className="p-4 bg-red-50 border-red-200">
+              <div className="flex items-start space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <h3 className="font-semibold text-red-800 mb-1">Image generation failed</h3>
+                  <p className="text-red-700 text-sm">{imageGenerationError}</p>
+                  <p className="text-red-600 text-xs mt-2">This error will persist until you try generating images again.</p>
+                </div>
+              </div>
+            </Card>
+          )}
 
           {/* Story Input */}
           <div className={`grid ${shouldShowRightSidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
