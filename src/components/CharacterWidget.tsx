@@ -31,61 +31,29 @@ const getCharacterIcon = (type: string) => {
   }
 };
 
-const getComprehensiveAttributes = (type: string) => {
+const getEssentialAttributes = (type: string) => {
   switch (type) {
     case 'human':
       return {
-        // Physical Appearance
         'Hair Color': '',
-        'Hairstyle': '',
         'Eye Color': '',
         'Skin Tone': '',
-        'Ethnicity': '',
-        'Height': '',
         'Age': '',
-        'Body Type': '',
-        'Gender': '',
-        'Facial Hair': '',
-        'Distinctive Marks': '',
-        'Facial Expression': '',
-        // Clothing & Accessories
+        'Height': '',
         'Clothing Style': '',
-        'Shirt Color': '',
-        'Pants Color': '',
-        'Shoe Type': '',
-        'Shoe Color': '',
-        'Accessories': '',
-        'Glasses': '',
-        'Hat': '',
-        'Jewelry': '',
-        // Personality & Mood
-        'Mood': '',
-        'Personality': ''
+        'Facial Expression': '',
+        'Gender': ''
       };
     case 'animal':
       return {
-        // Basic Info
         'Animal Type': '',
-        'Breed': '',
-        'Size': '',
-        'Age': '',
-        // Physical Features
         'Fur/Feather Color': '',
+        'Size': '',
         'Eye Color': '',
-        'Distinctive Features': '',
-        'Patterns': '',
-        'Tail': '',
-        'Ears': '',
-        // Accessories & Clothing
-        'Collar': '',
-        'Tags': '',
-        'Clothing': '',
-        'Accessories': '',
-        // Behavior & Mood
+        'Breed': '',
         'Pose': '',
-        'Action': '',
         'Facial Expression': '',
-        'Mood': ''
+        'Accessories': ''
       };
     case 'creature':
       return {
@@ -94,13 +62,9 @@ const getComprehensiveAttributes = (type: string) => {
         'Color': '',
         'Special Features': '',
         'Magical Properties': '',
-        'Texture': '',
         'Eyes': '',
-        'Wings': '',
-        'Claws/Talons': '',
-        'Markings': '',
-        'Aura': '',
-        'Pose': ''
+        'Pose': '',
+        'Aura': ''
       };
     default: // objects
       return {
@@ -110,18 +74,15 @@ const getComprehensiveAttributes = (type: string) => {
         'Material': '',
         'Condition': '',
         'Shape': '',
-        'Texture': '',
         'Special Features': '',
-        'Decorations': '',
-        'Age/Era': '',
-        'Functionality': ''
+        'Age/Era': ''
       };
   }
 };
 
 export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onUpdate }) => {
   const [attributes, setAttributes] = useState(() => {
-    const defaultAttrs = getComprehensiveAttributes(character.type);
+    const defaultAttrs = getEssentialAttributes(character.type);
     return { ...defaultAttrs, ...character.attributes };
   });
   
@@ -210,7 +171,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                             value={newAttributeKey}
                             onChange={(e) => setNewAttributeKey(e.target.value)}
                             placeholder="e.g., Tattoo, Scar, Favorite Color"
-                            className="mt-1 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                            className="mt-1 mx-2 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
                           />
                         </div>
                         <div>
@@ -219,7 +180,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                             value={newAttributeValue}
                             onChange={(e) => setNewAttributeValue(e.target.value)}
                             placeholder="Enter the attribute value"
-                            className="mt-1 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                            className="mt-1 mx-2 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
                           />
                         </div>
                         <div className="flex space-x-2">
@@ -247,10 +208,10 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                     </Card>
                   )}
                   
-                  {/* Attribute Grid */}
-                  <div className="grid grid-cols-2 gap-4">
+                  {/* Attribute Grid with improved padding */}
+                  <div className="grid grid-cols-2 gap-4 px-2">
                     {Object.entries(attributes).map(([key, value]) => {
-                      const isCustomAttribute = !getComprehensiveAttributes(character.type).hasOwnProperty(key);
+                      const isCustomAttribute = !getEssentialAttributes(character.type).hasOwnProperty(key);
                       return (
                         <div key={key} className="space-y-2">
                           <div className="flex items-center justify-between">
@@ -272,7 +233,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                             id={`${character.name}-${key}`}
                             value={value || ''}
                             onChange={(e) => handleAttributeChange(key, e.target.value)}
-                            className="h-9 text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 border-gray-300"
+                            className="h-9 text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 border-gray-300 mx-1"
                             placeholder={`Enter ${key.toLowerCase()}`}
                           />
                         </div>

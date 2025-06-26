@@ -4,7 +4,8 @@ import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CharacterSidebar } from './CharacterSidebar';
-import { ArrowLeft, Sparkles, FileText, Users } from 'lucide-react';
+import { GeneratedImages } from './GeneratedImages';
+import { ArrowLeft, Sparkles, FileText, Users, Image } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -23,8 +24,10 @@ interface StoryInputProps {
 export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidgets }) => {
   const [story, setStory] = useState('');
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isExtracting, setIsExtracting] = useState(false);
+  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const [isExtractingCharacters, setIsExtractingCharacters] = useState(false);
+  const [isGeneratingImages, setIsGeneratingImages] = useState(false);
+  const [hasGeneratedWidgets, setHasGeneratedWidgets] = useState(false);
   const { toast } = useToast();
 
   const handleExtractCharacters = async () => {
@@ -38,7 +41,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
     }
 
     console.log('Starting character extraction...');
-    setIsExtracting(true);
+    setIsExtractingCharacters(true);
     
     try {
       const { data, error } = await supabase.functions.invoke('extract-characters', {
@@ -60,6 +63,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       const extractedCharacters = data.characters || [];
       console.log('Setting characters:', extractedCharacters);
       setCharacters(extractedCharacters);
+      setHasGeneratedWidgets(true);
       
       toast({
         title: "Characters extracted!",
@@ -73,18 +77,60 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
         variant: "destructive"
       });
     } finally {
-      setIsExtracting(false);
+      setIsExtractingCharacters(false);
     }
   };
 
-  const handleGenerate = () => {
-    if (story.trim()) {
-      setIsLoading(true);
-      // Simulate processing
-      setTimeout(() => {
-        setIsLoading(false);
-        onGenerateWidgets(story);
-      }, 2000);
+  const handleGenerateImages = async () => {
+    if (!story.trim()) {
+      toast({
+        title: "No story provided",
+        description: "Please enter a story before generating images.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    console.log('Starting image generation...');
+    setIsGeneratingImages(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-images', {
+        body: { 
+          story: story.trim(),
+          characters: characters
+        }
+      });
+
+      console.log('Image generation response:', { data, error });
+
+      if (error) {
+        console.error('Supabase function error:', error);
+        throw error;
+      }
+
+      if (data.error) {
+        console.error('Function returned error:', data.error);
+        throw new Error(data.error);
+      }
+
+      const images = data.images || [];
+      console.log('Setting images:', images);
+      setGeneratedImages(images);
+      
+      toast({
+        title: "Images generated!",
+        description: `Created ${images.length} AI-generated images from your story.`
+      });
+    } catch (error: any) {
+      console.error('Error generating images:', error);
+      toast({
+        title: "Image generation failed",
+        description: error.message || "Failed to generate images from your story.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsGeneratingImages(false);
     }
   };
 
@@ -96,18 +142,20 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
   const exampleStory = `In the mystical realm of Aethermoor, Princess Luna discovered an ancient crystal that pulsed with otherworldly energy. Her loyal companion, a silver wolf named Asher, sensed danger approaching. The evil sorcerer Malachar had been searching for this very artifact for centuries, and now his dark magic grew stronger with each passing moment. Luna knew she had to protect her kingdom, but she would need the help of her childhood friend Marcus, a brave knight with a mysterious past.`;
 
+  const shouldShowRightSidebar = generatedImages.length === 0 && !isGeneratingImages;
+
   return (
     <Layout showSidebar={true} currentView="create">
       <div className="flex min-h-screen">
         {/* Character Sidebar */}
         <CharacterSidebar 
           characters={characters}
-          loading={isExtracting}
+          loading={isExtractingCharacters}
           onCharacterUpdate={handleCharacterUpdate}
         />
 
         {/* Main Content */}
-        <div className="flex-1 max-w-4xl mx-auto space-y-6 p-6">
+        <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
           {/* Header */}
           <div className="flex items-center justify-between">
             <Button
@@ -126,8 +174,8 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
           </div>
 
           {/* Story Input */}
-          <div className="grid lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+          <div className={`grid ${shouldShowRightSidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
+            <div className={shouldShowRightSidebar ? 'lg:col-span-2' : ''}>
               <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
                 <div className="flex items-center space-x-3 mb-4">
                   <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
@@ -146,15 +194,15 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                   className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
                 />
                 
-                {/* Improved button layout with better alignment and spacing */}
+                {/* Button layout */}
                 <div className="mt-6 space-y-4">
                   {/* Word/Character count */}
                   <div className="text-sm text-gray-500 text-center">
                     {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
                   
-                  {/* Button row with consistent spacing */}
-                  <div className="flex flex-wrap items-center justify-center gap-3">
+                  {/* Button row */}
+                  <div className="flex flex-wrap items-center justify-center gap-4">
                     <Button
                       variant="outline"
                       onClick={() => setStory(exampleStory)}
@@ -163,87 +211,99 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                       Try Example
                     </Button>
                     
-                    <Button
-                      onClick={handleExtractCharacters}
-                      disabled={!story.trim() || isExtracting}
-                      className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      {isExtracting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Extracting...
-                        </>
-                      ) : (
-                        <>
-                          <Users className="w-4 h-4 mr-2" />
-                          Generate Widgets
-                        </>
-                      )}
-                    </Button>
-                    
-                    <Button
-                      onClick={handleGenerate}
-                      disabled={!story.trim() || isLoading}
-                      className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      {isLoading ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Analyzing...
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4 mr-2" />
-                          Continue
-                        </>
-                      )}
-                    </Button>
+                    {!hasGeneratedWidgets ? (
+                      <Button
+                        onClick={handleExtractCharacters}
+                        disabled={!story.trim() || isExtractingCharacters}
+                        className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        {isExtractingCharacters ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Extracting...
+                          </>
+                        ) : (
+                          <>
+                            <Users className="w-4 h-4 mr-2" />
+                            Generate Widgets
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleGenerateImages}
+                        disabled={!story.trim() || isGeneratingImages}
+                        className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        {isGeneratingImages ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Image className="w-4 h-4 mr-2" />
+                            Generate Images
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </Card>
             </div>
 
-            {/* Tips Sidebar */}
-            <div className="space-y-6">
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">✨ Tips for Better Results</h3>
-                <ul className="space-y-3 text-sm text-gray-600">
-                  <li className="flex items-start space-x-2">
-                    <span className="text-sky-500">•</span>
-                    <span>Include character descriptions in your story</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-sky-500">•</span>
-                    <span>Mention physical attributes, clothing, and personality traits</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-sky-500">•</span>
-                    <span>Use character names consistently throughout</span>
-                  </li>
-                  <li className="flex items-start space-x-2">
-                    <span className="text-sky-500">•</span>
-                    <span>Include animals, creatures, or objects you want visualized</span>
-                  </li>
-                </ul>
-              </Card>
+            {/* Tips Sidebar - Only show when images haven't been generated */}
+            {shouldShowRightSidebar && (
+              <div className="space-y-6">
+                <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+                  <h3 className="text-lg font-semibold text-gray-900 mb-4">✨ Tips for Better Results</h3>
+                  <ul className="space-y-3 text-sm text-gray-600">
+                    <li className="flex items-start space-x-2">
+                      <span className="text-sky-500">•</span>
+                      <span>Include character descriptions in your story</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-sky-500">•</span>
+                      <span>Mention physical attributes, clothing, and personality traits</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-sky-500">•</span>
+                      <span>Use character names consistently throughout</span>
+                    </li>
+                    <li className="flex items-start space-x-2">
+                      <span className="text-sky-500">•</span>
+                      <span>Include animals, creatures, or objects you want visualized</span>
+                    </li>
+                  </ul>
+                </Card>
 
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                <div className="text-center">
-                  <Users className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Character Widgets</h3>
-                  <p className="text-sm text-gray-600 mb-4">
-                    Click "Generate Widgets" to automatically extract characters from your story and create customizable attribute forms.
-                  </p>
-                  {characters.length > 0 && (
-                    <div className="text-sm text-emerald-600 font-medium">
-                      {characters.length} characters detected!
-                    </div>
-                  )}
-                </div>
-              </Card>
-            </div>
+                <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+                  <div className="text-center">
+                    <Users className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Character Widgets</h3>
+                    <p className="text-sm text-gray-600 mb-4">
+                      Click "Generate Widgets" to automatically extract characters from your story and create customizable attribute forms.
+                    </p>
+                    {characters.length > 0 && (
+                      <div className="text-sm text-emerald-600 font-medium">
+                        {characters.length} characters detected!
+                      </div>
+                    )}
+                  </div>
+                </Card>
+              </div>
+            )}
           </div>
         </div>
+
+        {/* Generated Images Sidebar - Show when images exist or are being generated */}
+        {(generatedImages.length > 0 || isGeneratingImages) && (
+          <GeneratedImages 
+            images={generatedImages}
+            loading={isGeneratingImages}
+          />
+        )}
       </div>
     </Layout>
   );
