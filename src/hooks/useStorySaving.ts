@@ -52,14 +52,16 @@ export const useStorySaving = () => {
         additional_images: data.imageVersions.length > 0 
           ? data.imageVersions[data.imageVersions.length - 1].images 
           : [],
-        image_versions: data.imageVersions,
+        image_versions: JSON.parse(JSON.stringify(data.imageVersions)), // Convert to JSON
         is_public: data.isPublic || false,
-        canvas_data: data.canvasData || null,
+        canvas_data: JSON.parse(JSON.stringify(data.canvasData || null)), // Convert to JSON
         like_count: 0,
         view_count: 0,
-        generation_settings: data.imageVersions.length > 0 
-          ? data.imageVersions[data.imageVersions.length - 1].settings 
-          : {}
+        generation_settings: JSON.parse(JSON.stringify(
+          data.imageVersions.length > 0 
+            ? data.imageVersions[data.imageVersions.length - 1].settings 
+            : {}
+        )) // Convert to JSON
       };
 
       const { data: savedStory, error } = await supabase
