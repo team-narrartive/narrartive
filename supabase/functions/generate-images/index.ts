@@ -43,49 +43,70 @@ serve(async (req) => {
       style: 'realistic'
     };
 
-    console.log(`Generating ${imageSettings.numImages} images with ${imageSettings.quality} quality and ${imageSettings.style} style`);
+    console.log(`Generating ${imageSettings.numImages} images with ${imageSettings.quality} quality and ${imageSettings.style} style using gpt-image-1`);
 
     const images: string[] = [];
     const errors: string[] = [];
 
-    // Map quality to OpenAI parameters
+    // Map quality to gpt-image-1 parameters
     const qualityMap = {
-      low: 'standard',
-      medium: 'standard', 
-      high: 'hd'
+      low: 'low',
+      medium: 'medium', 
+      high: 'high'
     };
 
-    // Map style to prompt modifications
+    // Enhanced style prompts for better accuracy
     const stylePrompts = {
-      realistic: 'photorealistic, detailed, cinematic lighting',
-      artistic: 'artistic illustration, painterly style, creative interpretation',
-      cartoon: 'cartoon style, animated, colorful and playful'
+      realistic: 'photorealistic, highly detailed, professional photography style, accurate representation, crisp details, natural lighting',
+      artistic: 'artistic illustration, painterly technique, expressive brushstrokes, creative interpretation with artistic flair, rich colors',
+      cartoon: 'cartoon illustration, animated style, vibrant colors, clear character definition, playful and engaging visual style'
     };
 
     for (let i = 0; i < imageSettings.numImages; i++) {
-      let prompt = `Create a ${stylePrompts[imageSettings.style]} illustration for scene ${i + 1} of this story: "${story}"\n\n`;
+      // Enhanced prompt structure for better accuracy
+      let prompt = `Create a ${stylePrompts[imageSettings.style]} image for scene ${i + 1} of this story:\n\n"${story}"\n\n`;
       
-      // Add character descriptions
+      // Improved character descriptions with better attribute handling
       if (characters && characters.length > 0) {
-        prompt += "Characters in the scene:\n";
+        prompt += "IMPORTANT - Include these specific characters with their exact attributes:\n";
         characters.forEach((char: Character) => {
-          const filledAttributes = Object.entries(char.attributes)
-            .filter(([_, value]) => value && value.toString().trim())
-            .map(([key, value]) => `${key}: ${value}`)
-            .join(', ');
+          prompt += `\n- ${char.name} (${char.type}):\n`;
           
-          if (filledAttributes) {
-            prompt += `- ${char.name} (${char.type}): ${filledAttributes}\n`;
-          } else if (char.description) {
-            prompt += `- ${char.name} (${char.type}): ${char.description}\n`;
+          // Include description if available
+          if (char.description) {
+            prompt += `  Description: ${char.description}\n`;
+          }
+          
+          // Process all attributes, preserving important details
+          const attributeEntries = Object.entries(char.attributes)
+            .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+            .map(([key, value]) => {
+              // Handle different attribute types
+              if (typeof value === 'object' && value !== null) {
+                return `${key}: ${JSON.stringify(value)}`;
+              }
+              return `${key}: ${value}`;
+            });
+          
+          if (attributeEntries.length > 0) {
+            prompt += `  Specific attributes: ${attributeEntries.join(', ')}\n`;
           }
         });
+        
+        prompt += "\nEnsure all character details and attributes are accurately represented in the visual.\n";
       }
       
-      prompt += `\nStyle: ${stylePrompts[imageSettings.style]}. Focus on bringing the narrative to life with rich colors and engaging composition.`;
+      // Add scene-specific and consistency instructions
+      prompt += `\nScene ${i + 1} specific requirements:\n`;
+      prompt += `- Maintain visual consistency with the story narrative\n`;
+      prompt += `- Focus on accurate character representation as described\n`;
+      prompt += `- Use ${stylePrompts[imageSettings.style]} visual approach\n`;
+      prompt += `- Ensure all specified character attributes are clearly visible\n`;
+
+      console.log(`Generated prompt for image ${i + 1}:`, prompt);
 
       try {
-        console.log(`Making OpenAI API call for image ${i + 1}...`);
+        console.log(`Making OpenAI API call for image ${i + 1} with gpt-image-1...`);
         const response = await fetch('https://api.openai.com/v1/images/generations', {
           method: 'POST',
           headers: {
@@ -93,16 +114,21 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'dall-e-3',
+            model: 'gpt-image-1',
             prompt: prompt,
-            n: 1,
             size: '1024x1024',
-            quality: qualityMap[imageSettings.quality]
+            quality: qualityMap[imageSettings.quality],
+            output_format: 'png'
           }),
         });
 
         const data = await response.json();
-        console.log(`OpenAI API response for image ${i + 1}:`, { status: response.status, ok: response.ok });
+        console.log(`OpenAI API response for image ${i + 1}:`, { 
+          status: response.status, 
+          ok: response.ok,
+          model: 'gpt-image-1',
+          quality: qualityMap[imageSettings.quality]
+        });
         
         if (!response.ok) {
           const errorMessage = data.error?.message || `API call failed with status ${response.status}`;
@@ -111,7 +137,7 @@ serve(async (req) => {
           continue;
         }
 
-        // Handle both URL and base64 responses
+        // Handle gpt-image-1 response (returns base64 by default)
         if (data.data && data.data[0]) {
           const imageData = data.data[0];
           let imageUrl = '';
@@ -124,7 +150,7 @@ serve(async (req) => {
           
           if (imageUrl) {
             images.push(imageUrl);
-            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages}`);
+            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages} with gpt-image-1`);
           } else {
             const errorMessage = 'No image URL or base64 data in response';
             console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
@@ -141,7 +167,7 @@ serve(async (req) => {
       }
     }
 
-    console.log(`Image generation complete. Generated: ${images.length}, Errors: ${errors.length}`);
+    console.log(`Image generation complete with gpt-image-1. Generated: ${images.length}, Errors: ${errors.length}`);
 
     if (images.length === 0 && errors.length > 0) {
       return new Response(JSON.stringify({ 
