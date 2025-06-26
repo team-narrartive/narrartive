@@ -1,19 +1,35 @@
-
 import React, { useState } from 'react';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { CharacterSidebar } from './CharacterSidebar';
-import { GeneratedImages } from './GeneratedImages';
-import { ArrowLeft, Sparkles, FileText, Users, Image, AlertCircle } from 'lucide-react';
+import { EnhancedGeneratedImages } from './EnhancedGeneratedImages';
+import { ImageGenerationSettingsComponent } from './ImageGenerationSettings';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { ArrowLeft, FileText, Users, Image, AlertCircle, Save, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useStorySaving } from '@/hooks/useStorySaving';
 
 interface Character {
   name: string;
   type: 'human' | 'animal' | 'creature' | 'object';
   description?: string;
   attributes: Record<string, any>;
+}
+
+interface ImageGenerationSettings {
+  numImages: number;
+  quality: 'low' | 'medium' | 'high';
+  style: 'realistic' | 'artistic' | 'cartoon';
+}
+
+interface ImageVersion {
+  id: string;
+  images: string[];
+  created_at: string;
+  settings: ImageGenerationSettings;
 }
 
 interface StoryInputProps {
@@ -24,12 +40,22 @@ interface StoryInputProps {
 export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidgets }) => {
   const [story, setStory] = useState('');
   const [characters, setCharacters] = useState<Character[]>([]);
-  const [generatedImages, setGeneratedImages] = useState<string[]>([]);
+  const [imageVersions, setImageVersions] = useState<ImageVersion[]>([]);
   const [isExtractingCharacters, setIsExtractingCharacters] = useState(false);
   const [isGeneratingImages, setIsGeneratingImages] = useState(false);
   const [hasGeneratedWidgets, setHasGeneratedWidgets] = useState(false);
   const [imageGenerationError, setImageGenerationError] = useState<string | null>(null);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [storyTitle, setStoryTitle] = useState('');
+  const [storyDescription, setStoryDescription] = useState('');
+  const [imageSettings, setImageSettings] = useState<ImageGenerationSettings>({
+    numImages: 3,
+    quality: 'medium',
+    style: 'realistic'
+  });
+  
   const { toast } = useToast();
+  const { saveStory, isSaving } = useStorySaving();
 
   const handleExtractCharacters = async () => {
     if (!story.trim()) {
@@ -92,15 +118,16 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
-    console.log('Starting image generation...');
+    console.log('Starting image generation with settings:', imageSettings);
     setIsGeneratingImages(true);
-    setImageGenerationError(null); // Clear previous error when starting new generation
+    setImageGenerationError(null);
     
     try {
       const { data, error } = await supabase.functions.invoke('generate-images', {
         body: { 
           story: story.trim(),
-          characters: characters
+          characters: characters,
+          settings: imageSettings
         }
       });
 
@@ -119,7 +146,16 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
       const images = data.images || [];
       console.log('Setting images:', images);
-      setGeneratedImages(images);
+      
+      // Create new image version
+      const newVersion: ImageVersion = {
+        id: `version-${Date.now()}`,
+        images,
+        created_at: new Date().toISOString(),
+        settings: imageSettings
+      };
+      
+      setImageVersions(prev => [...prev, newVersion]);
       
       toast({
         title: "Images generated!",
@@ -145,9 +181,37 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
     setCharacters(newCharacters);
   };
 
+  const handleSaveStory = async () => {
+    if (!storyTitle.trim() || !storyDescription.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please provide both title and description.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    const savedStory = await saveStory({
+      title: storyTitle,
+      description: storyDescription,
+      storyContent: story,
+      imageVersions,
+      isPublic: false
+    });
+
+    if (savedStory) {
+      setShowSaveDialog(false);
+      toast({
+        title: "Success! 🎉",
+        description: "Your story has been saved and is now available in My Projects."
+      });
+    }
+  };
+
   const exampleStory = `In the mystical realm of Aethermoor, Princess Luna discovered an ancient crystal that pulsed with otherworldly energy. Her loyal companion, a silver wolf named Asher, sensed danger approaching. The evil sorcerer Malachar had been searching for this very artifact for centuries, and now his dark magic grew stronger with each passing moment. Luna knew she had to protect her kingdom, but she would need the help of her childhood friend Marcus, a brave knight with a mysterious past.`;
 
-  const shouldShowRightSidebar = generatedImages.length === 0 && !isGeneratingImages;
+  const shouldShowRightSidebar = imageVersions.length === 0 && !isGeneratingImages;
+  const hasImages = imageVersions.length > 0;
 
   return (
     <Layout showSidebar={true} currentView="create">
@@ -161,7 +225,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
         {/* Main Content */}
         <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
-          {/* Header */}
+          {/* Simplified Header */}
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
@@ -172,10 +236,15 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
               Back to Dashboard
             </Button>
             
-            <div className="text-right">
-              <h1 className="text-2xl font-bold text-gray-900">Create New Story</h1>
-              <p className="text-gray-600">Step 1 of 3: Enter your story</p>
-            </div>
+            {hasImages && (
+              <Button
+                onClick={() => setShowSaveDialog(true)}
+                className="bg-green-600 hover:bg-green-700 text-white"
+              >
+                <Save className="w-4 h-4 mr-2" />
+                Save Project
+              </Button>
+            )}
           </div>
 
           {/* Persistent Error Message */}
@@ -190,6 +259,14 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                 </div>
               </div>
             </Card>
+          )}
+
+          {/* Image Generation Settings - Show after widgets are generated */}
+          {hasGeneratedWidgets && (
+            <ImageGenerationSettingsComponent
+              settings={imageSettings}
+              onSettingsChange={setImageSettings}
+            />
           )}
 
           {/* Story Input */}
@@ -213,14 +290,11 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                   className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
                 />
                 
-                {/* Button layout */}
                 <div className="mt-6 space-y-4">
-                  {/* Word/Character count */}
                   <div className="text-sm text-gray-500 text-center">
                     {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
                   
-                  {/* Button row */}
                   <div className="flex flex-wrap items-center justify-center gap-4">
                     <Button
                       variant="outline"
@@ -316,14 +390,64 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
           </div>
         </div>
 
-        {/* Generated Images Sidebar - Show when images exist or are being generated */}
-        {(generatedImages.length > 0 || isGeneratingImages) && (
-          <GeneratedImages 
-            images={generatedImages}
+        {/* Enhanced Generated Images Sidebar */}
+        {(imageVersions.length > 0 || isGeneratingImages) && (
+          <EnhancedGeneratedImages 
+            imageVersions={imageVersions}
             loading={isGeneratingImages}
+            story={story}
           />
         )}
       </div>
+
+      {/* Save Story Dialog */}
+      <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save Your Story</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">Story Title</label>
+              <Input
+                value={storyTitle}
+                onChange={(e) => setStoryTitle(e.target.value)}
+                placeholder="Enter a title for your story"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Description</label>
+              <Input
+                value={storyDescription}
+                onChange={(e) => setStoryDescription(e.target.value)}
+                placeholder="Brief description of your story"
+              />
+            </div>
+            <div className="flex gap-2 pt-4">
+              <Button
+                onClick={handleSaveStory}
+                disabled={isSaving}
+                className="flex-1"
+              >
+                {isSaving ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Save Story
+                  </>
+                )}
+              </Button>
+              <Button variant="outline" onClick={() => setShowSaveDialog(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </Layout>
   );
 };

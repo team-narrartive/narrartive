@@ -39,10 +39,13 @@ export type Database = {
       stories: {
         Row: {
           additional_images: string[] | null
+          canvas_data: Json | null
           category: string | null
           created_at: string
           description: string
+          generation_settings: Json | null
           id: string
+          image_versions: Json | null
           is_public: boolean | null
           like_count: number | null
           main_image: string | null
@@ -54,10 +57,13 @@ export type Database = {
         }
         Insert: {
           additional_images?: string[] | null
+          canvas_data?: Json | null
           category?: string | null
           created_at?: string
           description: string
+          generation_settings?: Json | null
           id?: string
+          image_versions?: Json | null
           is_public?: boolean | null
           like_count?: number | null
           main_image?: string | null
@@ -69,10 +75,13 @@ export type Database = {
         }
         Update: {
           additional_images?: string[] | null
+          canvas_data?: Json | null
           category?: string | null
           created_at?: string
           description?: string
+          generation_settings?: Json | null
           id?: string
+          image_versions?: Json | null
           is_public?: boolean | null
           like_count?: number | null
           main_image?: string | null

@@ -16,39 +16,54 @@ interface Character {
   attributes: Record<string, any>;
 }
 
+interface ImageSettings {
+  numImages: number;
+  quality: 'low' | 'medium' | 'high';
+  style: 'realistic' | 'artistic' | 'cartoon';
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { story, characters } = await req.json();
+    const { story, characters, settings } = await req.json();
 
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Processing story for image generation...');
+    console.log('Processing story for image generation with settings:', settings);
 
-    // Determine number of images based on word count
-    const wordCount = story.split(' ').filter((word: string) => word.length > 0).length;
-    let numImages = 1;
-    
-    if (wordCount > 200) numImages = 2;
-    if (wordCount > 500) numImages = 3;
-    if (wordCount > 1000) numImages = 4;
-    
-    // Cap at 4 images maximum
-    numImages = Math.min(numImages, 4);
+    // Use settings from the request, with fallback to automatic calculation
+    const imageSettings: ImageSettings = settings || {
+      numImages: Math.min(Math.max(1, Math.floor(story.split(' ').length / 200)), 4),
+      quality: 'medium',
+      style: 'realistic'
+    };
 
-    console.log(`Generating ${numImages} images for story with ${wordCount} words`);
+    console.log(`Generating ${imageSettings.numImages} images with ${imageSettings.quality} quality and ${imageSettings.style} style`);
 
     const images: string[] = [];
     const errors: string[] = [];
 
-    for (let i = 0; i < numImages; i++) {
-      // Create a detailed prompt for each image
-      let prompt = `Create a detailed, high-quality illustration for scene ${i + 1} of this story: "${story}"\n\n`;
+    // Map quality to OpenAI parameters
+    const qualityMap = {
+      low: 'standard',
+      medium: 'standard', 
+      high: 'hd'
+    };
+
+    // Map style to prompt modifications
+    const stylePrompts = {
+      realistic: 'photorealistic, detailed, cinematic lighting',
+      artistic: 'artistic illustration, painterly style, creative interpretation',
+      cartoon: 'cartoon style, animated, colorful and playful'
+    };
+
+    for (let i = 0; i < imageSettings.numImages; i++) {
+      let prompt = `Create a ${stylePrompts[imageSettings.style]} illustration for scene ${i + 1} of this story: "${story}"\n\n`;
       
       // Add character descriptions
       if (characters && characters.length > 0) {
@@ -67,7 +82,7 @@ serve(async (req) => {
         });
       }
       
-      prompt += "\nStyle: Detailed, vibrant, story illustration style. Focus on bringing the narrative to life with rich colors and engaging composition.";
+      prompt += `\nStyle: ${stylePrompts[imageSettings.style]}. Focus on bringing the narrative to life with rich colors and engaging composition.`;
 
       try {
         console.log(`Making OpenAI API call for image ${i + 1}...`);
@@ -78,11 +93,11 @@ serve(async (req) => {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            model: 'gpt-image-1',
+            model: 'dall-e-3',
             prompt: prompt,
             n: 1,
             size: '1024x1024',
-            quality: 'high'
+            quality: qualityMap[imageSettings.quality]
           }),
         });
 
@@ -102,16 +117,14 @@ serve(async (req) => {
           let imageUrl = '';
           
           if (imageData.url) {
-            // Standard URL response
             imageUrl = imageData.url;
           } else if (imageData.b64_json) {
-            // Base64 response - convert to data URL
             imageUrl = `data:image/png;base64,${imageData.b64_json}`;
           }
           
           if (imageUrl) {
             images.push(imageUrl);
-            console.log(`Successfully generated image ${i + 1}/${numImages}`);
+            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages}`);
           } else {
             const errorMessage = 'No image URL or base64 data in response';
             console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
@@ -130,7 +143,6 @@ serve(async (req) => {
 
     console.log(`Image generation complete. Generated: ${images.length}, Errors: ${errors.length}`);
 
-    // If no images were generated and we have errors, return an error response
     if (images.length === 0 && errors.length > 0) {
       return new Response(JSON.stringify({ 
         error: `Failed to generate images: ${errors.join('; ')}`,
@@ -142,11 +154,10 @@ serve(async (req) => {
       });
     }
 
-    // If some images failed but some succeeded, include error details in response
     const response: any = { images };
     if (errors.length > 0) {
       response.warnings = errors;
-      response.message = `Generated ${images.length} out of ${numImages} requested images. Some images failed: ${errors.join('; ')}`;
+      response.message = `Generated ${images.length} out of ${imageSettings.numImages} requested images. Some images failed: ${errors.join('; ')}`;
     }
 
     return new Response(JSON.stringify(response), {
