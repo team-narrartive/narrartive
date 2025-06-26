@@ -1,0 +1,73 @@
+
+import React from 'react';
+import { CharacterWidget } from './CharacterWidget';
+import { Card } from '@/components/ui/card';
+import { Users, Loader2 } from 'lucide-react';
+
+interface Character {
+  name: string;
+  type: 'human' | 'animal' | 'creature' | 'object';
+  description?: string;
+  attributes: Record<string, any>;
+}
+
+interface CharacterSidebarProps {
+  characters: Character[];
+  loading: boolean;
+  onCharacterUpdate: (index: number, updatedCharacter: Character) => void;
+}
+
+export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({ 
+  characters, 
+  loading, 
+  onCharacterUpdate 
+}) => {
+  if (loading) {
+    return (
+      <div className="w-80 bg-white/60 backdrop-blur-sm border-r border-white/30 p-4">
+        <div className="flex items-center justify-center h-32">
+          <div className="text-center">
+            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-sky-500" />
+            <p className="text-sm text-gray-600">Analyzing characters...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (characters.length === 0) {
+    return (
+      <div className="w-80 bg-white/60 backdrop-blur-sm border-r border-white/30 p-4">
+        <Card className="p-6 text-center bg-white/80">
+          <Users className="w-8 h-8 text-gray-400 mx-auto mb-3" />
+          <h3 className="font-semibold text-gray-700 mb-2">No Characters Found</h3>
+          <p className="text-sm text-gray-500">
+            Click "Generate Widgets" to analyze your story and extract characters.
+          </p>
+        </Card>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-80 bg-white/60 backdrop-blur-sm border-r border-white/30 p-4">
+      <div className="flex items-center space-x-2 mb-4">
+        <Users className="w-5 h-5 text-sky-600" />
+        <h2 className="font-semibold text-gray-900">Story Characters</h2>
+        <span className="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-full">
+          {characters.length}
+        </span>
+      </div>
+      
+      <div className="space-y-3 max-h-96 overflow-y-auto">
+        {characters.map((character, index) => (
+          <CharacterWidget
+            key={`${character.name}-${index}`}
+            character={character}
+            onUpdate={(updatedCharacter) => onCharacterUpdate(index, updatedCharacter)}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};

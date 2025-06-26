@@ -29,8 +29,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
-        console.log('Full session object:', session);
-        console.log('User metadata:', session?.user?.user_metadata);
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
@@ -45,7 +43,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (event === 'SIGNED_OUT') {
           console.log('User signed out');
-          // Ensure complete cleanup on sign out
           setSession(null);
           setUser(null);
           toast({
@@ -64,10 +61,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('Error getting session:', error);
         } else {
           console.log('Initial session check:', session?.user?.email || 'No session');
-          console.log('Initial session object:', session);
-          if (session?.user) {
-            console.log('User metadata from initial session:', session.user.user_metadata);
-          }
           setSession(session);
           setUser(session?.user ?? null);
         }
@@ -144,9 +137,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       console.log('Sign in response:', { data, error });
-      if (data.user) {
-        console.log('Sign in user metadata:', data.user.user_metadata);
-      }
 
       if (error) {
         console.error('Sign in error:', error);
@@ -176,7 +166,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     console.log('Attempting to sign out user');
     
     try {
-      // Clear local state immediately
       setUser(null);
       setSession(null);
       
@@ -190,13 +179,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         });
       } else {
         console.log('Sign out successful');
-        // Force clear any remaining session data
-        localStorage.removeItem('supabase.auth.token');
-        sessionStorage.clear();
       }
     } catch (err: any) {
       console.error('Unexpected sign out error:', err);
-      // Even if there's an error, clear the local state
       setUser(null);
       setSession(null);
       toast({
@@ -213,6 +198,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Use the current domain for the redirect URL
       const redirectUrl = `${window.location.origin}/reset-password`;
+      console.log('Password reset redirect URL:', redirectUrl);
       
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: redirectUrl
@@ -231,7 +217,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         console.log('Password reset email sent to:', email);
         toast({
           title: "Password reset email sent",
-          description: "Please check your email for password reset instructions."
+          description: "Please check your email (including spam folder) for password reset instructions."
         });
       }
 
