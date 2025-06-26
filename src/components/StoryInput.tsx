@@ -37,25 +37,33 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
+    console.log('Starting character extraction...');
     setIsExtracting(true);
+    
     try {
       const { data, error } = await supabase.functions.invoke('extract-characters', {
         body: { story: story.trim() }
       });
 
+      console.log('Character extraction response:', { data, error });
+
       if (error) {
+        console.error('Supabase function error:', error);
         throw error;
       }
 
       if (data.error) {
+        console.error('Function returned error:', data.error);
         throw new Error(data.error);
       }
 
-      setCharacters(data.characters || []);
+      const extractedCharacters = data.characters || [];
+      console.log('Setting characters:', extractedCharacters);
+      setCharacters(extractedCharacters);
       
       toast({
         title: "Characters extracted!",
-        description: `Found ${data.characters?.length || 0} characters in your story.`
+        description: `Found ${extractedCharacters.length} characters in your story.`
       });
     } catch (error: any) {
       console.error('Error extracting characters:', error);

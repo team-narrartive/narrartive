@@ -28,6 +28,8 @@ serve(async (req) => {
       throw new Error('OpenAI API key not configured');
     }
 
+    console.log('Processing story for character extraction...');
+
     const prompt = `
     Analyze the following story and extract all main characters (humans, animals, creatures, objects) with their descriptions and attributes.
 
@@ -70,6 +72,7 @@ serve(async (req) => {
     const data = await response.json();
     
     if (!response.ok) {
+      console.error('OpenAI API error:', data);
       throw new Error(data.error?.message || 'OpenAI API request failed');
     }
 
@@ -90,6 +93,8 @@ serve(async (req) => {
         throw new Error('Could not parse character data from AI response');
       }
     }
+
+    console.log('Extracted characters:', characters);
 
     return new Response(JSON.stringify({ characters }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
