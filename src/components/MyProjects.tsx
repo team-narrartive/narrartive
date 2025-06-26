@@ -1,12 +1,15 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
+import { useDeleteStory } from '@/hooks/useDeleteStory';
 import { useLikedStories } from '@/hooks/useLikedStories';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Heart, Eye, Share2, BookOpen, PlusCircle } from 'lucide-react';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { ArrowLeft, Heart, Eye, Share2, BookOpen, PlusCircle, Trash2, MoreVertical } from 'lucide-react';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useToast } from '@/hooks/use-toast';
 
 interface MyProjectsProps {
@@ -23,8 +26,10 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   const { data: stories, isLoading } = useStories('personal');
   const likeStoryMutation = useLikeStory();
   const incrementViewsMutation = useIncrementViews();
+  const { deleteStory, isDeleting } = useDeleteStory();
   const { toast } = useToast();
   const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
+  const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
 
   console.log('Personal stories:', stories);
 
@@ -76,6 +81,13 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
         description: "Story details copied to clipboard."
       });
     }
+  };
+
+  const handleDeleteStory = async (storyId: string) => {
+    setDeletingStoryId(storyId);
+    const success = await deleteStory(storyId);
+    setDeletingStoryId(null);
+    return success;
   };
 
   const handleReadStory = async (storyId: string) => {
@@ -161,10 +173,50 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-3 md:top-4 right-3 md:right-4">
+                  <div className="absolute top-3 md:top-4 left-3 md:left-4">
                     <Badge variant={story.is_public ? "default" : "secondary"} className={`${story.is_public ? "bg-accent" : "bg-gray-500"} text-xs md:text-sm`}>
                       {story.is_public ? 'Public' : 'Private'}
                     </Badge>
+                  </div>
+                  <div className="absolute top-3 md:top-4 right-3 md:right-4">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 backdrop-blur-sm">
+                          <MoreVertical className="h-4 w-4 text-white" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <DropdownMenuItem 
+                              className="text-red-600 focus:text-red-600 cursor-pointer"
+                              onSelect={(e) => e.preventDefault()}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Project
+                            </DropdownMenuItem>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Delete Project</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to delete "{story.title}"? This action cannot be undone and will permanently remove the story and all its associated data.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDeleteStory(story.id)}
+                                disabled={isDeleting || deletingStoryId === story.id}
+                                className="bg-red-600 hover:bg-red-700"
+                              >
+                                {deletingStoryId === story.id ? 'Deleting...' : 'Delete'}
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </div>
                 </div>
                 

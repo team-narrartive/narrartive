@@ -4,7 +4,9 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { X, Download, Palette, Type, Move, RotateCcw, Trash2, Plus } from 'lucide-react';
+import { Separator } from '@/components/ui/separator';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { X, Download, Palette, Type, Plus, Trash2, Image, Settings, ZoomIn, ZoomOut } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { CanvasImageLibrary } from './CanvasImageLibrary';
@@ -51,8 +53,10 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   const [selectedElement, setSelectedElement] = useState<string | null>(null);
   const [draggedElement, setDraggedElement] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [showPreviousVersions, setShowPreviousVersions] = useState(false);
+  const [showImageLibrary, setShowImageLibrary] = useState(true);
+  const [showPropertiesPanel, setShowPropertiesPanel] = useState(true);
   const [newTextContent, setNewTextContent] = useState('');
+  const [zoomLevel, setZoomLevel] = useState(1);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Initialize with story text at the top
@@ -65,9 +69,9 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
         x: 50,
         y: 50,
         width: 700,
-        height: 100,
-        fontSize: 16,
-        fontColor: '#000000'
+        height: 120,
+        fontSize: 18,
+        fontColor: '#1f2937'
       }
     ];
     setElements(initialElements);
@@ -75,6 +79,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
 
   const handleElementClick = (elementId: string) => {
     setSelectedElement(elementId);
+    setShowPropertiesPanel(true);
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -94,8 +99,8 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     if (!draggedElement || !canvasRef.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - dragOffset.x;
-    const y = e.clientY - rect.top - dragOffset.y;
+    const x = (e.clientX - rect.left - dragOffset.x) / zoomLevel;
+    const y = (e.clientY - rect.top - dragOffset.y) / zoomLevel;
     
     setElements(prev => prev.map(el => 
       el.id === draggedElement 
@@ -117,8 +122,8 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     if (!imageUrl) return;
 
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - 100; // Center the image
-    const y = e.clientY - rect.top - 100;
+    const x = (e.clientX - rect.left - 100) / zoomLevel;
+    const y = (e.clientY - rect.top - 100) / zoomLevel;
 
     const newElement: CanvasElement = {
       id: `image-${Date.now()}`,
@@ -138,10 +143,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     e.dataTransfer.dropEffect = 'copy';
   };
 
-  const handleImageDragStart = (imageUrl: string) => {
-    // Optional: Add visual feedback when dragging starts
-  };
-
   const addTextElement = () => {
     if (!newTextContent.trim()) return;
 
@@ -152,9 +153,9 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
       x: 100,
       y: 300,
       width: 300,
-      height: 50,
+      height: 60,
       fontSize: 16,
-      fontColor: '#000000'
+      fontColor: '#1f2937'
     };
 
     setElements(prev => [...prev, newElement]);
@@ -225,69 +226,142 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-w-[98vw] max-h-[98vh] w-full h-full">
-        <DialogHeader className="flex flex-row items-center justify-between">
-          <DialogTitle>Enhanced Canvas Editor</DialogTitle>
-          <Button variant="ghost" size="sm" onClick={onClose}>
-            <X className="w-4 h-4" />
-          </Button>
-        </DialogHeader>
-        
-        <div className="flex h-full">
-          {/* Image Library Sidebar */}
-          <CanvasImageLibrary
-            imageVersions={imageVersions}
-            onImageDragStart={handleImageDragStart}
-            showPreviousVersions={showPreviousVersions}
-            onTogglePreviousVersions={setShowPreviousVersions}
-          />
+      <DialogContent className="max-w-[100vw] max-h-[100vh] w-full h-full p-0 gap-0">
+        {/* Header Bar */}
+        <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
+          <div className="flex items-center gap-4">
+            <DialogTitle className="text-xl font-semibold text-gray-900">Canvas Editor</DialogTitle>
+            <Separator orientation="vertical" className="h-6" />
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowImageLibrary(!showImageLibrary)}
+                className={showImageLibrary ? 'bg-blue-50 border-blue-200' : ''}
+              >
+                <Image className="w-4 h-4 mr-2" />
+                Images
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setShowPropertiesPanel(!showPropertiesPanel)}
+                className={showPropertiesPanel ? 'bg-blue-50 border-blue-200' : ''}
+              >
+                <Settings className="w-4 h-4 mr-2" />
+                Properties
+              </Button>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setZoomLevel(Math.max(0.25, zoomLevel - 0.25))}
+              >
+                <ZoomOut className="w-4 h-4" />
+              </Button>
+              <span className="text-sm font-medium w-12 text-center">
+                {Math.round(zoomLevel * 100)}%
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setZoomLevel(Math.min(2, zoomLevel + 0.25))}
+              >
+                <ZoomIn className="w-4 h-4" />
+              </Button>
+            </div>
+            
+            <Separator orientation="vertical" className="h-6" />
+            
+            <Button onClick={exportToPDF} className="bg-blue-600 hover:bg-blue-700">
+              <Download className="w-4 h-4 mr-2" />
+              Export PDF
+            </Button>
+            
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
 
-          {/* Main Canvas Area */}
-          <div className="flex-1 flex flex-col">
-            {/* Toolbar */}
-            <div className="flex items-center gap-4 p-4 border-b bg-gray-50">
+        {/* Toolbar */}
+        <div className="flex items-center justify-between px-6 py-3 border-b bg-gray-50">
+          <div className="flex items-center gap-6">
+            {/* Background Colors */}
+            <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
-                <Palette className="w-4 h-4" />
-                <span className="text-sm font-medium">Background:</span>
-                <div className="flex gap-1">
-                  {backgroundColors.map(color => (
-                    <button
-                      key={color}
-                      className={`w-6 h-6 rounded border-2 ${
-                        backgroundColor === color ? 'border-gray-800' : 'border-gray-300'
-                      }`}
-                      style={{ backgroundColor: color }}
-                      onClick={() => setBackgroundColor(color)}
-                    />
-                  ))}
-                </div>
+                <Palette className="w-4 h-4 text-gray-600" />
+                <span className="text-sm font-medium text-gray-700">Background</span>
               </div>
+              <div className="flex gap-1">
+                {backgroundColors.map(color => (
+                  <button
+                    key={color}
+                    className={`w-6 h-6 rounded border-2 transition-all ${
+                      backgroundColor === color 
+                        ? 'border-blue-500 scale-110' 
+                        : 'border-gray-300 hover:border-gray-400'
+                    }`}
+                    style={{ backgroundColor: color }}
+                    onClick={() => setBackgroundColor(color)}
+                  />
+                ))}
+              </div>
+            </div>
 
+            <Separator orientation="vertical" className="h-6" />
+
+            {/* Add Text */}
+            <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
+                <Type className="w-4 h-4 text-gray-600" />
                 <Input
                   placeholder="Add text..."
                   value={newTextContent}
                   onChange={(e) => setNewTextContent(e.target.value)}
-                  className="w-48"
+                  className="w-48 h-8"
+                  onKeyPress={(e) => e.key === 'Enter' && addTextElement()}
                 />
-                <Button onClick={addTextElement} size="sm">
-                  <Plus className="w-4 h-4 mr-1" />
-                  Add Text
-                </Button>
               </div>
-              
-              <Button onClick={exportToPDF} className="ml-auto">
-                <Download className="w-4 h-4 mr-2" />
-                Save to PDF
+              <Button onClick={addTextElement} size="sm" disabled={!newTextContent.trim()}>
+                <Plus className="w-4 h-4 mr-1" />
+                Add
               </Button>
             </div>
+          </div>
+        </div>
 
-            {/* Canvas */}
-            <div className="flex-1 overflow-auto p-4">
+        {/* Main Content Area */}
+        <div className="flex flex-1 overflow-hidden">
+          {/* Image Library Sidebar */}
+          {showImageLibrary && (
+            <div className="w-80 border-r bg-white">
+              <CanvasImageLibrary
+                imageVersions={imageVersions}
+                onImageDragStart={() => {}}
+                showPreviousVersions={false}
+                onTogglePreviousVersions={() => {}}
+              />
+            </div>
+          )}
+
+          {/* Canvas Area */}
+          <div className="flex-1 bg-gray-100 overflow-auto">
+            <div className="p-8 min-h-full flex items-center justify-center">
               <div
                 ref={canvasRef}
-                className="relative w-[1000px] h-[700px] mx-auto border-2 border-gray-300 rounded-lg shadow-lg"
-                style={{ backgroundColor }}
+                className="relative bg-white rounded-lg shadow-lg border"
+                style={{ 
+                  width: 1000 * zoomLevel,
+                  height: 700 * zoomLevel,
+                  backgroundColor,
+                  transform: `scale(${zoomLevel})`,
+                  transformOrigin: 'center'
+                }}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onDrop={handleDrop}
@@ -296,9 +370,11 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                 {elements.map(element => (
                   <div
                     key={element.id}
-                    className={`absolute cursor-move select-none ${
-                      selectedElement === element.id ? 'ring-2 ring-blue-500' : ''
-                    } ${element.type === 'text' ? 'resize' : ''}`}
+                    className={`absolute cursor-move select-none transition-all ${
+                      selectedElement === element.id 
+                        ? 'ring-2 ring-blue-500 shadow-lg' 
+                        : 'hover:ring-1 hover:ring-gray-300'
+                    }`}
                     style={{
                       left: element.x,
                       top: element.y,
@@ -314,13 +390,17 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                       <img
                         src={element.content}
                         alt="Canvas element"
-                        className="w-full h-full object-cover rounded border"
+                        className="w-full h-full object-cover rounded border pointer-events-none"
                         draggable={false}
                       />
                     ) : (
                       <div 
-                        className="w-full h-full p-2 bg-white/80 rounded border overflow-hidden"
-                        style={{ fontSize: element.fontSize, color: element.fontColor }}
+                        className="w-full h-full p-3 bg-white/90 rounded border shadow-sm overflow-hidden"
+                        style={{ 
+                          fontSize: element.fontSize, 
+                          color: element.fontColor,
+                          lineHeight: '1.4'
+                        }}
                       >
                         {element.content}
                       </div>
@@ -330,7 +410,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                       <Button
                         size="sm"
                         variant="destructive"
-                        className="absolute -top-2 -right-2 w-6 h-6 p-0"
+                        className="absolute -top-3 -right-3 w-6 h-6 p-0 rounded-full shadow-lg"
                         onClick={(e) => {
                           e.stopPropagation();
                           deleteElement(element.id);
@@ -346,66 +426,93 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
           </div>
 
           {/* Properties Panel */}
-          {selectedElementData && (
-            <div className="w-64 bg-white/80 backdrop-blur-sm border-l border-white/30 p-4">
-              <h3 className="font-semibold mb-4">Element Properties</h3>
-              
-              {selectedElementData.type === 'text' && (
-                <div className="space-y-3">
-                  <div>
-                    <label className="text-sm font-medium">Text Content</label>
-                    <textarea
-                      value={selectedElementData.content}
-                      onChange={(e) => updateElementText(selectedElementData.id, e.target.value)}
-                      className="w-full mt-1 p-2 border rounded text-sm"
-                      rows={3}
-                    />
+          {showPropertiesPanel && selectedElementData && (
+            <div className="w-80 border-l bg-white">
+              <div className="p-6">
+                <h3 className="text-lg font-semibold mb-6 text-gray-900">Element Properties</h3>
+                
+                {selectedElementData.type === 'text' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Text Content
+                      </label>
+                      <textarea
+                        value={selectedElementData.content}
+                        onChange={(e) => updateElementText(selectedElementData.id, e.target.value)}
+                        className="w-full p-3 border rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        rows={4}
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Font Size
+                      </label>
+                      <Input
+                        type="number"
+                        value={selectedElementData.fontSize || 16}
+                        onChange={(e) => updateElementStyle(selectedElementData.id, { fontSize: parseInt(e.target.value) })}
+                        min="8"
+                        max="72"
+                        className="w-full"
+                      />
+                    </div>
+                    
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Text Color
+                      </label>
+                      <Input
+                        type="color"
+                        value={selectedElementData.fontColor || '#000000'}
+                        onChange={(e) => updateElementStyle(selectedElementData.id, { fontColor: e.target.value })}
+                        className="w-full h-12"
+                      />
+                    </div>
                   </div>
-                  
+                )}
+                
+                <Separator className="my-6" />
+                
+                <div className="space-y-4">
                   <div>
-                    <label className="text-sm font-medium">Font Size</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Width
+                    </label>
                     <Input
                       type="number"
-                      value={selectedElementData.fontSize || 16}
-                      onChange={(e) => updateElementStyle(selectedElementData.id, { fontSize: parseInt(e.target.value) })}
-                      className="mt-1"
-                      min="8"
-                      max="72"
+                      value={selectedElementData.width}
+                      onChange={(e) => updateElementStyle(selectedElementData.id, { width: parseInt(e.target.value) })}
+                      min="50"
+                      className="w-full"
                     />
                   </div>
                   
                   <div>
-                    <label className="text-sm font-medium">Color</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Height
+                    </label>
                     <Input
-                      type="color"
-                      value={selectedElementData.fontColor || '#000000'}
-                      onChange={(e) => updateElementStyle(selectedElementData.id, { fontColor: e.target.value })}
-                      className="mt-1 h-10"
+                      type="number"
+                      value={selectedElementData.height}
+                      onChange={(e) => updateElementStyle(selectedElementData.id, { height: parseInt(e.target.value) })}
+                      min="30"
+                      className="w-full"
                     />
                   </div>
                 </div>
-              )}
-              
-              <div className="mt-4 space-y-2">
-                <div>
-                  <label className="text-sm font-medium">Width</label>
-                  <Input
-                    type="number"
-                    value={selectedElementData.width}
-                    onChange={(e) => updateElementStyle(selectedElementData.id, { width: parseInt(e.target.value) })}
-                    className="mt-1"
-                  />
-                </div>
-                
-                <div>
-                  <label className="text-sm font-medium">Height</label>
-                  <Input
-                    type="number"
-                    value={selectedElementData.height}
-                    onChange={(e) => updateElementStyle(selectedElementData.id, { height: parseInt(e.target.value) })}
-                    className="mt-1"
-                  />
-                </div>
+
+                <Separator className="my-6" />
+
+                <Button
+                  variant="destructive"
+                  onClick={() => deleteElement(selectedElementData.id)}
+                  className="w-full"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  Delete Element
+                </Button>
               </div>
             </div>
           )}
