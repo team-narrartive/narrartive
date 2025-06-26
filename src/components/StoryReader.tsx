@@ -9,6 +9,17 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { ArrowLeft, Heart, Eye, Share2, Calendar, ChevronDown, ChevronRight, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
+interface ImageVersion {
+  id: string;
+  images: string[];
+  created_at: string;
+  settings: {
+    numImages: number;
+    quality: string;
+    style: string;
+  };
+}
+
 interface StoryReaderProps {
   storyId: string;
   onBack: () => void;
@@ -27,8 +38,8 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 
   const userLiked = story && !likesLoading ? isLiked(story.id) : false;
 
-  // Parse image versions from the story data
-  const imageVersions = story?.image_versions || [];
+  // Parse image versions from the story data with proper type casting
+  const imageVersions: ImageVersion[] = Array.isArray(story?.image_versions) ? story.image_versions as ImageVersion[] : [];
   const currentVersion = imageVersions.length > 0 ? imageVersions[imageVersions.length - 1] : null;
   const previousVersions = imageVersions.slice(0, -1);
 
