@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Image, Loader2, ChevronDown, ChevronRight, Palette } from 'lucide-react';
-import { CanvasEditor } from './CanvasEditor';
+import { EnhancedCanvasEditor } from './EnhancedCanvasEditor';
 
 interface ImageVersion {
   id: string;
@@ -165,11 +165,12 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
         )}
       </div>
 
-      {/* Canvas Editor Modal */}
+      {/* Enhanced Canvas Editor Modal */}
       {showCanvas && currentVersion && (
-        <CanvasEditor
+        <EnhancedCanvasEditor
           images={currentVersion.images}
           story={story}
+          imageVersions={imageVersions}
           onClose={() => setShowCanvas(false)}
         />
       )}

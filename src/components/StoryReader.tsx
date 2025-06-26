@@ -1,11 +1,12 @@
-
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useStory, useLikeStory, useIncrementViews } from '@/hooks/useStories';
 import { useLikedStories } from '@/hooks/useLikedStories';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, Heart, Eye, Share2, Calendar } from 'lucide-react';
+import { Card } from '@/components/ui/card';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ArrowLeft, Heart, Eye, Share2, Calendar, ChevronDown, ChevronRight, Image } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface StoryReaderProps {
@@ -22,8 +23,14 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const incrementViewsMutation = useIncrementViews();
   const { toast } = useToast();
   const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
+  const [showPreviousVersions, setShowPreviousVersions] = useState(false);
 
   const userLiked = story && !likesLoading ? isLiked(story.id) : false;
+
+  // Parse image versions from the story data
+  const imageVersions = story?.image_versions || [];
+  const currentVersion = imageVersions.length > 0 ? imageVersions[imageVersions.length - 1] : null;
+  const previousVersions = imageVersions.slice(0, -1);
 
   // Increment view count when story loads (only once)
   useEffect(() => {
@@ -126,7 +133,6 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
         </div>
       );
       
-      // Insert image after every 2-3 paragraphs
       if (images && images.length > 0 && (i + 1) % 2 === 0) {
         const imageIndex = Math.floor(i / 2) % images.length;
         result.push(
@@ -179,51 +185,120 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 
   return (
     <Layout showSidebar={true} currentView="story-reader">
-      <div className="max-w-4xl mx-auto px-4 md:px-0">
-        <div className="flex items-center gap-4 mb-6 md:mb-8">
-          <Button variant="outline" onClick={onBack} className="flex items-center gap-2 text-sm md:text-base">
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">Back</span>
-            <span className="sm:hidden">Back</span>
-          </Button>
-        </div>
+      <div className="flex">
+        {/* Main Content */}
+        <div className="flex-1 max-w-4xl mx-auto px-4 md:px-0">
+          <div className="flex items-center gap-4 mb-6 md:mb-8">
+            <Button variant="outline" onClick={onBack} className="flex items-center gap-2 text-sm md:text-base">
+              <ArrowLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Back</span>
+              <span className="sm:hidden">Back</span>
+            </Button>
+          </div>
 
-        <article className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
-          {/* Hero Image */}
-          {story.main_image && (
-            <div className="relative aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 overflow-hidden">
-              <img 
-                src={story.main_image} 
-                alt={story.title}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-              
-              {/* Title Overlay with improved mobile layout */}
-              <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 text-white">
-                <div className="flex flex-col gap-4 md:gap-6">
-                  {/* Metadata and title */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3 md:mb-4">
-                      <Badge variant="secondary" className="bg-white/20 text-white border-white/30 flex-shrink-0 w-fit text-xs md:text-sm">
-                        {story.category || 'Story'}
-                      </Badge>
-                      <div className="flex items-center gap-1 text-xs md:text-sm flex-shrink-0">
-                        <Calendar className="h-3 w-3 md:h-4 md:w-4" />
-                        {formatDate(story.created_at)}
+          <article className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
+            {/* Hero Image */}
+            {story.main_image && (
+              <div className="relative aspect-[16/9] md:aspect-[21/9] bg-gradient-to-br from-purple-100 to-blue-100 overflow-hidden">
+                <img 
+                  src={story.main_image} 
+                  alt={story.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
+                
+                {/* Title Overlay with improved mobile layout */}
+                <div className="absolute bottom-0 left-0 right-0 p-4 md:p-6 lg:p-8 text-white">
+                  <div className="flex flex-col gap-4 md:gap-6">
+                    {/* Metadata and title */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-3 md:mb-4">
+                        <Badge variant="secondary" className="bg-white/20 text-white border-white/30 flex-shrink-0 w-fit text-xs md:text-sm">
+                          {story.category || 'Story'}
+                        </Badge>
+                        <div className="flex items-center gap-1 text-xs md:text-sm flex-shrink-0">
+                          <Calendar className="h-3 w-3 md:h-4 md:w-4" />
+                          {formatDate(story.created_at)}
+                        </div>
+                      </div>
+                      
+                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-2 md:mb-4 leading-tight break-words">
+                        {story.title}
+                      </h1>
+                      
+                      <p className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mb-3 md:mb-4 lg:mb-6 break-words">
+                        {story.description}
+                      </p>
+
+                      {/* Stats */}
+                      <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm mb-4 md:mb-0">
+                        <span className="flex items-center gap-1">
+                          <Eye className="h-3 w-3 md:h-4 md:w-4" />
+                          {story.view_count || 0} views
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <Heart className="h-3 w-3 md:h-4 md:w-4" />
+                          {story.like_count || 0} likes
+                        </span>
                       </div>
                     </div>
                     
-                    <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-5xl font-bold mb-2 md:mb-4 leading-tight break-words">
-                      {story.title}
-                    </h1>
-                    
-                    <p className="text-sm sm:text-base md:text-lg lg:text-xl leading-relaxed mb-3 md:mb-4 lg:mb-6 break-words">
-                      {story.description}
-                    </p>
+                    {/* Action buttons */}
+                    <div className="flex gap-2 flex-shrink-0">
+                      <Button
+                        variant="outline"
+                        onClick={handleLike}
+                        disabled={likeStoryMutation.isPending || likesLoading}
+                        className={`bg-white/20 border-white/30 text-white hover:bg-white/30 transition-colors text-xs md:text-sm h-8 md:h-10 ${
+                          userLiked 
+                            ? 'bg-pink-500/30 border-pink-300' 
+                            : ''
+                        }`}
+                      >
+                        <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                        <span className="hidden sm:inline">{userLiked ? 'Liked' : 'Like'}</span>
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={handleShare}
+                        className="bg-white/20 border-white/30 text-white hover:bg-white/30 text-xs md:text-sm h-8 md:h-10"
+                      >
+                        <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                        <span className="hidden sm:inline">Share</span>
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
 
-                    {/* Stats */}
-                    <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm mb-4 md:mb-0">
+            {/* Story Content with Integrated Images */}
+            <div className="p-4 md:p-8 lg:p-12">
+              {/* If no hero image, show title here */}
+              {!story.main_image && (
+                <div className="mb-8 md:mb-12">
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4 md:mb-6">
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 w-fit text-xs md:text-sm">
+                      {story.category || 'Story'}
+                    </Badge>
+                    <div className="flex items-center gap-1 text-xs md:text-sm text-gray-500">
+                      <Calendar className="h-3 w-3 md:h-4 md:w-4" />
+                      {formatDate(story.created_at)}
+                    </div>
+                  </div>
+                  
+                  <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
+                    {story.title}
+                  </h1>
+                  
+                  <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-6 md:mb-8">
+                    {story.description}
+                  </p>
+
+                  {/* Stats and Actions for non-hero stories */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 pb-6 md:pb-8 border-b border-gray-200">
+                    <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm text-gray-500">
                       <span className="flex items-center gap-1">
                         <Eye className="h-3 w-3 md:h-4 md:w-4" />
                         {story.view_count || 0} views
@@ -233,72 +308,45 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                         {story.like_count || 0} likes
                       </span>
                     </div>
-                  </div>
-                  
-                  {/* Action buttons */}
-                  <div className="flex gap-2 flex-shrink-0">
-                    <Button
-                      variant="outline"
-                      onClick={handleLike}
-                      disabled={likeStoryMutation.isPending || likesLoading}
-                      className={`bg-white/20 border-white/30 text-white hover:bg-white/30 transition-colors text-xs md:text-sm h-8 md:h-10 ${
-                        userLiked 
-                          ? 'bg-pink-500/30 border-pink-300' 
-                          : ''
-                      }`}
-                    >
-                      <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
-                      <span className="hidden sm:inline">{userLiked ? 'Liked' : 'Like'}</span>
-                    </Button>
                     
-                    <Button
-                      variant="outline"
-                      onClick={handleShare}
-                      className="bg-white/20 border-white/30 text-white hover:bg-white/30 text-xs md:text-sm h-8 md:h-10"
-                    >
-                      <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                      <span className="hidden sm:inline">Share</span>
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={handleLike}
+                        disabled={likeStoryMutation.isPending || likesLoading}
+                        className={`hover:bg-pink-50 hover:border-pink-200 transition-colors text-xs md:text-sm h-8 md:h-10 ${
+                          userLiked 
+                            ? 'bg-pink-50 text-pink-600 border-pink-200' 
+                            : 'hover:text-pink-600'
+                        }`}
+                      >
+                        <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
+                        {userLiked ? 'Liked' : 'Like'}
+                      </Button>
+                      
+                      <Button
+                        variant="outline"
+                        onClick={handleShare}
+                        className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-xs md:text-sm h-8 md:h-10"
+                      >
+                        <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                        Share
+                      </Button>
+                    </div>
                   </div>
                 </div>
+              )}
+
+              {/* Story Content with Images Integrated */}
+              <div className="prose prose-sm md:prose-lg max-w-none">
+                {createStoryWithImages(story.story_content, story.additional_images || [])}
               </div>
-            </div>
-          )}
 
-          {/* Story Content with Integrated Images */}
-          <div className="p-4 md:p-8 lg:p-12">
-            {/* If no hero image, show title here */}
-            {!story.main_image && (
-              <div className="mb-8 md:mb-12">
-                <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 mb-4 md:mb-6">
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 w-fit text-xs md:text-sm">
-                    {story.category || 'Story'}
-                  </Badge>
-                  <div className="flex items-center gap-1 text-xs md:text-sm text-gray-500">
-                    <Calendar className="h-3 w-3 md:h-4 md:w-4" />
-                    {formatDate(story.created_at)}
-                  </div>
-                </div>
-                
-                <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-4 md:mb-6 leading-tight">
-                  {story.title}
-                </h1>
-                
-                <p className="text-lg md:text-xl text-gray-600 leading-relaxed mb-6 md:mb-8">
-                  {story.description}
-                </p>
-
-                {/* Stats and Actions for non-hero stories */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 pb-6 md:pb-8 border-b border-gray-200">
-                  <div className="flex items-center gap-4 md:gap-6 text-xs md:text-sm text-gray-500">
-                    <span className="flex items-center gap-1">
-                      <Eye className="h-3 w-3 md:h-4 md:w-4" />
-                      {story.view_count || 0} views
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <Heart className="h-3 w-3 md:h-4 md:w-4" />
-                      {story.like_count || 0} likes
-                    </span>
+              {/* Story Footer */}
+              <div className="mt-12 md:mt-16 pt-6 md:pt-8 border-t border-gray-200">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="text-xs md:text-sm text-gray-500">
+                    Published on {formatDate(story.created_at)}
                   </div>
                   
                   <div className="flex gap-2">
@@ -313,7 +361,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                       }`}
                     >
                       <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
-                      {userLiked ? 'Liked' : 'Like'}
+                      {story.like_count || 0} Likes
                     </Button>
                     
                     <Button
@@ -322,54 +370,96 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                       className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-xs md:text-sm h-8 md:h-10"
                     >
                       <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                      Share
+                      <span className="hidden sm:inline">Share Story</span>
+                      <span className="sm:hidden">Share</span>
                     </Button>
                   </div>
                 </div>
               </div>
-            )}
-
-            {/* Story Content with Images Integrated */}
-            <div className="prose prose-sm md:prose-lg max-w-none">
-              {createStoryWithImages(story.story_content, story.additional_images || [])}
             </div>
+          </article>
+        </div>
 
-            {/* Story Footer */}
-            <div className="mt-12 md:mt-16 pt-6 md:pt-8 border-t border-gray-200">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="text-xs md:text-sm text-gray-500">
-                  Published on {formatDate(story.created_at)}
-                </div>
-                
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    onClick={handleLike}
-                    disabled={likeStoryMutation.isPending || likesLoading}
-                    className={`hover:bg-pink-50 hover:border-pink-200 transition-colors text-xs md:text-sm h-8 md:h-10 ${
-                      userLiked 
-                        ? 'bg-pink-50 text-pink-600 border-pink-200' 
-                        : 'hover:text-pink-600'
-                    }`}
-                  >
-                    <Heart className={`h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2 ${userLiked ? 'fill-current' : ''}`} />
-                    {story.like_count || 0} Likes
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    onClick={handleShare}
-                    className="hover:bg-blue-50 hover:text-blue-600 hover:border-blue-200 text-xs md:text-sm h-8 md:h-10"
-                  >
-                    <Share2 className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                    <span className="hidden sm:inline">Share Story</span>
-                    <span className="sm:hidden">Share</span>
-                  </Button>
-                </div>
+        {/* Image Versions Sidebar */}
+        {imageVersions.length > 0 && (
+          <div className="w-80 bg-white/60 backdrop-blur-sm border-l border-white/30 h-screen flex flex-col">
+            {/* Header */}
+            <div className="p-4 border-b border-white/20 bg-white/80">
+              <div className="flex items-center space-x-2">
+                <Image className="w-5 h-5 text-sky-600" />
+                <h2 className="font-semibold text-gray-900">Generated Images</h2>
+                <span className="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-full">
+                  {currentVersion?.images.length || 0}
+                </span>
+              </div>
+            </div>
+            
+            {/* Scrollable Content */}
+            <div className="flex-1 overflow-auto p-4">
+              <div className="space-y-4">
+                {/* Previous Versions - Collapsible */}
+                {previousVersions.length > 0 && (
+                  <Collapsible open={showPreviousVersions} onOpenChange={setShowPreviousVersions}>
+                    <CollapsibleTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        className="w-full justify-between p-2 h-auto text-left"
+                      >
+                        <span className="font-medium text-gray-700">
+                          Previous Versions ({previousVersions.length})
+                        </span>
+                        {showPreviousVersions ? 
+                          <ChevronDown className="w-4 h-4" /> : 
+                          <ChevronRight className="w-4 h-4" />
+                        }
+                      </Button>
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-3 mt-2">
+                      {previousVersions.map((version, versionIndex) => (
+                        <Card key={version.id} className="p-3 bg-white/60 border border-gray-200">
+                          <div className="text-xs text-gray-500 mb-2">
+                            Version {versionIndex + 1} • {version.settings.quality} quality • {version.settings.style}
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            {version.images.map((imageUrl, imageIndex) => (
+                              <img
+                                key={imageIndex}
+                                src={imageUrl}
+                                alt={`Version ${versionIndex + 1} - Image ${imageIndex + 1}`}
+                                className="w-full h-20 object-cover rounded border"
+                              />
+                            ))}
+                          </div>
+                        </Card>
+                      ))}
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
+
+                {/* Current Version */}
+                {currentVersion && (
+                  <div className="space-y-3">
+                    <h3 className="font-medium text-gray-800">Latest Generation</h3>
+                    {currentVersion.images.map((imageUrl, index) => (
+                      <Card key={index} className="p-2 bg-white/80 backdrop-blur-sm border border-white/20">
+                        <img
+                          src={imageUrl}
+                          alt={`Generated scene ${index + 1}`}
+                          className="w-full h-auto rounded-lg object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280">Image failed to load</text></svg>';
+                          }}
+                        />
+                        <p className="text-xs text-gray-600 mt-2 text-center">Scene {index + 1}</p>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>
-        </article>
+        )}
       </div>
     </Layout>
   );

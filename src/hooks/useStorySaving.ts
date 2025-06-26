@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface ImageVersion {
   id: string;
@@ -29,6 +30,7 @@ export const useStorySaving = () => {
   const [isSaving, setIsSaving] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const saveStory = async (data: SaveStoryData) => {
     if (!user) {
@@ -52,7 +54,7 @@ export const useStorySaving = () => {
         additional_images: data.imageVersions.length > 0 
           ? data.imageVersions[data.imageVersions.length - 1].images 
           : [],
-        image_versions: JSON.parse(JSON.stringify(data.imageVersions)), // Convert to JSON
+        image_versions: JSON.parse(JSON.stringify(data.imageVersions)), // Convert to JSON - ALWAYS save all versions
         is_public: data.isPublic || false,
         canvas_data: JSON.parse(JSON.stringify(data.canvasData || null)), // Convert to JSON
         like_count: 0,
@@ -74,6 +76,10 @@ export const useStorySaving = () => {
         console.error('Error saving story:', error);
         throw error;
       }
+
+      // Immediately invalidate and refetch stories to show the new project quickly
+      await queryClient.invalidateQueries({ queryKey: ['stories'] });
+      await queryClient.refetchQueries({ queryKey: ['stories', 'personal'] });
 
       toast({
         title: "Story saved successfully! 🎉",
