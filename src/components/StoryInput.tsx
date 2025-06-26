@@ -146,16 +146,19 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                   className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
                 />
                 
-                <div className="flex items-center justify-between mt-4">
-                  <div className="text-sm text-gray-500">
+                {/* Improved button layout with better alignment and spacing */}
+                <div className="mt-6 space-y-4">
+                  {/* Word/Character count */}
+                  <div className="text-sm text-gray-500 text-center">
                     {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
                   
-                  <div className="flex space-x-3">
+                  {/* Button row with consistent spacing */}
+                  <div className="flex flex-wrap items-center justify-center gap-3">
                     <Button
                       variant="outline"
                       onClick={() => setStory(exampleStory)}
-                      className="text-sky-500 border-sky-200 hover:bg-sky-50"
+                      className="text-sky-500 border-sky-200 hover:bg-sky-50 px-6 h-11"
                     >
                       Try Example
                     </Button>
@@ -163,7 +166,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                     <Button
                       onClick={handleExtractCharacters}
                       disabled={!story.trim() || isExtracting}
-                      className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       {isExtracting ? (
                         <>
@@ -181,7 +184,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                     <Button
                       onClick={handleGenerate}
                       disabled={!story.trim() || isLoading}
-                      className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
                     >
                       {isLoading ? (
                         <>
