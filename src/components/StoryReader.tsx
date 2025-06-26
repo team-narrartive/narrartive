@@ -39,7 +39,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const userLiked = story && !likesLoading ? isLiked(story.id) : false;
 
   // Parse image versions from the story data with proper type casting
-  const imageVersions: ImageVersion[] = Array.isArray(story?.image_versions) ? story.image_versions as ImageVersion[] : [];
+  const imageVersions: ImageVersion[] = Array.isArray(story?.image_versions) ? (story.image_versions as unknown as ImageVersion[]) : [];
   const currentVersion = imageVersions.length > 0 ? imageVersions[imageVersions.length - 1] : null;
   const previousVersions = imageVersions.slice(0, -1);
 
