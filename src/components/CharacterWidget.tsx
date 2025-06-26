@@ -36,13 +36,15 @@ const getEssentialAttributes = (type: string) => {
     case 'human':
       return {
         'Hair Color': '',
+        'Hair Type': '',
         'Eye Color': '',
         'Skin Tone': '',
+        'Ethnicity/Nationality': '',
         'Age': '',
-        'Height': '',
+        'Gender': '',
         'Clothing Style': '',
-        'Facial Expression': '',
-        'Gender': ''
+        'Facial Hair': '',
+        'Facial Expression': ''
       };
     case 'animal':
       return {
@@ -171,7 +173,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                             value={newAttributeKey}
                             onChange={(e) => setNewAttributeKey(e.target.value)}
                             placeholder="e.g., Tattoo, Scar, Favorite Color"
-                            className="mt-1 mx-2 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                            className="mt-1 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
                           />
                         </div>
                         <div>
@@ -180,7 +182,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                             value={newAttributeValue}
                             onChange={(e) => setNewAttributeValue(e.target.value)}
                             placeholder="Enter the attribute value"
-                            className="mt-1 mx-2 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
+                            className="mt-1 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
                           />
                         </div>
                         <div className="flex space-x-2">
@@ -208,8 +210,8 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                     </Card>
                   )}
                   
-                  {/* Attribute Grid with improved padding */}
-                  <div className="grid grid-cols-2 gap-4 px-2">
+                  {/* Attribute Grid with proper padding for focus rings */}
+                  <div className="grid grid-cols-2 gap-4 px-1">
                     {Object.entries(attributes).map(([key, value]) => {
                       const isCustomAttribute = !getEssentialAttributes(character.type).hasOwnProperty(key);
                       return (
@@ -233,7 +235,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                             id={`${character.name}-${key}`}
                             value={value || ''}
                             onChange={(e) => handleAttributeChange(key, e.target.value)}
-                            className="h-9 text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 border-gray-300 mx-1"
+                            className="h-9 text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 border-gray-300"
                             placeholder={`Enter ${key.toLowerCase()}`}
                           />
                         </div>

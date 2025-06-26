@@ -80,7 +80,7 @@ serve(async (req) => {
             prompt: prompt,
             n: 1,
             size: '1024x1024',
-            quality: 'standard'
+            quality: 'high'
           }),
         });
 
