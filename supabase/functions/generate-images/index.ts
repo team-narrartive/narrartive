@@ -35,6 +35,7 @@ serve(async (req) => {
     }
 
     console.log('Processing story for image generation with settings:', settings);
+    console.log('Characters with attributes:', characters);
 
     // Use settings from the request, with fallback to automatic calculation
     const imageSettings: ImageSettings = settings || {
@@ -62,48 +63,60 @@ serve(async (req) => {
       cartoon: 'cartoon illustration, animated style, vibrant colors, clear character definition, playful and engaging visual style'
     };
 
+    // Helper function to format character attributes into detailed descriptions
+    const formatCharacterDescription = (char: Character): string => {
+      let description = `${char.name} (${char.type})`;
+      
+      if (char.description) {
+        description += `: ${char.description}`;
+      }
+
+      const attributes = Object.entries(char.attributes)
+        .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+        .map(([key, value]) => {
+          // Handle different attribute types
+          if (typeof value === 'object' && value !== null) {
+            return `${key}: ${JSON.stringify(value)}`;
+          }
+          return `${key}: ${value}`;
+        });
+
+      if (attributes.length > 0) {
+        description += `. Physical and descriptive attributes: ${attributes.join(', ')}`;
+      }
+
+      return description;
+    };
+
     for (let i = 0; i < imageSettings.numImages; i++) {
-      // Enhanced prompt structure for better accuracy
+      // Enhanced prompt structure with detailed character descriptions
       let prompt = `Create a ${stylePrompts[imageSettings.style]} image for scene ${i + 1} of this story:\n\n"${story}"\n\n`;
       
-      // Improved character descriptions with better attribute handling
+      // Detailed character descriptions with comprehensive attribute integration
       if (characters && characters.length > 0) {
-        prompt += "IMPORTANT - Include these specific characters with their exact attributes:\n";
-        characters.forEach((char: Character) => {
-          prompt += `\n- ${char.name} (${char.type}):\n`;
-          
-          // Include description if available
-          if (char.description) {
-            prompt += `  Description: ${char.description}\n`;
-          }
-          
-          // Process all attributes, preserving important details
-          const attributeEntries = Object.entries(char.attributes)
-            .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-            .map(([key, value]) => {
-              // Handle different attribute types
-              if (typeof value === 'object' && value !== null) {
-                return `${key}: ${JSON.stringify(value)}`;
-              }
-              return `${key}: ${value}`;
-            });
-          
-          if (attributeEntries.length > 0) {
-            prompt += `  Specific attributes: ${attributeEntries.join(', ')}\n`;
-          }
+        prompt += "CRITICAL CHARACTER REQUIREMENTS - Include these characters with EXACT specifications:\n\n";
+        
+        characters.forEach((char: Character, index: number) => {
+          const characterDesc = formatCharacterDescription(char);
+          prompt += `${index + 1}. ${characterDesc}\n`;
         });
         
-        prompt += "\nEnsure all character details and attributes are accurately represented in the visual.\n";
+        prompt += "\nIMPORTANT VISUAL ACCURACY REQUIREMENTS:\n";
+        prompt += "- Each character MUST appear exactly as described with all specified attributes\n";
+        prompt += "- Pay special attention to physical characteristics, clothing, colors, and accessories\n";
+        prompt += "- Maintain consistency with the character descriptions throughout the scene\n";
+        prompt += "- Ensure all specified details are clearly visible and accurately represented\n\n";
       }
       
       // Add scene-specific and consistency instructions
-      prompt += `\nScene ${i + 1} specific requirements:\n`;
-      prompt += `- Maintain visual consistency with the story narrative\n`;
-      prompt += `- Focus on accurate character representation as described\n`;
+      prompt += `SCENE COMPOSITION REQUIREMENTS:\n`;
+      prompt += `- Create scene ${i + 1} focusing on the narrative flow of the story\n`;
       prompt += `- Use ${stylePrompts[imageSettings.style]} visual approach\n`;
-      prompt += `- Ensure all specified character attributes are clearly visible\n`;
+      prompt += `- Maintain visual consistency and narrative coherence\n`;
+      prompt += `- Ensure character accuracy as specified above\n`;
+      prompt += `- Create engaging composition that supports the story narrative\n`;
 
-      console.log(`Generated prompt for image ${i + 1}:`, prompt);
+      console.log(`Generated detailed prompt for image ${i + 1}:`, prompt);
 
       try {
         console.log(`Making OpenAI API call for image ${i + 1} with gpt-image-1...`);
@@ -150,7 +163,7 @@ serve(async (req) => {
           
           if (imageUrl) {
             images.push(imageUrl);
-            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages} with gpt-image-1`);
+            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages} with detailed character attributes`);
           } else {
             const errorMessage = 'No image URL or base64 data in response';
             console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
@@ -167,7 +180,7 @@ serve(async (req) => {
       }
     }
 
-    console.log(`Image generation complete with gpt-image-1. Generated: ${images.length}, Errors: ${errors.length}`);
+    console.log(`Image generation complete with detailed character attributes. Generated: ${images.length}, Errors: ${errors.length}`);
 
     if (images.length === 0 && errors.length > 0) {
       return new Response(JSON.stringify({ 
