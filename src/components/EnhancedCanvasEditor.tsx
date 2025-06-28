@@ -1,4 +1,3 @@
-
 import React, { useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,10 +5,11 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { X, Download, Palette, Type, Plus, Trash2, Image, Settings, ZoomIn, ZoomOut } from 'lucide-react';
+import { X, Download, Palette, Type, Plus, Trash2, Image, Settings, ZoomIn, ZoomOut, FileText } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { CanvasImageLibrary } from './CanvasImageLibrary';
+import { StoryElementsSidebar } from './StoryElementsSidebar';
 
 interface CanvasElement {
   id: string;
@@ -22,6 +22,7 @@ interface CanvasElement {
   rotation?: number;
   fontSize?: number;
   fontColor?: string;
+  elementType?: 'paragraph' | 'sentence' | 'custom';
 }
 
 interface ImageVersion {
@@ -54,6 +55,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   const [draggedElement, setDraggedElement] = useState<string | null>(null);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showImageLibrary, setShowImageLibrary] = useState(true);
+  const [showStoryElements, setShowStoryElements] = useState(true);
   const [showPropertiesPanel, setShowPropertiesPanel] = useState(true);
   const [newTextContent, setNewTextContent] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -118,29 +120,55 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     e.preventDefault();
     if (!canvasRef.current) return;
 
-    const imageUrl = e.dataTransfer.getData('text/plain');
-    if (!imageUrl) return;
-
     const rect = canvasRef.current.getBoundingClientRect();
     const x = (e.clientX - rect.left - 100) / zoomLevel;
     const y = (e.clientY - rect.top - 100) / zoomLevel;
 
-    const newElement: CanvasElement = {
-      id: `image-${Date.now()}`,
-      type: 'image',
-      content: imageUrl,
-      x: Math.max(0, x),
-      y: Math.max(0, y),
-      width: 200,
-      height: 200,
-    };
+    // Check if it's a story element
+    const elementType = e.dataTransfer.getData('application/story-element');
+    const content = e.dataTransfer.getData('text/plain');
 
-    setElements(prev => [...prev, newElement]);
+    if (elementType && content) {
+      // Handle story element drop
+      const newElement: CanvasElement = {
+        id: `story-${elementType}-${Date.now()}`,
+        type: 'text',
+        content: content,
+        x: Math.max(0, x),
+        y: Math.max(0, y),
+        width: elementType === 'paragraph' ? 400 : 300,
+        height: elementType === 'paragraph' ? 120 : 80,
+        fontSize: elementType === 'paragraph' ? 14 : 16,
+        fontColor: '#1f2937',
+        elementType: elementType as 'paragraph' | 'sentence'
+      };
+      setElements(prev => [...prev, newElement]);
+    } else {
+      // Handle image drop
+      const imageUrl = content;
+      if (imageUrl && imageUrl.startsWith('http')) {
+        const newElement: CanvasElement = {
+          id: `image-${Date.now()}`,
+          type: 'image',
+          content: imageUrl,
+          x: Math.max(0, x),
+          y: Math.max(0, y),
+          width: 200,
+          height: 200,
+        };
+        setElements(prev => [...prev, newElement]);
+      }
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handleStoryElementDragStart = (content: string, type: 'paragraph' | 'sentence') => {
+    // This is called when drag starts from the story elements sidebar
+    console.log('Story element drag started:', type, content.substring(0, 50));
   };
 
   const addTextElement = () => {
@@ -185,15 +213,85 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     if (!canvasRef.current) return;
     
     try {
-      const canvas = await html2canvas(canvasRef.current, {
+      // Temporarily reset zoom for capture
+      const originalZoom = zoomLevel;
+      setZoomLevel(1);
+      
+      // Wait a bit for the zoom to apply
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      // Create a temporary container with higher resolution
+      const tempCanvas = document.createElement('div');
+      tempCanvas.style.width = '1000px';
+      tempCanvas.style.height = '700px';
+      tempCanvas.style.backgroundColor = backgroundColor;
+      tempCanvas.style.position = 'absolute';
+      tempCanvas.style.left = '-9999px';
+      tempCanvas.style.top = '0';
+      document.body.appendChild(tempCanvas);
+
+      // Clone all elements with higher quality
+      elements.forEach(element => {
+        const elementDiv = document.createElement('div');
+        elementDiv.style.position = 'absolute';
+        elementDiv.style.left = `${element.x}px`;
+        elementDiv.style.top = `${element.y}px`;
+        elementDiv.style.width = `${element.width}px`;
+        elementDiv.style.height = `${element.height}px`;
+
+        if (element.type === 'image') {
+          const img = document.createElement('img');
+          img.src = element.content;
+          img.style.width = '100%';
+          img.style.height = '100%';
+          img.style.objectFit = 'cover';
+          img.style.borderRadius = '4px';
+          elementDiv.appendChild(img);
+        } else {
+          elementDiv.style.padding = '12px';
+          elementDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
+          elementDiv.style.borderRadius = '6px';
+          elementDiv.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
+          elementDiv.style.fontSize = `${element.fontSize || 16}px`;
+          elementDiv.style.color = element.fontColor || '#1f2937';
+          elementDiv.style.lineHeight = '1.5';
+          elementDiv.style.overflow = 'hidden';
+          elementDiv.textContent = element.content;
+        }
+        
+        tempCanvas.appendChild(elementDiv);
+      });
+
+      // Wait for images to load
+      const images = tempCanvas.querySelectorAll('img');
+      await Promise.all(Array.from(images).map(img => {
+        return new Promise((resolve) => {
+          if (img.complete) {
+            resolve(img);
+          } else {
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(img);
+          }
+        });
+      }));
+
+      // Capture with higher quality settings
+      const canvas = await html2canvas(tempCanvas, {
         backgroundColor: backgroundColor,
-        scale: 2,
+        scale: 3, // Higher scale for better quality
         useCORS: true,
         allowTaint: true,
         foreignObjectRendering: true,
+        logging: false,
+        width: 1000,
+        height: 700
       });
+
+      // Clean up temporary element
+      document.body.removeChild(tempCanvas);
       
-      const imgData = canvas.toDataURL('image/png');
+      // Create PDF
+      const imgData = canvas.toDataURL('image/png', 1.0);
       const pdf = new jsPDF({
         orientation: 'landscape',
         unit: 'mm',
@@ -211,8 +309,13 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
       
       pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
       pdf.save('storyboard.pdf');
+
+      // Restore original zoom
+      setZoomLevel(originalZoom);
     } catch (error) {
       console.error('Error generating PDF:', error);
+      // Restore zoom even if there's an error
+      setZoomLevel(1);
     }
   };
 
@@ -245,8 +348,17 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
               <Button
                 variant="outline"
                 size="sm"
+                onClick={() => setShowStoryElements(!showStoryElements)}
+                className={showStoryElements ? 'bg-green-50 border-green-200' : ''}
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Story
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setShowPropertiesPanel(!showPropertiesPanel)}
-                className={showPropertiesPanel ? 'bg-blue-50 border-blue-200' : ''}
+                className={showPropertiesPanel ? 'bg-purple-50 border-purple-200' : ''}
               >
                 <Settings className="w-4 h-4 mr-2" />
                 Properties
@@ -349,6 +461,16 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
             </div>
           )}
 
+          {/* Story Elements Sidebar */}
+          {showStoryElements && (
+            <div className="w-80 border-r bg-white">
+              <StoryElementsSidebar
+                story={story}
+                onDragStart={handleStoryElementDragStart}
+              />
+            </div>
+          )}
+
           {/* Canvas Area */}
           <div className="flex-1 bg-gray-100 overflow-auto">
             <div className="p-8 min-h-full flex items-center justify-center">
@@ -395,7 +517,13 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                       />
                     ) : (
                       <div 
-                        className="w-full h-full p-3 bg-white/90 rounded border shadow-sm overflow-hidden"
+                        className={`w-full h-full p-3 rounded border shadow-sm overflow-hidden ${
+                          element.elementType === 'paragraph' 
+                            ? 'bg-blue-50/90 border-blue-200' 
+                            : element.elementType === 'sentence'
+                            ? 'bg-green-50/90 border-green-200'
+                            : 'bg-white/90'
+                        }`}
                         style={{ 
                           fontSize: element.fontSize, 
                           color: element.fontColor,
