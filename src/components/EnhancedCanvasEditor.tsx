@@ -57,7 +57,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showImageLibrary, setShowImageLibrary] = useState(true);
   const [showStoryElements, setShowStoryElements] = useState(true);
-  const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [newTextContent, setNewTextContent] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isResizing, setIsResizing] = useState(false);
@@ -109,12 +108,10 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   const handleElementClick = (elementId: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setSelectedElement(elementId);
-    setShowPropertiesPanel(true);
   };
 
   const handleCanvasClick = () => {
     setSelectedElement(null);
-    setShowPropertiesPanel(false);
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
@@ -217,9 +214,11 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
       };
       setElements(prev => [...prev, newElement]);
     } else {
-      // Handle image drop
+      // Handle image drop - Fixed to properly handle image URLs
       const imageUrl = content;
-      if (imageUrl && imageUrl.startsWith('http')) {
+      console.log('Dropping image:', imageUrl);
+      
+      if (imageUrl && (imageUrl.startsWith('http') || imageUrl.startsWith('data:') || imageUrl.startsWith('blob:'))) {
         const newElement: CanvasElement = {
           id: `image-${Date.now()}`,
           type: 'image',
@@ -230,6 +229,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
           height: 200,
         };
         setElements(prev => [...prev, newElement]);
+        console.log('Image element added:', newElement);
       }
     }
   };
@@ -267,7 +267,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     setElements(prev => prev.filter(el => el.id !== elementId));
     if (selectedElement === elementId) {
       setSelectedElement(null);
-      setShowPropertiesPanel(false);
     }
   };
 
@@ -439,15 +438,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                 <FileText className="w-4 h-4 mr-2" />
                 Story
               </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setShowPropertiesPanel(!showPropertiesPanel)}
-                className={showPropertiesPanel ? 'bg-purple-50 border-purple-200' : ''}
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Properties
-              </Button>
             </div>
           </div>
           
@@ -485,7 +475,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
           </div>
         </div>
 
-        {/* Toolbar */}
+        {/* Streamlined Top Toolbar */}
         <div className="flex items-center justify-between px-6 py-3 border-b bg-gray-50">
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
@@ -527,6 +517,40 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                 Add
               </Button>
             </div>
+
+            {/* Streamlined text editing for selected element */}
+            {selectedElementData && selectedElementData.type === 'text' && (
+              <>
+                <Separator orientation="vertical" className="h-6" />
+                <div className="flex items-center gap-3">
+                  <label className="text-sm font-medium text-gray-700">Font Size:</label>
+                  <Input
+                    type="number"
+                    value={selectedElementData.fontSize || 16}
+                    onChange={(e) => updateElementStyle(selectedElementData.id, { fontSize: parseInt(e.target.value) })}
+                    min="8"
+                    max="72"
+                    className="w-16 h-8"
+                  />
+                  
+                  <label className="text-sm font-medium text-gray-700">Color:</label>
+                  <Input
+                    type="color"
+                    value={selectedElementData.fontColor || '#000000'}
+                    onChange={(e) => updateElementStyle(selectedElementData.id, { fontColor: e.target.value })}
+                    className="w-12 h-8 p-1"
+                  />
+                  
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => deleteElement(selectedElementData.id)}
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
@@ -647,98 +671,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
               </div>
             </div>
           </div>
-
-          {/* Properties Panel */}
-          {showPropertiesPanel && selectedElementData && (
-            <div className="w-80 border-l bg-white">
-              <div className="p-6">
-                <h3 className="text-lg font-semibold mb-6 text-gray-900">Element Properties</h3>
-                
-                {selectedElementData.type === 'text' && (
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Text Content
-                      </label>
-                      <textarea
-                        value={selectedElementData.content}
-                        onChange={(e) => updateElementText(selectedElementData.id, e.target.value)}
-                        className="w-full p-3 border rounded-lg text-sm resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                        rows={4}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Font Size
-                      </label>
-                      <Input
-                        type="number"
-                        value={selectedElementData.fontSize || 16}
-                        onChange={(e) => updateElementStyle(selectedElementData.id, { fontSize: parseInt(e.target.value) })}
-                        min="8"
-                        max="72"
-                        className="w-full"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Text Color
-                      </label>
-                      <Input
-                        type="color"
-                        value={selectedElementData.fontColor || '#000000'}
-                        onChange={(e) => updateElementStyle(selectedElementData.id, { fontColor: e.target.value })}
-                        className="w-full h-12"
-                      />
-                    </div>
-                  </div>
-                )}
-                
-                <Separator className="my-6" />
-                
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Width
-                    </label>
-                    <Input
-                      type="number"
-                      value={selectedElementData.width}
-                      onChange={(e) => updateElementStyle(selectedElementData.id, { width: parseInt(e.target.value) })}
-                      min="50"
-                      className="w-full"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Height
-                    </label>
-                    <Input
-                      type="number"
-                      value={selectedElementData.height}
-                      onChange={(e) => updateElementStyle(selectedElementData.id, { height: parseInt(e.target.value) })}
-                      min="30"
-                      className="w-full"
-                    />
-                  </div>
-                </div>
-
-                <Separator className="my-6" />
-
-                <Button
-                  variant="destructive"
-                  onClick={() => deleteElement(selectedElementData.id)}
-                  className="w-full"
-                >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Delete Element
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>

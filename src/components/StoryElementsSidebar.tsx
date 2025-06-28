@@ -93,17 +93,17 @@ export const StoryElementsSidebar: React.FC<StoryElementsSidebarProps> = ({
   return (
     <div className="h-full flex flex-col bg-white">
       <div className="p-4 border-b">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Story Elements</h3>
+        <h3 className="text-lg font-bold text-gray-900 mb-4">Story Elements</h3>
         
         <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
           <Button
             variant={activeTab === 'paragraphs' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('paragraphs')}
-            className={`flex-1 text-xs ${
+            className={`flex-1 text-xs font-semibold ${
               activeTab === 'paragraphs' 
-                ? 'bg-white shadow-sm' 
-                : 'hover:bg-gray-200'
+                ? 'bg-white shadow-sm text-gray-900' 
+                : 'hover:bg-gray-200 text-gray-700'
             }`}
           >
             <FileText className="w-3 h-3 mr-2" />
@@ -113,10 +113,10 @@ export const StoryElementsSidebar: React.FC<StoryElementsSidebarProps> = ({
             variant={activeTab === 'sentences' ? 'default' : 'ghost'}
             size="sm"
             onClick={() => setActiveTab('sentences')}
-            className={`flex-1 text-xs ${
+            className={`flex-1 text-xs font-semibold ${
               activeTab === 'sentences' 
-                ? 'bg-white shadow-sm' 
-                : 'hover:bg-gray-200'
+                ? 'bg-white shadow-sm text-gray-900' 
+                : 'hover:bg-gray-200 text-gray-700'
             }`}
           >
             <Type className="w-3 h-3 mr-2" />
@@ -128,7 +128,7 @@ export const StoryElementsSidebar: React.FC<StoryElementsSidebarProps> = ({
       <ScrollArea className="flex-1 p-4">
         {activeTab === 'paragraphs' ? (
           <div className="space-y-3">
-            <div className="text-xs text-gray-500 mb-3 flex items-center gap-2">
+            <div className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-2 bg-gray-100 p-2 rounded">
               <Hash className="w-3 h-3" />
               Drag paragraphs to canvas
             </div>
@@ -151,22 +151,22 @@ export const StoryElementsSidebar: React.FC<StoryElementsSidebarProps> = ({
                 >
                   <div className="flex items-start gap-2">
                     <div className={`w-6 h-6 rounded flex items-center justify-center flex-shrink-0 mt-0.5 ${
-                      isHeading ? 'bg-purple-100' : 'bg-blue-100'
+                      isHeading ? 'bg-purple-200' : 'bg-blue-200'
                     }`}>
                       {isHeading ? (
-                        <Hash className={`w-3 h-3 ${isHeading ? 'text-purple-600' : 'text-blue-600'}`} />
+                        <Hash className={`w-3 h-3 ${isHeading ? 'text-purple-700' : 'text-blue-700'}`} />
                       ) : (
-                        <FileText className="w-3 h-3 text-blue-600" />
+                        <FileText className="w-3 h-3 text-blue-700" />
                       )}
                     </div>
-                    <p className={`text-sm text-gray-700 line-clamp-4 leading-relaxed ${
-                      isHeading ? 'font-semibold' : ''
+                    <p className={`text-sm text-gray-800 line-clamp-4 leading-relaxed ${
+                      isHeading ? 'font-bold' : 'font-medium'
                     }`}>
                       {paragraph}
                     </p>
                   </div>
                   <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-2">
-                    <div className="text-xs text-gray-500 bg-white px-2 py-1 rounded border inline-block">
+                    <div className="text-xs font-semibold text-gray-700 bg-white px-2 py-1 rounded border inline-block">
                       {isHeading ? 'Heading' : 'Paragraph'} • Drag to canvas
                     </div>
                   </div>
@@ -176,7 +176,7 @@ export const StoryElementsSidebar: React.FC<StoryElementsSidebarProps> = ({
           </div>
         ) : (
           <div className="space-y-2">
-            <div className="text-xs text-gray-500 mb-3 flex items-center gap-2">
+            <div className="text-xs font-bold text-gray-800 mb-3 flex items-center gap-2 bg-gray-100 p-2 rounded">
               <Type className="w-3 h-3" />
               Drag sentences to canvas
             </div>
@@ -188,15 +188,15 @@ export const StoryElementsSidebar: React.FC<StoryElementsSidebarProps> = ({
                 className="p-3 bg-green-50 rounded-lg border border-green-200 cursor-grab hover:bg-green-100 hover:border-green-300 hover:shadow-md transition-all duration-200 group active:cursor-grabbing"
               >
                 <div className="flex items-start gap-2">
-                  <div className="w-6 h-6 bg-green-100 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <Type className="w-3 h-3 text-green-600" />
+                  <div className="w-6 h-6 bg-green-200 rounded flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Type className="w-3 h-3 text-green-700" />
                   </div>
-                  <p className="text-sm text-gray-700 line-clamp-3 leading-relaxed">
+                  <p className="text-sm text-gray-800 font-medium line-clamp-3 leading-relaxed">
                     {sentence}
                   </p>
                 </div>
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity mt-2">
-                  <div className="text-xs text-gray-500 bg-white px-2 py-1 rounded border inline-block">
+                  <div className="text-xs font-semibold text-gray-700 bg-white px-2 py-1 rounded border inline-block">
                     Sentence • Drag to canvas
                   </div>
                 </div>
