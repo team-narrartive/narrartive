@@ -3,10 +3,9 @@ import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { User, Cat, Sparkles, Edit, Plus, X } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { ChevronDown, ChevronRight, Edit2, Check, X, User, Zap } from 'lucide-react';
 
 interface Character {
   name: string;
@@ -20,255 +19,211 @@ interface CharacterWidgetProps {
   onUpdate: (updatedCharacter: Character) => void;
 }
 
-const getCharacterIcon = (type: string) => {
-  switch (type) {
-    case 'human':
-      return <User className="w-4 h-4" />;
-    case 'animal':
-      return <Cat className="w-4 h-4" />;
-    default:
-      return <Sparkles className="w-4 h-4" />;
-  }
-};
-
-const getEssentialAttributes = (type: string) => {
-  switch (type) {
-    case 'human':
-      return {
-        'Hair Color': '',
-        'Hair Type': '',
-        'Eye Color': '',
-        'Skin Tone': '',
-        'Ethnicity/Nationality': '',
-        'Age': '',
-        'Gender': '',
-        'Clothing Style': '',
-        'Facial Hair': '',
-        'Facial Expression': ''
-      };
-    case 'animal':
-      return {
-        'Animal Type': '',
-        'Fur/Feather Color': '',
-        'Size': '',
-        'Eye Color': '',
-        'Breed': '',
-        'Pose': '',
-        'Facial Expression': '',
-        'Accessories': ''
-      };
-    case 'creature':
-      return {
-        'Creature Type': '',
-        'Size': '',
-        'Color': '',
-        'Special Features': '',
-        'Magical Properties': '',
-        'Eyes': '',
-        'Pose': '',
-        'Aura': ''
-      };
-    default: // objects
-      return {
-        'Object Type': '',
-        'Color': '',
-        'Size': '',
-        'Material': '',
-        'Condition': '',
-        'Shape': '',
-        'Special Features': '',
-        'Age/Era': ''
-      };
-  }
-};
-
 export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onUpdate }) => {
-  const [attributes, setAttributes] = useState(() => {
-    const defaultAttrs = getEssentialAttributes(character.type);
-    return { ...defaultAttrs, ...character.attributes };
-  });
-  
-  const [newAttributeKey, setNewAttributeKey] = useState('');
-  const [newAttributeValue, setNewAttributeValue] = useState('');
-  const [isAddingAttribute, setIsAddingAttribute] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const [editingAttribute, setEditingAttribute] = useState<string | null>(null);
+  const [editValue, setEditValue] = useState('');
 
-  const handleAttributeChange = (key: string, value: string) => {
-    const newAttributes = { ...attributes, [key]: value };
-    setAttributes(newAttributes);
-    onUpdate({ ...character, attributes: newAttributes });
-  };
-
-  const handleAddCustomAttribute = () => {
-    if (newAttributeKey.trim() && newAttributeValue.trim()) {
-      const newAttributes = { ...attributes, [newAttributeKey.trim()]: newAttributeValue.trim() };
-      setAttributes(newAttributes);
-      onUpdate({ ...character, attributes: newAttributes });
-      setNewAttributeKey('');
-      setNewAttributeValue('');
-      setIsAddingAttribute(false);
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case 'human': return <User className="w-4 h-4" />;
+      case 'animal': return <Zap className="w-4 h-4" />;
+      case 'creature': return <Zap className="w-4 h-4" />;
+      case 'object': return <Zap className="w-4 h-4" />;
+      default: return <User className="w-4 h-4" />;
     }
   };
 
-  const handleRemoveAttribute = (key: string) => {
-    const newAttributes = { ...attributes };
-    delete newAttributes[key];
-    setAttributes(newAttributes);
-    onUpdate({ ...character, attributes: newAttributes });
+  const getTypeColor = (type: string) => {
+    switch (type) {
+      case 'human': return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'animal': return 'bg-green-100 text-green-800 border-green-200';
+      case 'creature': return 'bg-purple-100 text-purple-800 border-purple-200';
+      case 'object': return 'bg-orange-100 text-orange-800 border-orange-200';
+      default: return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
   };
 
-  const filledAttributes = Object.entries(attributes).filter(([_, value]) => value && value.trim()).length;
+  const startEditing = (key: string, currentValue: any) => {
+    setEditingAttribute(key);
+    // Convert value to string for editing, handling different types
+    if (typeof currentValue === 'string') {
+      setEditValue(currentValue);
+    } else if (currentValue !== null && currentValue !== undefined) {
+      setEditValue(String(currentValue));
+    } else {
+      setEditValue('');
+    }
+  };
+
+  const saveEdit = () => {
+    if (editingAttribute) {
+      const updatedCharacter = {
+        ...character,
+        attributes: {
+          ...character.attributes,
+          [editingAttribute]: editValue
+        }
+      };
+      onUpdate(updatedCharacter);
+    }
+    setEditingAttribute(null);
+    setEditValue('');
+  };
+
+  const cancelEdit = () => {
+    setEditingAttribute(null);
+    setEditValue('');
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveEdit();
+    } else if (e.key === 'Escape') {
+      cancelEdit();
+    }
+  };
+
+  // Safe filtering of attributes - handle different value types properly
+  const validAttributes = Object.entries(character.attributes).filter(([key, value]) => {
+    // Check if value exists and is not empty
+    if (value === null || value === undefined) {
+      return false;
+    }
+    
+    // Handle string values
+    if (typeof value === 'string') {
+      return value.trim().length > 0;
+    }
+    
+    // Handle arrays
+    if (Array.isArray(value)) {
+      return value.length > 0;
+    }
+    
+    // Handle objects
+    if (typeof value === 'object') {
+      return Object.keys(value).length > 0;
+    }
+    
+    // Handle numbers, booleans, etc.
+    return true;
+  });
+
+  const formatAttributeValue = (value: any): string => {
+    if (typeof value === 'string') {
+      return value;
+    } else if (Array.isArray(value)) {
+      return value.join(', ');
+    } else if (typeof value === 'object' && value !== null) {
+      return JSON.stringify(value);
+    } else {
+      return String(value);
+    }
+  };
 
   return (
-    <Card className="p-3 bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-md transition-all duration-200">
-      <div className="flex items-center justify-between mb-2">
-        <div className="flex items-center space-x-2">
-          {getCharacterIcon(character.type)}
-          <h3 className="font-semibold text-sm text-gray-900">{character.name}</h3>
-        </div>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-              <Edit className="w-3 h-3" />
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl max-h-[80vh] p-0">
-            <DialogHeader className="p-6 pb-4">
-              <DialogTitle className="flex items-center space-x-2">
-                {getCharacterIcon(character.type)}
-                <span>{character.name}</span>
-                <span className="text-sm font-normal text-gray-500 capitalize">({character.type})</span>
-              </DialogTitle>
-            </DialogHeader>
-            
-            <div className="px-6 pb-6">
-              {character.description && (
-                <div className="mb-6">
-                  <Label className="text-sm font-medium text-gray-700">Description</Label>
-                  <p className="text-sm text-gray-800 bg-gray-50 p-3 rounded-lg mt-1">{character.description}</p>
+    <Card className="bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-200">
+      <Collapsible open={isExpanded} onOpenChange={setIsExpanded}>
+        <CollapsibleTrigger asChild>
+          <div className="p-4 cursor-pointer hover:bg-white/40 transition-colors rounded-t-lg">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3">
+                <div className={`p-2 rounded-lg ${getTypeColor(character.type)}`}>
+                  {getTypeIcon(character.type)}
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">{character.name}</h3>
+                  <div className="flex items-center space-x-2 mt-1">
+                    <Badge variant="secondary" className={`text-xs ${getTypeColor(character.type)}`}>
+                      {character.type}
+                    </Badge>
+                    <span className="text-xs text-gray-500">
+                      {validAttributes.length} attributes
+                    </span>
+                  </div>
+                </div>
+              </div>
+              {isExpanded ? (
+                <ChevronDown className="w-4 h-4 text-gray-500" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-gray-500" />
+              )}
+            </div>
+            {character.description && (
+              <p className="text-sm text-gray-600 mt-2 line-clamp-2">
+                {character.description}
+              </p>
+            )}
+          </div>
+        </CollapsibleTrigger>
+        
+        <CollapsibleContent>
+          <div className="px-4 pb-4 border-t border-white/20 bg-white/20">
+            <div className="space-y-3 mt-3">
+              {validAttributes.length > 0 ? (
+                validAttributes.map(([key, value]) => (
+                  <div
+                    key={key}
+                    className="flex items-center justify-between p-3 bg-white/60 rounded-lg border border-white/30"
+                  >
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium text-gray-700 mb-1">
+                        {key.charAt(0).toUpperCase() + key.slice(1)}
+                      </div>
+                      {editingAttribute === key ? (
+                        <div className="flex items-center space-x-2">
+                          <Input
+                            value={editValue}
+                            onChange={(e) => setEditValue(e.target.value)}
+                            onKeyDown={handleKeyPress}
+                            className="flex-1 h-8 text-sm"
+                            autoFocus
+                          />
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={saveEdit}
+                            className="h-8 w-8 p-0 text-green-600 hover:bg-green-100"
+                          >
+                            <Check className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={cancelEdit}
+                            className="h-8 w-8 p-0 text-red-600 hover:bg-red-100"
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <div className="text-sm text-gray-600 break-words">
+                          {formatAttributeValue(value)}
+                        </div>
+                      )}
+                    </div>
+                    {editingAttribute !== key && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => startEditing(key, value)}
+                        className="ml-2 h-8 w-8 p-0 text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+                      >
+                        <Edit2 className="w-3 h-3" />
+                      </Button>
+                    )}
+                  </div>
+                ))
+              ) : (
+                <div className="text-center py-4 text-gray-500">
+                  <p className="text-sm">No attributes found for this character.</p>
                 </div>
               )}
-              
-              <ScrollArea className="h-96 pr-4">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <Label className="text-base font-semibold text-gray-800">Character Attributes</Label>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setIsAddingAttribute(true)}
-                      className="text-sky-600 border-sky-200 hover:bg-sky-50"
-                    >
-                      <Plus className="w-3 h-3 mr-1" />
-                      Add Custom
-                    </Button>
-                  </div>
-                  
-                  {/* Custom Attribute Input */}
-                  {isAddingAttribute && (
-                    <Card className="p-4 bg-sky-50 border-sky-200">
-                      <div className="space-y-3">
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700">Attribute Name</Label>
-                          <Input
-                            value={newAttributeKey}
-                            onChange={(e) => setNewAttributeKey(e.target.value)}
-                            placeholder="e.g., Tattoo, Scar, Favorite Color"
-                            className="mt-1 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                          />
-                        </div>
-                        <div>
-                          <Label className="text-sm font-medium text-gray-700">Value</Label>
-                          <Input
-                            value={newAttributeValue}
-                            onChange={(e) => setNewAttributeValue(e.target.value)}
-                            placeholder="Enter the attribute value"
-                            className="mt-1 focus:ring-2 focus:ring-sky-400 focus:border-sky-400"
-                          />
-                        </div>
-                        <div className="flex space-x-2">
-                          <Button
-                            size="sm"
-                            onClick={handleAddCustomAttribute}
-                            disabled={!newAttributeKey.trim() || !newAttributeValue.trim()}
-                            className="bg-sky-500 hover:bg-sky-600"
-                          >
-                            Add Attribute
-                          </Button>
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setIsAddingAttribute(false);
-                              setNewAttributeKey('');
-                              setNewAttributeValue('');
-                            }}
-                          >
-                            Cancel
-                          </Button>
-                        </div>
-                      </div>
-                    </Card>
-                  )}
-                  
-                  {/* Attribute Grid with proper padding for focus rings */}
-                  <div className="grid grid-cols-2 gap-4 px-1">
-                    {Object.entries(attributes).map(([key, value]) => {
-                      const isCustomAttribute = !getEssentialAttributes(character.type).hasOwnProperty(key);
-                      return (
-                        <div key={key} className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <Label htmlFor={`${character.name}-${key}`} className="text-sm font-medium text-gray-700">
-                              {key}
-                            </Label>
-                            {isCustomAttribute && (
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleRemoveAttribute(key)}
-                                className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
-                              >
-                                <X className="w-3 h-3" />
-                              </Button>
-                            )}
-                          </div>
-                          <Input
-                            id={`${character.name}-${key}`}
-                            value={value || ''}
-                            onChange={(e) => handleAttributeChange(key, e.target.value)}
-                            className="h-9 text-sm focus:ring-2 focus:ring-sky-400 focus:border-sky-400 border-gray-300"
-                            placeholder={`Enter ${key.toLowerCase()}`}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </ScrollArea>
             </div>
-          </DialogContent>
-        </Dialog>
-      </div>
-      
-      <div className="text-xs text-gray-600 mb-2 capitalize flex items-center justify-between">
-        <span>{character.type}</span>
-        <span className="text-emerald-600 font-medium">{filledAttributes} filled</span>
-      </div>
-      
-      {character.description && (
-        <p className="text-xs text-gray-700 line-clamp-2 mb-2">{character.description}</p>
-      )}
-      
-      <div className="mt-2 flex items-center justify-between">
-        <div className="text-xs text-gray-500">
-          {filledAttributes} of {Object.keys(attributes).length} attributes
-        </div>
-        <div className="w-16 bg-gray-200 rounded-full h-1.5">
-          <div 
-            className="bg-emerald-500 h-1.5 rounded-full transition-all duration-300" 
-            style={{ width: `${(filledAttributes / Object.keys(attributes).length) * 100}%` }}
-          ></div>
-        </div>
-      </div>
+          </div>
+        </CollapsibleContent>
+      </Collapsible>
     </Card>
   );
 };
