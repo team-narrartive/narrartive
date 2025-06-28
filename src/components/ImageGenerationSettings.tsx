@@ -4,12 +4,14 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
+import { Textarea } from '@/components/ui/textarea';
 import { Settings } from 'lucide-react';
 
 interface ImageGenerationSettings {
   numImages: number;
   quality: 'low' | 'medium' | 'high';
   style: 'realistic' | 'artistic' | 'cartoon';
+  instructions?: string;
 }
 
 interface ImageGenerationSettingsProps {
@@ -33,6 +35,10 @@ export const ImageGenerationSettingsComponent: React.FC<ImageGenerationSettingsP
     onSettingsChange({ ...settings, style });
   };
 
+  const handleInstructionsChange = (instructions: string) => {
+    onSettingsChange({ ...settings, instructions });
+  };
+
   return (
     <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 mb-6">
       <div className="flex items-center space-x-3 mb-4">
@@ -45,7 +51,7 @@ export const ImageGenerationSettingsComponent: React.FC<ImageGenerationSettingsP
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {/* Number of Images */}
         <div className="space-y-3">
           <Label className="text-sm font-medium text-gray-700">
@@ -94,6 +100,22 @@ export const ImageGenerationSettingsComponent: React.FC<ImageGenerationSettingsP
             </SelectContent>
           </Select>
         </div>
+      </div>
+
+      {/* Additional Instructions */}
+      <div className="space-y-3">
+        <Label className="text-sm font-medium text-gray-700">
+          Additional Instructions (Optional)
+        </Label>
+        <Textarea
+          value={settings.instructions || ''}
+          onChange={(e) => handleInstructionsChange(e.target.value)}
+          placeholder="Describe specific scenes, settings, or context you want in the images..."
+          className="min-h-[80px] resize-none"
+        />
+        <p className="text-xs text-gray-500">
+          These instructions will be added to your story and character details to create more accurate images.
+        </p>
       </div>
     </Card>
   );

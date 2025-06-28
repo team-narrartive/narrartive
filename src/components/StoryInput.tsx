@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { CharacterSidebar } from './CharacterSidebar';
 import { EnhancedGeneratedImages } from './EnhancedGeneratedImages';
 import { ImageGenerationSettingsComponent } from './ImageGenerationSettings';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { ArrowLeft, FileText, Users, Image, AlertCircle, Save, CheckCircle } from 'lucide-react';
+import { FileText, Users, Image, AlertCircle, Save, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useStorySaving } from '@/hooks/useStorySaving';
@@ -23,6 +24,7 @@ interface ImageGenerationSettings {
   numImages: number;
   quality: 'low' | 'medium' | 'high';
   style: 'realistic' | 'artistic' | 'cartoon';
+  instructions?: string;
 }
 
 interface ImageVersion {
@@ -51,7 +53,8 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   const [imageSettings, setImageSettings] = useState<ImageGenerationSettings>({
     numImages: 3,
     quality: 'medium',
-    style: 'realistic'
+    style: 'realistic',
+    instructions: ''
   });
   
   const { toast } = useToast();
@@ -225,14 +228,13 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
         {/* Main Content */}
         <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
-          {/* Simplified Header */}
+          {/* Header with Back Button and Save */}
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
               onClick={onBack}
               className="text-gray-600 hover:text-sky-500"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
             </Button>
             
@@ -263,10 +265,34 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
           {/* Image Generation Settings - Show after widgets are generated */}
           {hasGeneratedWidgets && (
-            <ImageGenerationSettingsComponent
-              settings={imageSettings}
-              onSettingsChange={setImageSettings}
-            />
+            <>
+              <ImageGenerationSettingsComponent
+                settings={imageSettings}
+                onSettingsChange={setImageSettings}
+              />
+              
+              {/* Generate Images Button - Prominently placed */}
+              <div className="flex justify-center">
+                <Button
+                  onClick={handleGenerateImages}
+                  disabled={!story.trim() || isGeneratingImages}
+                  size="lg"
+                  className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  {isGeneratingImages ? (
+                    <>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                      Generating Images...
+                    </>
+                  ) : (
+                    <>
+                      <Image className="w-5 h-5 mr-3" />
+                      Generate Images
+                    </>
+                  )}
+                </Button>
+              </div>
+            </>
           )}
 
           {/* Story Input */}
@@ -304,7 +330,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                       Try Example
                     </Button>
                     
-                    {!hasGeneratedWidgets ? (
+                    {!hasGeneratedWidgets && (
                       <Button
                         onClick={handleExtractCharacters}
                         disabled={!story.trim() || isExtractingCharacters}
@@ -319,24 +345,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                           <>
                             <Users className="w-4 h-4 mr-2" />
                             Generate Widgets
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleGenerateImages}
-                        disabled={!story.trim() || isGeneratingImages}
-                        className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        {isGeneratingImages ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Generating...
-                          </>
-                        ) : (
-                          <>
-                            <Image className="w-4 h-4 mr-2" />
-                            Generate Images
                           </>
                         )}
                       </Button>

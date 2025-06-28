@@ -20,6 +20,7 @@ interface ImageSettings {
   numImages: number;
   quality: 'low' | 'medium' | 'high';
   style: 'realistic' | 'artistic' | 'cartoon';
+  instructions?: string;
 }
 
 serve(async (req) => {
@@ -108,12 +109,21 @@ serve(async (req) => {
         prompt += "- Ensure all specified details are clearly visible and accurately represented\n\n";
       }
       
+      // Add user instructions if provided
+      if (imageSettings.instructions && imageSettings.instructions.trim()) {
+        prompt += `ADDITIONAL USER INSTRUCTIONS:\n`;
+        prompt += `${imageSettings.instructions.trim()}\n\n`;
+      }
+      
       // Add scene-specific and consistency instructions
       prompt += `SCENE COMPOSITION REQUIREMENTS:\n`;
       prompt += `- Create scene ${i + 1} focusing on the narrative flow of the story\n`;
       prompt += `- Use ${stylePrompts[imageSettings.style]} visual approach\n`;
       prompt += `- Maintain visual consistency and narrative coherence\n`;
       prompt += `- Ensure character accuracy as specified above\n`;
+      if (imageSettings.instructions && imageSettings.instructions.trim()) {
+        prompt += `- Follow the additional user instructions provided above\n`;
+      }
       prompt += `- Create engaging composition that supports the story narrative\n`;
 
       console.log(`Generated detailed prompt for image ${i + 1}:`, prompt);
@@ -163,7 +173,7 @@ serve(async (req) => {
           
           if (imageUrl) {
             images.push(imageUrl);
-            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages} with detailed character attributes`);
+            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages} with detailed character attributes and user instructions`);
           } else {
             const errorMessage = 'No image URL or base64 data in response';
             console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
@@ -180,7 +190,7 @@ serve(async (req) => {
       }
     }
 
-    console.log(`Image generation complete with detailed character attributes. Generated: ${images.length}, Errors: ${errors.length}`);
+    console.log(`Image generation complete with detailed character attributes and user instructions. Generated: ${images.length}, Errors: ${errors.length}`);
 
     if (images.length === 0 && errors.length > 0) {
       return new Response(JSON.stringify({ 

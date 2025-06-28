@@ -22,49 +22,46 @@ interface CharacterAttributesPopupProps {
   onSave: (updatedCharacter: Character) => void;
 }
 
-const HUMAN_ATTRIBUTES: Record<string, string[]> = {
-  'Hair Color': ['Black', 'Brown', 'Blonde', 'Red', 'Gray', 'White', 'Auburn', 'Strawberry Blonde'],
-  'Eye Color': ['Brown', 'Blue', 'Green', 'Hazel', 'Gray', 'Amber', 'Violet'],
-  'Skin Tone': ['Fair', 'Light', 'Medium', 'Olive', 'Tan', 'Dark', 'Deep'],
-  'Ethnicity/Nationality': ['Caucasian', 'African American', 'Hispanic/Latino', 'Asian', 'Middle Eastern', 'Native American', 'Mixed', 'Other'],
-  'Hair Type': ['Straight', 'Wavy', 'Curly', 'Coily', 'Kinky'],
-  'Facial Hair': ['Clean-shaven', 'Beard', 'Goatee', 'Mustache', 'Stubble', 'Full Beard'],
-  'Age': ['Child (5-12)', 'Teen (13-17)', 'Young Adult (18-25)', 'Adult (26-40)', 'Middle-aged (41-60)', 'Senior (60+)'],
-  'Height': ['Short', 'Average', 'Tall', 'Very Tall'],
-  'Body Type': ['Slim', 'Athletic', 'Average', 'Stocky', 'Heavyset'],
-  'Clothing Style': ['Casual', 'Formal', 'Business', 'Sporty', 'Vintage', 'Bohemian', 'Gothic'],
-  'Shirt Color': ['White', 'Black', 'Blue', 'Red', 'Green', 'Yellow', 'Purple', 'Pink', 'Gray'],
-  'Pants Color': ['Black', 'Blue', 'Brown', 'Gray', 'White', 'Khaki', 'Navy'],
-  'Accessories': ['Glasses', 'Sunglasses', 'Hat', 'Watch', 'Jewelry', 'Scarf', 'Bag', 'None']
+// Only keep dropdown options for attributes that benefit from specific choices
+const DROPDOWN_ATTRIBUTES: Record<string, Record<string, string[]>> = {
+  human: {
+    'Hair Color': ['Black', 'Brown', 'Blonde', 'Red', 'Gray', 'White', 'Auburn', 'Strawberry Blonde'],
+    'Eye Color': ['Brown', 'Blue', 'Green', 'Hazel', 'Gray', 'Amber', 'Violet'],
+    'Hair Type': ['Straight', 'Wavy', 'Curly', 'Coily', 'Kinky'],
+    'Facial Hair': ['Clean-shaven', 'Beard', 'Goatee', 'Mustache', 'Stubble', 'Full Beard'],
+    'Age': ['Child (5-12)', 'Teen (13-17)', 'Young Adult (18-25)', 'Adult (26-40)', 'Middle-aged (41-60)', 'Senior (60+)']
+  },
+  animal: {
+    'Animal Type': ['Dog', 'Cat', 'Horse', 'Bird', 'Rabbit', 'Fox', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Other'],
+    'Breed': ['Mixed', 'Purebred', 'Unknown'],
+    'Eye Color': ['Brown', 'Blue', 'Green', 'Amber', 'Yellow', 'Black'],
+    'Size': ['Very Small', 'Small', 'Medium', 'Large', 'Very Large']
+  },
+  creature: {
+    'Creature Type': ['Dragon', 'Fairy', 'Goblin', 'Elf', 'Dwarf', 'Giant', 'Spirit', 'Monster', 'Mythical Beast'],
+    'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Colossal']
+  },
+  object: {
+    'Object Type': ['Weapon', 'Tool', 'Jewelry', 'Furniture', 'Vehicle', 'Clothing', 'Book', 'Container'],
+    'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge']
+  }
 };
 
-const ANIMAL_ATTRIBUTES: Record<string, string[]> = {
-  'Animal Type': ['Dog', 'Cat', 'Horse', 'Bird', 'Rabbit', 'Fox', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Other'],
-  'Breed': ['Mixed', 'Purebred', 'Unknown'],
-  'Fur/Feather Color': ['Black', 'Brown', 'White', 'Gray', 'Golden', 'Red', 'Spotted', 'Striped', 'Multi-colored'],
-  'Eye Color': ['Brown', 'Blue', 'Green', 'Amber', 'Yellow', 'Black'],
-  'Size': ['Very Small', 'Small', 'Medium', 'Large', 'Very Large'],
-  'Distinctive Features': ['Spots', 'Stripes', 'Long Tail', 'Short Tail', 'Floppy Ears', 'Pointed Ears', 'Scars', 'None'],
-  'Accessories': ['Collar', 'Tags', 'Clothing', 'Harness', 'Bow', 'Hat', 'None'],
-  'Mood/Expression': ['Happy', 'Playful', 'Calm', 'Alert', 'Sleepy', 'Serious', 'Mischievous', 'Gentle']
-};
-
-const CREATURE_ATTRIBUTES: Record<string, string[]> = {
-  'Creature Type': ['Dragon', 'Fairy', 'Goblin', 'Elf', 'Dwarf', 'Giant', 'Spirit', 'Monster', 'Mythical Beast'],
-  'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Colossal'],
-  'Color Scheme': ['Natural', 'Magical', 'Dark', 'Bright', 'Ethereal', 'Metallic'],
-  'Special Features': ['Wings', 'Horns', 'Claws', 'Fangs', 'Glowing Eyes', 'Scales', 'Fur', 'Feathers'],
-  'Magical Abilities': ['Fire', 'Ice', 'Lightning', 'Healing', 'Invisibility', 'Flight', 'Teleportation', 'None'],
-  'Temperament': ['Friendly', 'Hostile', 'Neutral', 'Protective', 'Mischievous', 'Wise', 'Fierce']
-};
-
-const OBJECT_ATTRIBUTES: Record<string, string[]> = {
-  'Object Type': ['Weapon', 'Tool', 'Jewelry', 'Furniture', 'Vehicle', 'Clothing', 'Book', 'Container'],
-  'Material': ['Wood', 'Metal', 'Stone', 'Fabric', 'Glass', 'Plastic', 'Leather', 'Crystal', 'Magical'],
-  'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge'],
-  'Color': ['Black', 'Brown', 'White', 'Gray', 'Silver', 'Gold', 'Blue', 'Red', 'Green', 'Multi-colored'],
-  'Condition': ['New', 'Well-maintained', 'Worn', 'Damaged', 'Ancient', 'Magical'],
-  'Special Properties': ['Glowing', 'Sharp', 'Heavy', 'Light', 'Flexible', 'Rigid', 'Transparent', 'Ornate', 'Simple']
+// Free-text attributes for each type
+const TEXT_ATTRIBUTES: Record<string, string[]> = {
+  human: [
+    'Skin Tone', 'Ethnicity/Nationality', 'Height', 'Body Type', 'Clothing Style',
+    'Shirt Color', 'Pants Color', 'Accessories'
+  ],
+  animal: [
+    'Fur/Feather Color', 'Distinctive Features', 'Accessories', 'Mood/Expression'
+  ],
+  creature: [
+    'Color Scheme', 'Special Features', 'Magical Abilities', 'Temperament'
+  ],
+  object: [
+    'Material', 'Color', 'Condition', 'Special Properties'
+  ]
 };
 
 export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> = ({
@@ -77,22 +74,10 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
   const [customAttributeKey, setCustomAttributeKey] = useState('');
   const [customAttributeValue, setCustomAttributeValue] = useState('');
 
-  const getAttributeOptions = (): Record<string, string[]> => {
-    switch (character.type) {
-      case 'human':
-        return HUMAN_ATTRIBUTES;
-      case 'animal':
-        return ANIMAL_ATTRIBUTES;
-      case 'creature':
-        return CREATURE_ATTRIBUTES;
-      case 'object':
-        return OBJECT_ATTRIBUTES;
-      default:
-        return {};
-    }
-  };
+  const dropdownOptions = DROPDOWN_ATTRIBUTES[character.type] || {};
+  const textAttributes = TEXT_ATTRIBUTES[character.type] || [];
 
-  const attributeOptions = getAttributeOptions();
+  const allPredefinedAttributes = [...Object.keys(dropdownOptions), ...textAttributes];
 
   const handleAttributeChange = (key: string, value: string) => {
     setEditedCharacter(prev => ({
@@ -160,32 +145,53 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
               </div>
             )}
 
-            {/* Predefined Attributes */}
-            <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Character Attributes</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {Object.entries(attributeOptions).map(([key, options]) => (
-                  <div key={key} className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">{key}</label>
-                    <Select
-                      value={editedCharacter.attributes[key] || ''}
-                      onValueChange={(value) => handleAttributeChange(key, value)}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder={`Select ${key.toLowerCase()}`} />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {options.map((option) => (
-                          <SelectItem key={option} value={option}>
-                            {option}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                ))}
+            {/* Dropdown Attributes */}
+            {Object.keys(dropdownOptions).length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4">Select Attributes</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {Object.entries(dropdownOptions).map(([key, options]) => (
+                    <div key={key} className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">{key}</label>
+                      <Select
+                        value={editedCharacter.attributes[key] || ''}
+                        onValueChange={(value) => handleAttributeChange(key, value)}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder={`Select ${key.toLowerCase()}`} />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {options.map((option) => (
+                            <SelectItem key={option} value={option}>
+                              {option}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
+
+            {/* Free Text Attributes */}
+            {textAttributes.length > 0 && (
+              <div>
+                <h4 className="font-semibold text-gray-900 mb-4">Describe Attributes</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {textAttributes.map((key) => (
+                    <div key={key} className="space-y-2">
+                      <label className="text-sm font-medium text-gray-700">{key}</label>
+                      <Input
+                        value={editedCharacter.attributes[key] || ''}
+                        onChange={(e) => handleAttributeChange(key, e.target.value)}
+                        placeholder={`Enter ${key.toLowerCase()}`}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Separator />
 
@@ -195,7 +201,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
               
               {/* Existing Custom Attributes */}
               {Object.entries(editedCharacter.attributes)
-                .filter(([key]) => !Object.keys(attributeOptions).includes(key))
+                .filter(([key]) => !allPredefinedAttributes.includes(key))
                 .map(([key, value]) => (
                   <div key={key} className="flex items-center gap-2 mb-2">
                     <Badge variant="outline" className="flex items-center gap-2">

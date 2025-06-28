@@ -1,9 +1,8 @@
 
 import React, { useState } from 'react';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { User, Zap, Settings, Eye } from 'lucide-react';
+import { User, Zap } from 'lucide-react';
 import { CharacterAttributesPopup } from './CharacterAttributesPopup';
 
 interface Character {
@@ -41,11 +40,24 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
     }
   };
 
-  // Count all attributes (both predefined and custom)
-  const attributeCount = Object.keys(character.attributes).filter(key => {
+  // Count filled attributes
+  const filledAttributes = Object.keys(character.attributes).filter(key => {
     const value = character.attributes[key];
     return value !== null && value !== undefined && value !== '';
   }).length;
+
+  // Get total possible attributes based on type
+  const getTotalAttributes = (type: string) => {
+    switch (type) {
+      case 'human': return 12; // Based on HUMAN_ATTRIBUTES count
+      case 'animal': return 8;  // Based on ANIMAL_ATTRIBUTES count
+      case 'creature': return 6; // Based on CREATURE_ATTRIBUTES count
+      case 'object': return 6;   // Based on OBJECT_ATTRIBUTES count
+      default: return 8;
+    }
+  };
+
+  const totalAttributes = getTotalAttributes(character.type);
 
   const handleSaveAttributes = (updatedCharacter: Character) => {
     onUpdate(updatedCharacter);
@@ -53,7 +65,10 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
 
   return (
     <>
-      <Card className="bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-200">
+      <Card 
+        className="bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-200 cursor-pointer"
+        onClick={() => setShowAttributesPopup(true)}
+      >
         <div className="p-4">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center space-x-3">
@@ -62,65 +77,26 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
               </div>
               <div>
                 <h3 className="font-semibold text-gray-900">{character.name}</h3>
-                <div className="flex items-center space-x-2 mt-1">
-                  <Badge variant="secondary" className={`text-xs ${getTypeColor(character.type)}`}>
-                    {character.type}
-                  </Badge>
-                  <span className="text-xs text-gray-500">
-                    {attributeCount} attributes
-                  </span>
-                </div>
+                <Badge variant="secondary" className={`text-xs ${getTypeColor(character.type)} mt-1`}>
+                  {character.type.charAt(0).toUpperCase() + character.type.slice(1)}
+                </Badge>
               </div>
             </div>
           </div>
 
-          {character.description && (
-            <p className="text-sm text-gray-600 mb-3 line-clamp-2">
-              {character.description}
-            </p>
-          )}
+          {/* Attribute Status Indicator */}
+          <div className="text-sm text-gray-600 mb-2">
+            <span className="font-medium text-blue-600">
+              {filledAttributes} out of {totalAttributes} attributes filled
+            </span>
+          </div>
 
-          {/* Quick attribute preview */}
-          {attributeCount > 0 && (
-            <div className="mb-3">
-              <div className="flex flex-wrap gap-1">
-                {Object.entries(character.attributes)
-                  .filter(([_, value]) => value !== null && value !== undefined && value !== '')
-                  .slice(0, 3)
-                  .map(([key, value]) => (
-                    <Badge key={key} variant="outline" className="text-xs">
-                      {key}: {String(value)}
-                    </Badge>
-                  ))}
-                {attributeCount > 3 && (
-                  <Badge variant="outline" className="text-xs text-gray-500">
-                    +{attributeCount - 3} more
-                  </Badge>
-                )}
-              </div>
-            </div>
-          )}
-
-          <div className="flex gap-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => setShowAttributesPopup(true)}
-              className="flex-1 text-blue-600 border-blue-200 hover:bg-blue-50"
-            >
-              <Settings className="w-3 h-3 mr-2" />
-              {attributeCount > 0 ? 'Edit Attributes' : 'Add Attributes'}
-            </Button>
-            {attributeCount > 0 && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => setShowAttributesPopup(true)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Eye className="w-3 h-3" />
-              </Button>
-            )}
+          {/* Progress Bar */}
+          <div className="w-full bg-gray-200 rounded-full h-2">
+            <div 
+              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+              style={{ width: `${(filledAttributes / totalAttributes) * 100}%` }}
+            ></div>
           </div>
         </div>
       </Card>
