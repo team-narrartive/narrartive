@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Bell, Search, User } from 'lucide-react';
+import { Bell, Search, User, ArrowLeft } from 'lucide-react';
 import { Notifications } from './Notifications';
 import { UserProfile } from './UserProfile';
 
@@ -9,9 +9,10 @@ interface HeaderProps {
   showSidebar?: boolean;
   onSettings?: () => void;
   onLogout?: () => void;
+  onBack?: () => void;
 }
 
-export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogout }) => {
+export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogout, onBack }) => {
   const [showNotifications, setShowNotifications] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
 
@@ -39,7 +40,19 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
     <header className="bg-white/80 backdrop-blur-md border-b border-white/20 px-6 py-4 relative z-40">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
-          {!showSidebar && (
+          {/* Back Button */}
+          {onBack && (
+            <Button
+              variant="ghost"
+              onClick={onBack}
+              className="text-gray-600 hover:text-sky-500"
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          )}
+          
+          {!showSidebar && !onBack && (
             <div className="flex items-center space-x-2">
               <img 
                 src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 

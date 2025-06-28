@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
@@ -22,45 +21,23 @@ interface CharacterAttributesPopupProps {
   onSave: (updatedCharacter: Character) => void;
 }
 
-// Only keep dropdown options for attributes that benefit from specific choices
-const DROPDOWN_ATTRIBUTES: Record<string, Record<string, string[]>> = {
-  human: {
-    'Hair Color': ['Black', 'Brown', 'Blonde', 'Red', 'Gray', 'White', 'Auburn', 'Strawberry Blonde'],
-    'Eye Color': ['Brown', 'Blue', 'Green', 'Hazel', 'Gray', 'Amber', 'Violet'],
-    'Hair Type': ['Straight', 'Wavy', 'Curly', 'Coily', 'Kinky'],
-    'Facial Hair': ['Clean-shaven', 'Beard', 'Goatee', 'Mustache', 'Stubble', 'Full Beard'],
-    'Age': ['Child (5-12)', 'Teen (13-17)', 'Young Adult (18-25)', 'Adult (26-40)', 'Middle-aged (41-60)', 'Senior (60+)']
-  },
-  animal: {
-    'Animal Type': ['Dog', 'Cat', 'Horse', 'Bird', 'Rabbit', 'Fox', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Other'],
-    'Breed': ['Mixed', 'Purebred', 'Unknown'],
-    'Eye Color': ['Brown', 'Blue', 'Green', 'Amber', 'Yellow', 'Black'],
-    'Size': ['Very Small', 'Small', 'Medium', 'Large', 'Very Large']
-  },
-  creature: {
-    'Creature Type': ['Dragon', 'Fairy', 'Goblin', 'Elf', 'Dwarf', 'Giant', 'Spirit', 'Monster', 'Mythical Beast'],
-    'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Colossal']
-  },
-  object: {
-    'Object Type': ['Weapon', 'Tool', 'Jewelry', 'Furniture', 'Vehicle', 'Clothing', 'Book', 'Container'],
-    'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge']
-  }
-};
-
-// Free-text attributes for each type
-const TEXT_ATTRIBUTES: Record<string, string[]> = {
+// All attributes are now text inputs for maximum flexibility
+const ATTRIBUTE_TEMPLATES: Record<string, string[]> = {
   human: [
+    'Hair Color', 'Eye Color', 'Hair Type', 'Facial Hair', 'Age',
     'Skin Tone', 'Ethnicity/Nationality', 'Height', 'Body Type', 'Clothing Style',
     'Shirt Color', 'Pants Color', 'Accessories'
   ],
   animal: [
-    'Fur/Feather Color', 'Distinctive Features', 'Accessories', 'Mood/Expression'
+    'Animal Type', 'Breed', 'Fur/Feather Color', 'Eye Color', 'Size',
+    'Distinctive Features', 'Accessories', 'Mood/Expression'
   ],
   creature: [
-    'Color Scheme', 'Special Features', 'Magical Abilities', 'Temperament'
+    'Creature Type', 'Size', 'Color Scheme', 'Special Features', 
+    'Magical Abilities', 'Temperament'
   ],
   object: [
-    'Material', 'Color', 'Condition', 'Special Properties'
+    'Object Type', 'Material', 'Color', 'Size', 'Condition', 'Special Properties'
   ]
 };
 
@@ -74,10 +51,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
   const [customAttributeKey, setCustomAttributeKey] = useState('');
   const [customAttributeValue, setCustomAttributeValue] = useState('');
 
-  const dropdownOptions = DROPDOWN_ATTRIBUTES[character.type] || {};
-  const textAttributes = TEXT_ATTRIBUTES[character.type] || [];
-
-  const allPredefinedAttributes = [...Object.keys(dropdownOptions), ...textAttributes];
+  const attributeTemplates = ATTRIBUTE_TEMPLATES[character.type] || [];
 
   const handleAttributeChange = (key: string, value: string) => {
     setEditedCharacter(prev => ({
@@ -123,8 +97,8 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
-        <DialogHeader>
+      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b">
           <DialogTitle className="flex items-center gap-3">
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(character.type)}`}>
               {character.type.charAt(0).toUpperCase() + character.type.slice(1)}
@@ -133,8 +107,8 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
           </DialogTitle>
         </DialogHeader>
         
-        <ScrollArea className="flex-1 pr-4">
-          <div className="space-y-6">
+        <ScrollArea className="flex-1 px-6">
+          <div className="space-y-6 py-4">
             {/* Description */}
             {character.description && (
               <div>
@@ -145,47 +119,19 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
               </div>
             )}
 
-            {/* Dropdown Attributes */}
-            {Object.keys(dropdownOptions).length > 0 && (
+            {/* All Attributes as Text Inputs */}
+            {attributeTemplates.length > 0 && (
               <div>
-                <h4 className="font-semibold text-gray-900 mb-4">Select Attributes</h4>
+                <h4 className="font-semibold text-gray-900 mb-4">Character Attributes</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {Object.entries(dropdownOptions).map(([key, options]) => (
-                    <div key={key} className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">{key}</label>
-                      <Select
-                        value={editedCharacter.attributes[key] || ''}
-                        onValueChange={(value) => handleAttributeChange(key, value)}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder={`Select ${key.toLowerCase()}`} />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {options.map((option) => (
-                            <SelectItem key={option} value={option}>
-                              {option}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Free Text Attributes */}
-            {textAttributes.length > 0 && (
-              <div>
-                <h4 className="font-semibold text-gray-900 mb-4">Describe Attributes</h4>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {textAttributes.map((key) => (
+                  {attributeTemplates.map((key) => (
                     <div key={key} className="space-y-2">
                       <label className="text-sm font-medium text-gray-700">{key}</label>
                       <Input
                         value={editedCharacter.attributes[key] || ''}
                         onChange={(e) => handleAttributeChange(key, e.target.value)}
                         placeholder={`Enter ${key.toLowerCase()}`}
+                        className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
                       />
                     </div>
                   ))}
@@ -201,17 +147,17 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
               
               {/* Existing Custom Attributes */}
               {Object.entries(editedCharacter.attributes)
-                .filter(([key]) => !allPredefinedAttributes.includes(key))
+                .filter(([key]) => !attributeTemplates.includes(key))
                 .map(([key, value]) => (
                   <div key={key} className="flex items-center gap-2 mb-2">
-                    <Badge variant="outline" className="flex items-center gap-2">
+                    <Badge variant="outline" className="flex items-center gap-2 px-3 py-1">
                       <span className="font-medium">{key}:</span>
                       <span>{String(value)}</span>
                       <Button
                         size="sm"
                         variant="ghost"
                         onClick={() => removeAttribute(key)}
-                        className="h-4 w-4 p-0 text-red-500 hover:text-red-700"
+                        className="h-4 w-4 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
                       >
                         <X className="w-3 h-3" />
                       </Button>
@@ -225,19 +171,20 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
                   placeholder="Attribute name"
                   value={customAttributeKey}
                   onChange={(e) => setCustomAttributeKey(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
                 />
                 <Input
                   placeholder="Attribute value"
                   value={customAttributeValue}
                   onChange={(e) => setCustomAttributeValue(e.target.value)}
-                  className="flex-1"
+                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
                 />
                 <Button
                   onClick={addCustomAttribute}
                   size="sm"
                   variant="outline"
                   disabled={!customAttributeKey.trim() || !customAttributeValue.trim()}
+                  className="px-3"
                 >
                   <Plus className="w-4 h-4" />
                 </Button>
@@ -246,7 +193,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end gap-2 pt-4 border-t">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>

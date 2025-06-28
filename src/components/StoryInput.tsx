@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
@@ -217,7 +216,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   const hasImages = imageVersions.length > 0;
 
   return (
-    <Layout showSidebar={true} currentView="create">
+    <Layout showSidebar={true} currentView="create" onBack={onBack}>
       <div className="flex min-h-screen">
         {/* Character Sidebar */}
         <CharacterSidebar 
@@ -228,17 +227,9 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
         {/* Main Content */}
         <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
-          {/* Header with Back Button and Save */}
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              onClick={onBack}
-              className="text-gray-600 hover:text-sky-500"
-            >
-              Back to Dashboard
-            </Button>
-            
-            {hasImages && (
+          {/* Save Button - Top Right */}
+          {hasImages && (
+            <div className="flex justify-end">
               <Button
                 onClick={() => setShowSaveDialog(true)}
                 className="bg-green-600 hover:bg-green-700 text-white"
@@ -246,8 +237,8 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                 <Save className="w-4 h-4 mr-2" />
                 Save Project
               </Button>
-            )}
-          </div>
+            </div>
+          )}
 
           {/* Persistent Error Message */}
           {imageGenerationError && (

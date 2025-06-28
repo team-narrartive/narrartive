@@ -2,17 +2,20 @@
 import React, { useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { Header } from './Header';
+import { Button } from '@/components/ui/button';
 
 interface LayoutProps {
   children: React.ReactNode;
   showSidebar?: boolean;
   currentView?: string;
+  onBack?: () => void;
 }
 
 export const Layout: React.FC<LayoutProps> = ({ 
   children, 
   showSidebar = false, 
-  currentView = 'dashboard'
+  currentView = 'dashboard',
+  onBack
 }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -39,6 +42,7 @@ export const Layout: React.FC<LayoutProps> = ({
           showSidebar={showSidebar}
           onSettings={handleSettings}
           onLogout={handleLogout}
+          onBack={onBack}
         />
         <main className="p-6">
           {children}
