@@ -22,7 +22,7 @@ interface CharacterAttributesPopupProps {
   onSave: (updatedCharacter: Character) => void;
 }
 
-const HUMAN_ATTRIBUTES = {
+const HUMAN_ATTRIBUTES: Record<string, string[]> = {
   'Hair Color': ['Black', 'Brown', 'Blonde', 'Red', 'Gray', 'White', 'Auburn', 'Strawberry Blonde'],
   'Eye Color': ['Brown', 'Blue', 'Green', 'Hazel', 'Gray', 'Amber', 'Violet'],
   'Skin Tone': ['Fair', 'Light', 'Medium', 'Olive', 'Tan', 'Dark', 'Deep'],
@@ -38,7 +38,7 @@ const HUMAN_ATTRIBUTES = {
   'Accessories': ['Glasses', 'Sunglasses', 'Hat', 'Watch', 'Jewelry', 'Scarf', 'Bag', 'None']
 };
 
-const ANIMAL_ATTRIBUTES = {
+const ANIMAL_ATTRIBUTES: Record<string, string[]> = {
   'Animal Type': ['Dog', 'Cat', 'Horse', 'Bird', 'Rabbit', 'Fox', 'Wolf', 'Bear', 'Lion', 'Tiger', 'Other'],
   'Breed': ['Mixed', 'Purebred', 'Unknown'],
   'Fur/Feather Color': ['Black', 'Brown', 'White', 'Gray', 'Golden', 'Red', 'Spotted', 'Striped', 'Multi-colored'],
@@ -49,7 +49,7 @@ const ANIMAL_ATTRIBUTES = {
   'Mood/Expression': ['Happy', 'Playful', 'Calm', 'Alert', 'Sleepy', 'Serious', 'Mischievous', 'Gentle']
 };
 
-const CREATURE_ATTRIBUTES = {
+const CREATURE_ATTRIBUTES: Record<string, string[]> = {
   'Creature Type': ['Dragon', 'Fairy', 'Goblin', 'Elf', 'Dwarf', 'Giant', 'Spirit', 'Monster', 'Mythical Beast'],
   'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge', 'Colossal'],
   'Color Scheme': ['Natural', 'Magical', 'Dark', 'Bright', 'Ethereal', 'Metallic'],
@@ -58,7 +58,7 @@ const CREATURE_ATTRIBUTES = {
   'Temperament': ['Friendly', 'Hostile', 'Neutral', 'Protective', 'Mischievous', 'Wise', 'Fierce']
 };
 
-const OBJECT_ATTRIBUTES = {
+const OBJECT_ATTRIBUTES: Record<string, string[]> = {
   'Object Type': ['Weapon', 'Tool', 'Jewelry', 'Furniture', 'Vehicle', 'Clothing', 'Book', 'Container'],
   'Material': ['Wood', 'Metal', 'Stone', 'Fabric', 'Glass', 'Plastic', 'Leather', 'Crystal', 'Magical'],
   'Size': ['Tiny', 'Small', 'Medium', 'Large', 'Huge'],
@@ -77,7 +77,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
   const [customAttributeKey, setCustomAttributeKey] = useState('');
   const [customAttributeValue, setCustomAttributeValue] = useState('');
 
-  const getAttributeOptions = () => {
+  const getAttributeOptions = (): Record<string, string[]> => {
     switch (character.type) {
       case 'human':
         return HUMAN_ATTRIBUTES;
