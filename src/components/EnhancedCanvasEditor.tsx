@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,7 @@ interface CanvasElement {
   rotation?: number;
   fontSize?: number;
   fontColor?: string;
-  elementType?: 'paragraph' | 'sentence' | 'custom';
+  elementType?: 'paragraph' | 'sentence' | 'custom' | 'heading';
 }
 
 interface ImageVersion {
@@ -56,64 +57,136 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showImageLibrary, setShowImageLibrary] = useState(true);
   const [showStoryElements, setShowStoryElements] = useState(true);
-  const [showPropertiesPanel, setShowPropertiesPanel] = useState(true);
+  const [showPropertiesPanel, setShowPropertiesPanel] = useState(false);
   const [newTextContent, setNewTextContent] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeHandle, setResizeHandle] = useState<string>('');
   const canvasRef = useRef<HTMLDivElement>(null);
 
-  // Initialize with story text at the top
-  React.useEffect(() => {
-    const initialElements: CanvasElement[] = [
-      {
-        id: 'story-text',
+  // Parse story into structured content with headings
+  const parseStoryContent = (storyText: string) => {
+    const lines = storyText.split('\n').filter(line => line.trim());
+    const elements: CanvasElement[] = [];
+    let yOffset = 50;
+
+    lines.forEach((line, index) => {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) return;
+
+      // Detect headings (lines that end with : or are all caps or start with numbers)
+      const isHeading = trimmedLine.endsWith(':') || 
+                       trimmedLine === trimmedLine.toUpperCase() || 
+                       /^\d+\./.test(trimmedLine) ||
+                       trimmedLine.length < 50 && index === 0;
+
+      const element: CanvasElement = {
+        id: `story-${isHeading ? 'heading' : 'paragraph'}-${index}`,
         type: 'text',
-        content: story,
+        content: trimmedLine,
         x: 50,
-        y: 50,
-        width: 700,
-        height: 120,
-        fontSize: 18,
-        fontColor: '#1f2937'
-      }
-    ];
+        y: yOffset,
+        width: isHeading ? 600 : 500,
+        height: isHeading ? 40 : 80,
+        fontSize: isHeading ? 24 : 16,
+        fontColor: isHeading ? '#1f2937' : '#374151',
+        elementType: isHeading ? 'heading' : 'paragraph'
+      };
+
+      elements.push(element);
+      yOffset += element.height + 20;
+    });
+
+    return elements;
+  };
+
+  // Initialize with parsed story content
+  React.useEffect(() => {
+    const initialElements = parseStoryContent(story);
     setElements(initialElements);
   }, [story]);
 
-  const handleElementClick = (elementId: string) => {
+  const handleElementClick = (elementId: string, e: React.MouseEvent) => {
+    e.stopPropagation();
     setSelectedElement(elementId);
     setShowPropertiesPanel(true);
+  };
+
+  const handleCanvasClick = () => {
+    setSelectedElement(null);
+    setShowPropertiesPanel(false);
   };
 
   const handleMouseDown = (e: React.MouseEvent, elementId: string) => {
     const element = elements.find(el => el.id === elementId);
     if (!element) return;
 
+    // Check if clicking on resize handle
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('resize-handle')) {
+      setIsResizing(true);
+      setResizeHandle(target.dataset.handle || '');
+      setSelectedElement(elementId);
+      return;
+    }
+
     const rect = e.currentTarget.getBoundingClientRect();
     const offsetX = e.clientX - rect.left;
     const offsetY = e.clientY - rect.top;
     
     setDraggedElement(elementId);
+    setSelectedElement(elementId);
     setDragOffset({ x: offsetX, y: offsetY });
     e.preventDefault();
+    e.stopPropagation();
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
-    if (!draggedElement || !canvasRef.current) return;
+    if (!canvasRef.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = (e.clientX - rect.left - dragOffset.x) / zoomLevel;
-    const y = (e.clientY - rect.top - dragOffset.y) / zoomLevel;
     
-    setElements(prev => prev.map(el => 
-      el.id === draggedElement 
-        ? { ...el, x: Math.max(0, x), y: Math.max(0, y) }
-        : el
-    ));
+    if (isResizing && selectedElement) {
+      // Handle resizing
+      const element = elements.find(el => el.id === selectedElement);
+      if (!element) return;
+
+      const x = (e.clientX - rect.left) / zoomLevel;
+      const y = (e.clientY - rect.top) / zoomLevel;
+
+      let newWidth = element.width;
+      let newHeight = element.height;
+
+      if (resizeHandle.includes('right')) {
+        newWidth = Math.max(50, x - element.x);
+      }
+      if (resizeHandle.includes('bottom')) {
+        newHeight = Math.max(30, y - element.y);
+      }
+
+      setElements(prev => prev.map(el => 
+        el.id === selectedElement 
+          ? { ...el, width: newWidth, height: newHeight }
+          : el
+      ));
+    } else if (draggedElement) {
+      // Handle dragging
+      const x = (e.clientX - rect.left - dragOffset.x) / zoomLevel;
+      const y = (e.clientY - rect.top - dragOffset.y) / zoomLevel;
+      
+      setElements(prev => prev.map(el => 
+        el.id === draggedElement 
+          ? { ...el, x: Math.max(0, x), y: Math.max(0, y) }
+          : el
+      ));
+    }
   };
 
   const handleMouseUp = () => {
     setDraggedElement(null);
     setDragOffset({ x: 0, y: 0 });
+    setIsResizing(false);
+    setResizeHandle('');
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -137,9 +210,9 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
         x: Math.max(0, x),
         y: Math.max(0, y),
         width: elementType === 'paragraph' ? 400 : 300,
-        height: elementType === 'paragraph' ? 120 : 80,
+        height: elementType === 'paragraph' ? 100 : 60,
         fontSize: elementType === 'paragraph' ? 14 : 16,
-        fontColor: '#1f2937',
+        fontColor: '#374151',
         elementType: elementType as 'paragraph' | 'sentence'
       };
       setElements(prev => [...prev, newElement]);
@@ -167,7 +240,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   };
 
   const handleStoryElementDragStart = (content: string, type: 'paragraph' | 'sentence') => {
-    // This is called when drag starts from the story elements sidebar
     console.log('Story element drag started:', type, content.substring(0, 50));
   };
 
@@ -183,7 +255,8 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
       width: 300,
       height: 60,
       fontSize: 16,
-      fontColor: '#1f2937'
+      fontColor: '#374151',
+      elementType: 'custom'
     };
 
     setElements(prev => [...prev, newElement]);
@@ -194,6 +267,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     setElements(prev => prev.filter(el => el.id !== elementId));
     if (selectedElement === elementId) {
       setSelectedElement(null);
+      setShowPropertiesPanel(false);
     }
   };
 
@@ -213,31 +287,28 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     if (!canvasRef.current) return;
     
     try {
-      // Temporarily reset zoom for capture
-      const originalZoom = zoomLevel;
-      setZoomLevel(1);
+      console.log('Starting PDF export...');
       
-      // Wait a bit for the zoom to apply
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      // Create a temporary container with higher resolution
-      const tempCanvas = document.createElement('div');
-      tempCanvas.style.width = '1000px';
-      tempCanvas.style.height = '700px';
-      tempCanvas.style.backgroundColor = backgroundColor;
-      tempCanvas.style.position = 'absolute';
-      tempCanvas.style.left = '-9999px';
-      tempCanvas.style.top = '0';
-      document.body.appendChild(tempCanvas);
+      // Create a high-quality version of the canvas for export
+      const exportCanvas = document.createElement('div');
+      exportCanvas.style.width = '1000px';
+      exportCanvas.style.height = '700px';
+      exportCanvas.style.backgroundColor = backgroundColor;
+      exportCanvas.style.position = 'absolute';
+      exportCanvas.style.left = '-10000px';
+      exportCanvas.style.top = '0';
+      exportCanvas.style.fontFamily = 'system-ui, -apple-system, sans-serif';
+      document.body.appendChild(exportCanvas);
 
-      // Clone all elements with higher quality
-      elements.forEach(element => {
+      // Add all elements to the export canvas
+      for (const element of elements) {
         const elementDiv = document.createElement('div');
         elementDiv.style.position = 'absolute';
         elementDiv.style.left = `${element.x}px`;
         elementDiv.style.top = `${element.y}px`;
         elementDiv.style.width = `${element.width}px`;
         elementDiv.style.height = `${element.height}px`;
+        elementDiv.style.overflow = 'hidden';
 
         if (element.type === 'image') {
           const img = document.createElement('img');
@@ -245,25 +316,31 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
           img.style.width = '100%';
           img.style.height = '100%';
           img.style.objectFit = 'cover';
-          img.style.borderRadius = '4px';
+          img.style.borderRadius = '8px';
+          img.style.border = '1px solid #e5e7eb';
           elementDiv.appendChild(img);
         } else {
-          elementDiv.style.padding = '12px';
-          elementDiv.style.backgroundColor = 'rgba(255, 255, 255, 0.95)';
-          elementDiv.style.borderRadius = '6px';
-          elementDiv.style.boxShadow = '0 2px 4px rgba(0, 0, 0, 0.1)';
           elementDiv.style.fontSize = `${element.fontSize || 16}px`;
-          elementDiv.style.color = element.fontColor || '#1f2937';
-          elementDiv.style.lineHeight = '1.5';
-          elementDiv.style.overflow = 'hidden';
+          elementDiv.style.color = element.fontColor || '#374151';
+          elementDiv.style.lineHeight = '1.4';
+          elementDiv.style.padding = '8px';
+          elementDiv.style.wordWrap = 'break-word';
+          elementDiv.style.whiteSpace = 'pre-wrap';
+          
+          // Clean text appearance - no backgrounds for seamless look
+          if (element.elementType === 'heading') {
+            elementDiv.style.fontWeight = 'bold';
+            elementDiv.style.fontSize = `${(element.fontSize || 24)}px`;
+          }
+          
           elementDiv.textContent = element.content;
         }
         
-        tempCanvas.appendChild(elementDiv);
-      });
+        exportCanvas.appendChild(elementDiv);
+      }
 
       // Wait for images to load
-      const images = tempCanvas.querySelectorAll('img');
+      const images = exportCanvas.querySelectorAll('img');
       await Promise.all(Array.from(images).map(img => {
         return new Promise((resolve) => {
           if (img.complete) {
@@ -271,24 +348,36 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
           } else {
             img.onload = () => resolve(img);
             img.onerror = () => resolve(img);
+            // Set a timeout to avoid hanging
+            setTimeout(() => resolve(img), 3000);
           }
         });
       }));
 
-      // Capture with higher quality settings
-      const canvas = await html2canvas(tempCanvas, {
+      console.log('Images loaded, capturing canvas...');
+
+      // Capture with high quality
+      const canvas = await html2canvas(exportCanvas, {
         backgroundColor: backgroundColor,
-        scale: 3, // Higher scale for better quality
+        scale: 2,
         useCORS: true,
         allowTaint: true,
-        foreignObjectRendering: true,
         logging: false,
         width: 1000,
-        height: 700
+        height: 700,
+        onclone: (clonedDoc) => {
+          // Ensure styles are applied in the cloned document
+          const clonedCanvas = clonedDoc.querySelector('div');
+          if (clonedCanvas) {
+            clonedCanvas.style.backgroundColor = backgroundColor;
+          }
+        }
       });
 
-      // Clean up temporary element
-      document.body.removeChild(tempCanvas);
+      console.log('Canvas captured, creating PDF...');
+
+      // Clean up
+      document.body.removeChild(exportCanvas);
       
       // Create PDF
       const imgData = canvas.toDataURL('image/png', 1.0);
@@ -300,22 +389,18 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
       
       const pdfWidth = pdf.internal.pageSize.getWidth();
       const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
       
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = (pdfHeight - imgHeight * ratio) / 2;
+      // Add the canvas image to fill the entire PDF page
+      pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
       
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save('storyboard.pdf');
-
-      // Restore original zoom
-      setZoomLevel(originalZoom);
+      // Download the PDF
+      const fileName = `canvas-export-${new Date().getTime()}.pdf`;
+      pdf.save(fileName);
+      
+      console.log('PDF exported successfully:', fileName);
     } catch (error) {
       console.error('Error generating PDF:', error);
-      // Restore zoom even if there's an error
-      setZoomLevel(1);
+      alert('Failed to export PDF. Please try again.');
     }
   };
 
@@ -331,7 +416,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
     <Dialog open={true} onOpenChange={onClose}>
       <DialogContent className="max-w-[100vw] max-h-[100vh] w-full h-full p-0 gap-0">
         {/* Header Bar */}
-        <div className="flex items-center justify-between px-6 py-4 border-b bg-white">
+        <div className="flex items-center justify-between px-6 py-4 border-b bg-white z-50">
           <div className="flex items-center gap-4">
             <DialogTitle className="text-xl font-semibold text-gray-900">Canvas Editor</DialogTitle>
             <Separator orientation="vertical" className="h-6" />
@@ -391,7 +476,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
             
             <Button onClick={exportToPDF} className="bg-blue-600 hover:bg-blue-700">
               <Download className="w-4 h-4 mr-2" />
-              Export PDF
+              Download PDF
             </Button>
             
             <Button variant="ghost" size="sm" onClick={onClose}>
@@ -403,7 +488,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
         {/* Toolbar */}
         <div className="flex items-center justify-between px-6 py-3 border-b bg-gray-50">
           <div className="flex items-center gap-6">
-            {/* Background Colors */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <Palette className="w-4 h-4 text-gray-600" />
@@ -427,12 +511,11 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
 
             <Separator orientation="vertical" className="h-6" />
 
-            {/* Add Text */}
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <Type className="w-4 h-4 text-gray-600" />
                 <Input
-                  placeholder="Add text..."
+                  placeholder="Add custom text..."
                   value={newTextContent}
                   onChange={(e) => setNewTextContent(e.target.value)}
                   className="w-48 h-8"
@@ -476,76 +559,88 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
             <div className="p-8 min-h-full flex items-center justify-center">
               <div
                 ref={canvasRef}
-                className="relative bg-white rounded-lg shadow-lg border"
+                className="relative bg-white rounded-lg shadow-xl border-2 border-gray-200"
                 style={{ 
-                  width: 1000 * zoomLevel,
-                  height: 700 * zoomLevel,
+                  width: Math.max(1000 * zoomLevel, 400),
+                  height: Math.max(700 * zoomLevel, 300),
                   backgroundColor,
-                  transform: `scale(${zoomLevel})`,
-                  transformOrigin: 'center'
                 }}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onDrop={handleDrop}
                 onDragOver={handleDragOver}
+                onClick={handleCanvasClick}
               >
                 {elements.map(element => (
                   <div
                     key={element.id}
-                    className={`absolute cursor-move select-none transition-all ${
+                    className={`absolute cursor-move select-none group transition-all ${
                       selectedElement === element.id 
-                        ? 'ring-2 ring-blue-500 shadow-lg' 
+                        ? 'ring-2 ring-blue-500 shadow-lg z-10' 
                         : 'hover:ring-1 hover:ring-gray-300'
                     }`}
                     style={{
-                      left: element.x,
-                      top: element.y,
-                      width: element.width,
-                      height: element.height,
-                      fontSize: element.fontSize,
-                      color: element.fontColor,
+                      left: element.x * zoomLevel,
+                      top: element.y * zoomLevel,
+                      width: element.width * zoomLevel,
+                      height: element.height * zoomLevel,
+                      transform: `scale(${zoomLevel})`,
+                      transformOrigin: 'top left',
                     }}
-                    onClick={() => handleElementClick(element.id)}
+                    onClick={(e) => handleElementClick(element.id, e)}
                     onMouseDown={(e) => handleMouseDown(e, element.id)}
                   >
                     {element.type === 'image' ? (
                       <img
                         src={element.content}
                         alt="Canvas element"
-                        className="w-full h-full object-cover rounded border pointer-events-none"
+                        className="w-full h-full object-cover rounded-lg border shadow-sm pointer-events-none"
                         draggable={false}
                       />
                     ) : (
                       <div 
-                        className={`w-full h-full p-3 rounded border shadow-sm overflow-hidden ${
-                          element.elementType === 'paragraph' 
-                            ? 'bg-blue-50/90 border-blue-200' 
-                            : element.elementType === 'sentence'
-                            ? 'bg-green-50/90 border-green-200'
-                            : 'bg-white/90'
-                        }`}
+                        className="w-full h-full p-3 overflow-hidden pointer-events-none"
                         style={{ 
                           fontSize: element.fontSize, 
                           color: element.fontColor,
-                          lineHeight: '1.4'
+                          lineHeight: element.elementType === 'heading' ? '1.2' : '1.4',
+                          fontWeight: element.elementType === 'heading' ? 'bold' : 'normal',
+                          wordWrap: 'break-word',
+                          whiteSpace: 'pre-wrap'
                         }}
                       >
                         {element.content}
                       </div>
                     )}
                     
+                    {/* Selection handles */}
                     {selectedElement === element.id && (
-                      <Button
-                        size="sm"
-                        variant="destructive"
-                        className="absolute -top-3 -right-3 w-6 h-6 p-0 rounded-full shadow-lg"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteElement(element.id);
-                        }}
-                      >
-                        <X className="w-3 h-3" />
-                      </Button>
+                      <>
+                        {/* Delete button */}
+                        <Button
+                          size="sm"
+                          variant="destructive"
+                          className="absolute -top-3 -right-3 w-6 h-6 p-0 rounded-full shadow-lg z-20"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            deleteElement(element.id);
+                          }}
+                        >
+                          <X className="w-3 h-3" />
+                        </Button>
+                        
+                        {/* Resize handles */}
+                        <div
+                          className="resize-handle absolute -bottom-2 -right-2 w-4 h-4 bg-blue-500 rounded cursor-se-resize z-20"
+                          data-handle="bottom-right"
+                          onMouseDown={(e) => {
+                            e.stopPropagation();
+                            setIsResizing(true);
+                            setResizeHandle('bottom-right');
+                            setSelectedElement(element.id);
+                          }}
+                        />
+                      </>
                     )}
                   </div>
                 ))}
