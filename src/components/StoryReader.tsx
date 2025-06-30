@@ -31,7 +31,6 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
 }) => {
   const { data: story, isLoading } = useStory(storyId);
   const likeStoryMutation = useLikeStory();
-  const incrementViewsMutation = useIncrementViews();
   const { toast } = useToast();
   const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
   const [showPreviousVersions, setShowPreviousVersions] = useState(false);
@@ -43,13 +42,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const currentVersion = imageVersions.length > 0 ? imageVersions[imageVersions.length - 1] : null;
   const previousVersions = imageVersions.slice(0, -1);
 
-  // Increment view count when story loads (only once)
-  useEffect(() => {
-    if (story && !incrementViewsMutation.isPending) {
-      console.log('StoryReader: Incrementing views for story:', story.id);
-      incrementViewsMutation.mutate(story.id);
-    }
-  }, [story?.id]); // Only depend on story ID to avoid multiple calls
+  // Remove the automatic view increment here since MyProjects already handles it
 
   const handleLike = async () => {
     if (!story || likesLoading || likeStoryMutation.isPending) return;

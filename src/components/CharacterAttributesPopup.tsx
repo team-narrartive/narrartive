@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -97,8 +98,8 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[85vh] flex flex-col p-0">
-        <DialogHeader className="px-6 py-4 border-b">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-0">
+        <DialogHeader className="px-6 py-4 border-b flex-shrink-0">
           <DialogTitle className="flex items-center gap-3">
             <div className={`px-3 py-1 rounded-full text-sm font-medium ${getTypeColor(character.type)}`}>
               {character.type.charAt(0).toUpperCase() + character.type.slice(1)}
@@ -131,7 +132,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
                         value={editedCharacter.attributes[key] || ''}
                         onChange={(e) => handleAttributeChange(key, e.target.value)}
                         placeholder={`Enter ${key.toLowerCase()}`}
-                        className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
+                        className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 mx-1"
                       />
                     </div>
                   ))}
@@ -171,13 +172,13 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
                   placeholder="Attribute name"
                   value={customAttributeKey}
                   onChange={(e) => setCustomAttributeKey(e.target.value)}
-                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
+                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 mx-1"
                 />
                 <Input
                   placeholder="Attribute value"
                   value={customAttributeValue}
                   onChange={(e) => setCustomAttributeValue(e.target.value)}
-                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2"
+                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 mx-1"
                 />
                 <Button
                   onClick={addCustomAttribute}
@@ -193,7 +194,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
           </div>
         </ScrollArea>
 
-        <div className="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50">
+        <div className="flex justify-end gap-2 px-6 py-4 border-t bg-gray-50 flex-shrink-0">
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
