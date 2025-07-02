@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { CharacterSidebar } from './CharacterSidebar';
 import { EnhancedGeneratedImages } from './EnhancedGeneratedImages';
 import { ImageGenerationSettingsComponent } from './ImageGenerationSettings';
+import { SpinningCatLoader } from './SpinningCatLoader';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { FileText, Users, Image, AlertCircle, Save, CheckCircle } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
@@ -216,188 +217,196 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   const hasImages = imageVersions.length > 0;
 
   return (
-    <Layout showSidebar={true} currentView="create" onBack={onBack}>
-      <div className="flex min-h-screen">
-        {/* Character Sidebar */}
-        <CharacterSidebar 
-          characters={characters}
-          loading={isExtractingCharacters}
-          onCharacterUpdate={handleCharacterUpdate}
-        />
+    <>
+      {/* Spinning Cat Loader - Full screen overlay */}
+      <SpinningCatLoader 
+        isVisible={isGeneratingImages} 
+        message="Creating magical images from your story... 🎨✨"
+      />
+      
+      <Layout showSidebar={true} currentView="create" onBack={onBack}>
+        <div className="flex min-h-screen">
+          {/* Character Sidebar */}
+          <CharacterSidebar 
+            characters={characters}
+            loading={isExtractingCharacters}
+            onCharacterUpdate={handleCharacterUpdate}
+          />
 
-        {/* Main Content */}
-        <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
-          {/* Save Button - Top Right */}
-          {hasImages && (
-            <div className="flex justify-end">
-              <Button
-                onClick={() => setShowSaveDialog(true)}
-                className="bg-green-600 hover:bg-green-700 text-white"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Project
-              </Button>
-            </div>
-          )}
-
-          {/* Persistent Error Message */}
-          {imageGenerationError && (
-            <Card className="p-4 bg-red-50 border-red-200">
-              <div className="flex items-start space-x-3">
-                <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
-                <div>
-                  <h3 className="font-semibold text-red-800 mb-1">Image generation failed</h3>
-                  <p className="text-red-700 text-sm">{imageGenerationError}</p>
-                  <p className="text-red-600 text-xs mt-2">This error will persist until you try generating images again.</p>
-                </div>
-              </div>
-            </Card>
-          )}
-
-          {/* Image Generation Settings - Show after widgets are generated */}
-          {hasGeneratedWidgets && (
-            <>
-              <ImageGenerationSettingsComponent
-                settings={imageSettings}
-                onSettingsChange={setImageSettings}
-              />
-              
-              {/* Generate Images Button - Prominently placed */}
-              <div className="flex justify-center">
+          {/* Main Content */}
+          <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
+            {/* Save Button - Top Right */}
+            {hasImages && (
+              <div className="flex justify-end">
                 <Button
-                  onClick={handleGenerateImages}
-                  disabled={!story.trim() || isGeneratingImages}
-                  size="lg"
-                  className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={() => setShowSaveDialog(true)}
+                  className="bg-green-600 hover:bg-green-700 text-white"
                 >
-                  {isGeneratingImages ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                      Generating Images...
-                    </>
-                  ) : (
-                    <>
-                      <Image className="w-5 h-5 mr-3" />
-                      Generate Images
-                    </>
-                  )}
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Project
                 </Button>
               </div>
-            </>
-          )}
+            )}
 
-          {/* Story Input */}
-          <div className={`grid ${shouldShowRightSidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
-            <div className={shouldShowRightSidebar ? 'lg:col-span-2' : ''}>
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-white" />
-                  </div>
+            {/* Persistent Error Message */}
+            {imageGenerationError && (
+              <Card className="p-4 bg-red-50 border-red-200">
+                <div className="flex items-start space-x-3">
+                  <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
-                    <p className="text-sm text-gray-600">Paste or write your story below</p>
-                  </div>
-                </div>
-                
-                <textarea
-                  value={story}
-                  onChange={(e) => setStory(e.target.value)}
-                  placeholder="Input Story Here..."
-                  className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
-                />
-                
-                <div className="mt-6 space-y-4">
-                  <div className="text-sm text-gray-500 text-center">
-                    {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
-                  </div>
-                  
-                  <div className="flex flex-wrap items-center justify-center gap-4">
-                    <Button
-                      variant="outline"
-                      onClick={() => setStory(exampleStory)}
-                      className="text-sky-500 border-sky-200 hover:bg-sky-50 px-6 h-11"
-                    >
-                      Try Example
-                    </Button>
-                    
-                    {!hasGeneratedWidgets && (
-                      <Button
-                        onClick={handleExtractCharacters}
-                        disabled={!story.trim() || isExtractingCharacters}
-                        className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        {isExtractingCharacters ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Extracting...
-                          </>
-                        ) : (
-                          <>
-                            <Users className="w-4 h-4 mr-2" />
-                            Generate Widgets
-                          </>
-                        )}
-                      </Button>
-                    )}
+                    <h3 className="font-semibold text-red-800 mb-1">Image generation failed</h3>
+                    <p className="text-red-700 text-sm">{imageGenerationError}</p>
+                    <p className="text-red-600 text-xs mt-2">This error will persist until you try generating images again.</p>
                   </div>
                 </div>
               </Card>
-            </div>
+            )}
 
-            {/* Tips Sidebar - Only show when images haven't been generated */}
-            {shouldShowRightSidebar && (
-              <div className="space-y-6">
-                <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                  <h3 className="text-lg font-semibold text-gray-900 mb-4">✨ Tips for Better Results</h3>
-                  <ul className="space-y-3 text-sm text-gray-600">
-                    <li className="flex items-start space-x-2">
-                      <span className="text-sky-500">•</span>
-                      <span>Include character descriptions in your story</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <span className="text-sky-500">•</span>
-                      <span>Mention physical attributes, clothing, and personality traits</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <span className="text-sky-500">•</span>
-                      <span>Use character names consistently throughout</span>
-                    </li>
-                    <li className="flex items-start space-x-2">
-                      <span className="text-sky-500">•</span>
-                      <span>Include animals, creatures, or objects you want visualized</span>
-                    </li>
-                  </ul>
-                </Card>
-
-                <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                  <div className="text-center">
-                    <Users className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2">Character Widgets</h3>
-                    <p className="text-sm text-gray-600 mb-4">
-                      Click "Generate Widgets" to automatically extract characters from your story and create customizable attribute forms.
-                    </p>
-                    {characters.length > 0 && (
-                      <div className="text-sm text-emerald-600 font-medium">
-                        {characters.length} characters detected!
-                      </div>
+            {/* Image Generation Settings - Show after widgets are generated */}
+            {hasGeneratedWidgets && (
+              <>
+                <ImageGenerationSettingsComponent
+                  settings={imageSettings}
+                  onSettingsChange={setImageSettings}
+                />
+                
+                {/* Generate Images Button - Prominently placed */}
+                <div className="flex justify-center">
+                  <Button
+                    onClick={handleGenerateImages}
+                    disabled={!story.trim() || isGeneratingImages}
+                    size="lg"
+                    className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    {isGeneratingImages ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                        Generating Images...
+                      </>
+                    ) : (
+                      <>
+                        <Image className="w-5 h-5 mr-3" />
+                        Generate Images
+                      </>
                     )}
+                  </Button>
+                </div>
+              </>
+            )}
+
+            {/* Story Input */}
+            <div className={`grid ${shouldShowRightSidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
+              <div className={shouldShowRightSidebar ? 'lg:col-span-2' : ''}>
+                <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
+                      <p className="text-sm text-gray-600">Paste or write your story below</p>
+                    </div>
+                  </div>
+                  
+                  <textarea
+                    value={story}
+                    onChange={(e) => setStory(e.target.value)}
+                    placeholder="Input Story Here..."
+                    className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
+                  />
+                  
+                  <div className="mt-6 space-y-4">
+                    <div className="text-sm text-gray-500 text-center">
+                      {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
+                    </div>
+                    
+                    <div className="flex flex-wrap items-center justify-center gap-4">
+                      <Button
+                        variant="outline"
+                        onClick={() => setStory(exampleStory)}
+                        className="text-sky-500 border-sky-200 hover:bg-sky-50 px-6 h-11"
+                      >
+                        Try Example
+                      </Button>
+                      
+                      {!hasGeneratedWidgets && (
+                        <Button
+                          onClick={handleExtractCharacters}
+                          disabled={!story.trim() || isExtractingCharacters}
+                          className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                        >
+                          {isExtractingCharacters ? (
+                            <>
+                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                              Extracting...
+                            </>
+                          ) : (
+                            <>
+                              <Users className="w-4 h-4 mr-2" />
+                              Generate Widgets
+                            </>
+                          )}
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </Card>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Enhanced Generated Images Sidebar */}
-        {(imageVersions.length > 0 || isGeneratingImages) && (
-          <EnhancedGeneratedImages 
-            imageVersions={imageVersions}
-            loading={isGeneratingImages}
-            story={story}
-          />
-        )}
-      </div>
+              {/* Tips Sidebar - Only show when images haven't been generated */}
+              {shouldShowRightSidebar && (
+                <div className="space-y-6">
+                  <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+                    <h3 className="text-lg font-semibold text-gray-900 mb-4">✨ Tips for Better Results</h3>
+                    <ul className="space-y-3 text-sm text-gray-600">
+                      <li className="flex items-start space-x-2">
+                        <span className="text-sky-500">•</span>
+                        <span>Include character descriptions in your story</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="text-sky-500">•</span>
+                        <span>Mention physical attributes, clothing, and personality traits</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="text-sky-500">•</span>
+                        <span>Use character names consistently throughout</span>
+                      </li>
+                      <li className="flex items-start space-x-2">
+                        <span className="text-sky-500">•</span>
+                        <span>Include animals, creatures, or objects you want visualized</span>
+                      </li>
+                    </ul>
+                  </Card>
+
+                  <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+                    <div className="text-center">
+                      <Users className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Character Widgets</h3>
+                      <p className="text-sm text-gray-600 mb-4">
+                        Click "Generate Widgets" to automatically extract characters from your story and create customizable attribute forms.
+                      </p>
+                      {characters.length > 0 && (
+                        <div className="text-sm text-emerald-600 font-medium">
+                          {characters.length} characters detected!
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Enhanced Generated Images Sidebar */}
+          {(imageVersions.length > 0 || isGeneratingImages) && (
+            <EnhancedGeneratedImages 
+              imageVersions={imageVersions}
+              loading={isGeneratingImages}
+              story={story}
+            />
+          )}
+        </div>
+      </Layout>
 
       {/* Save Story Dialog */}
       <Dialog open={showSaveDialog} onOpenChange={setShowSaveDialog}>
@@ -447,6 +456,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
           </div>
         </DialogContent>
       </Dialog>
-    </Layout>
+    </>
   );
 };

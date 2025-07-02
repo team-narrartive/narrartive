@@ -4,7 +4,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { Image, Loader2, ChevronDown, ChevronRight, Palette } from 'lucide-react';
+import { Image, ChevronDown, ChevronRight, Palette } from 'lucide-react';
 import { EnhancedCanvasEditor } from './EnhancedCanvasEditor';
 
 interface ImageVersion {
@@ -47,9 +47,17 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
       <div className="w-80 bg-white/60 backdrop-blur-sm border-l border-white/30 p-4 h-screen flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-sky-500" />
+            {/* Mini spinning cat for sidebar */}
+            <div className="w-16 h-16 mx-auto mb-4 relative">
+              <div className="absolute inset-0 animate-spin text-3xl flex items-center justify-center">
+                🐱
+              </div>
+              <div className="absolute inset-0 animate-spin text-xl flex items-center justify-center opacity-50" style={{ animationDirection: 'reverse', animationDuration: '2s' }}>
+                ✨
+              </div>
+            </div>
             <h3 className="font-semibold text-gray-700 mb-2">Generating Images</h3>
-            <p className="text-sm text-gray-600">Creating AI-generated images from your story...</p>
+            <p className="text-sm text-gray-600">The magic is happening...</p>
           </div>
         </div>
       </div>
