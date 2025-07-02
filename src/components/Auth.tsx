@@ -1,11 +1,10 @@
+
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { Sparkles, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
-import { PasswordStrengthMeter } from '@/components/PasswordStrengthMeter';
-import { validatePassword, validateInput, sanitizeInput, VALIDATION_RULES } from '@/utils/validation';
 
 interface AuthProps {
   onSuccess: () => void;
@@ -18,7 +17,6 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
   const [isResetMode, setIsResetMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -28,79 +26,21 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
 
   const { signUp, signIn, resetPassword } = useAuth();
 
-  const validateForm = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    // Validate email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      errors.email = 'Please enter a valid email address';
-    }
-
-    if (!isResetMode) {
-      // Validate password
-      if (!isLogin) {
-        const passwordValidation = validatePassword(formData.password);
-        if (!passwordValidation.isValid) {
-          errors.password = passwordValidation.errors[0];
-        }
-      } else if (formData.password.length < 6) {
-        errors.password = 'Password must be at least 6 characters long';
-      }
-
-      // Validate names for sign up
-      if (!isLogin) {
-        const firstNameValidation = validateInput(
-          formData.firstName,
-          VALIDATION_RULES.user.firstName,
-          'First name'
-        );
-        if (!firstNameValidation.isValid) {
-          errors.firstName = firstNameValidation.error!;
-        }
-
-        const lastNameValidation = validateInput(
-          formData.lastName,
-          VALIDATION_RULES.user.lastName,
-          'Last name'
-        );
-        if (!lastNameValidation.isValid) {
-          errors.lastName = lastNameValidation.error!;
-        }
-      }
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) {
-      return;
-    }
-
     setLoading(true);
     setMessage('');
 
     try {
-      const sanitizedData = {
-        firstName: sanitizeInput(formData.firstName),
-        lastName: sanitizeInput(formData.lastName),
-        email: formData.email.trim().toLowerCase(),
-        password: formData.password
-      };
-
       if (isResetMode) {
-        const { error } = await resetPassword(sanitizedData.email);
+        const { error } = await resetPassword(formData.email);
         if (error) {
           setMessage(error.message);
         } else {
           setMessage('Password reset email sent! Check your inbox.');
         }
       } else if (isLogin) {
-        const { error } = await signIn(sanitizedData.email, sanitizedData.password);
+        const { error } = await signIn(formData.email, formData.password);
         if (error) {
           console.log('Sign in error:', error);
           setMessage(error.message);
@@ -110,10 +50,10 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
         }
       } else {
         const { error } = await signUp(
-          sanitizedData.email, 
-          sanitizedData.password, 
-          sanitizedData.firstName, 
-          sanitizedData.lastName
+          formData.email, 
+          formData.password, 
+          formData.firstName, 
+          formData.lastName
         );
         if (error) {
           console.log('Sign up error:', error);
@@ -124,26 +64,17 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
       }
     } catch (err: any) {
       console.error('Auth error:', err);
-      setMessage('An unexpected error occurred. Please try again.');
+      setMessage(err.message || 'An unexpected error occurred');
     } finally {
       setLoading(false);
     }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [e.target.name]: e.target.value
     });
-    
-    // Clear validation error when user starts typing
-    if (validationErrors[name]) {
-      setValidationErrors(prev => ({
-        ...prev,
-        [name]: ''
-      }));
-    }
   };
 
   const resetForm = () => {
@@ -154,7 +85,6 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
       password: ''
     });
     setMessage('');
-    setValidationErrors({});
   };
 
   const switchToLogin = () => {
@@ -254,9 +184,6 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       required
                       disabled={loading}
                     />
-                    {validationErrors.firstName && (
-                      <p className="text-red-600 text-xs mt-1">{validationErrors.firstName}</p>
-                    )}
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -271,9 +198,6 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       required
                       disabled={loading}
                     />
-                    {validationErrors.lastName && (
-                      <p className="text-red-600 text-xs mt-1">{validationErrors.lastName}</p>
-                    )}
                   </div>
                 </div>
               )}
@@ -291,9 +215,6 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   required
                   disabled={loading}
                 />
-                {validationErrors.email && (
-                  <p className="text-red-600 text-xs mt-1">{validationErrors.email}</p>
-                )}
               </div>
 
               {!isResetMode && (
@@ -310,7 +231,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       className="bg-white/80 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 pr-12"
                       required
                       disabled={loading}
-                      minLength={isLogin ? 6 : 8}
+                      minLength={6}
                     />
                     <Button
                       type="button"
@@ -323,12 +244,6 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </Button>
                   </div>
-                  {validationErrors.password && (
-                    <p className="text-red-600 text-xs mt-1">{validationErrors.password}</p>
-                  )}
-                  {!isLogin && formData.password && (
-                    <PasswordStrengthMeter password={formData.password} />
-                  )}
                 </div>
               )}
 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
@@ -12,9 +11,6 @@ import { FileText, Users, Image, AlertCircle, Save, CheckCircle } from 'lucide-r
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useStorySaving } from '@/hooks/useStorySaving';
-import { useRateLimit } from '@/hooks/useRateLimit';
-import { validateInput, sanitizeInput, sanitizeHtml, VALIDATION_RULES } from '@/utils/validation';
-import { handleError } from '@/utils/errorHandler';
 
 interface Character {
   name: string;
@@ -53,7 +49,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [storyTitle, setStoryTitle] = useState('');
   const [storyDescription, setStoryDescription] = useState('');
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [imageSettings, setImageSettings] = useState<ImageGenerationSettings>({
     numImages: 3,
     quality: 'medium',
@@ -63,60 +58,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   
   const { toast } = useToast();
   const { saveStory, isSaving } = useStorySaving();
-
-  // Rate limiting hooks
-  const { checkRateLimit: checkCharacterExtractionLimit } = useRateLimit({
-    maxRequests: 5,
-    windowMs: 60000, // 1 minute
-    message: "Please wait before extracting characters again."
-  });
-
-  const { checkRateLimit: checkImageGenerationLimit } = useRateLimit({
-    maxRequests: 3,
-    windowMs: 300000, // 5 minutes
-    message: "Please wait before generating more images. This helps us manage costs."
-  });
-
-  const validateStoryInput = (storyContent: string): boolean => {
-    const validation = validateInput(
-      storyContent,
-      VALIDATION_RULES.story.content,
-      'Story content'
-    );
-
-    if (!validation.isValid) {
-      setValidationErrors(prev => ({ ...prev, story: validation.error! }));
-      return false;
-    }
-
-    setValidationErrors(prev => ({ ...prev, story: '' }));
-    return true;
-  };
-
-  const validateSaveDialog = (): boolean => {
-    const errors: Record<string, string> = {};
-
-    const titleValidation = validateInput(
-      storyTitle,
-      VALIDATION_RULES.story.title,
-      'Story title'
-    );
-    if (!titleValidation.isValid) {
-      errors.title = titleValidation.error!;
-    }
-
-    const descriptionValidation = validateInput(
-      storyDescription,
-      VALIDATION_RULES.story.description,
-      'Story description'
-    );
-    if (!descriptionValidation.isValid) {
-      errors.description = descriptionValidation.error!;
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
 
   const handleExtractCharacters = async () => {
     if (!story.trim()) {
@@ -128,22 +69,12 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
-    if (!validateStoryInput(story)) {
-      return;
-    }
-
-    if (!checkCharacterExtractionLimit()) {
-      return;
-    }
-
     console.log('Starting character extraction...');
     setIsExtractingCharacters(true);
     
     try {
-      const sanitizedStory = sanitizeHtml(story.trim());
-      
       const { data, error } = await supabase.functions.invoke('extract-characters', {
-        body: { story: sanitizedStory }
+        body: { story: story.trim() }
       });
 
       console.log('Character extraction response:', { data, error });
@@ -169,10 +100,9 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       });
     } catch (error: any) {
       console.error('Error extracting characters:', error);
-      const errorMessage = handleError(error, 'character extraction');
       toast({
         title: "Character extraction failed",
-        description: errorMessage,
+        description: error.message || "Failed to analyze story for characters.",
         variant: "destructive"
       });
     } finally {
@@ -190,31 +120,16 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
-    if (!validateStoryInput(story)) {
-      return;
-    }
-
-    if (!checkImageGenerationLimit()) {
-      return;
-    }
-
     console.log('Starting image generation with settings:', imageSettings);
     setIsGeneratingImages(true);
     setImageGenerationError(null);
     
     try {
-      const sanitizedStory = sanitizeHtml(story.trim());
-      const sanitizedInstructions = imageSettings.instructions ? 
-        sanitizeInput(imageSettings.instructions) : '';
-
       const { data, error } = await supabase.functions.invoke('generate-images', {
         body: { 
-          story: sanitizedStory,
+          story: story.trim(),
           characters: characters,
-          settings: {
-            ...imageSettings,
-            instructions: sanitizedInstructions
-          }
+          settings: imageSettings
         }
       });
 
@@ -250,7 +165,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       });
     } catch (error: any) {
       console.error('Error generating images:', error);
-      const errorMessage = handleError(error, 'image generation');
+      const errorMessage = error.message || "Failed to generate images from your story.";
       setImageGenerationError(errorMessage);
       toast({
         title: "Image generation failed",
@@ -263,35 +178,25 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   };
 
   const handleCharacterUpdate = (index: number, updatedCharacter: Character) => {
-    // Sanitize character data
-    const sanitizedCharacter: Character = {
-      ...updatedCharacter,
-      name: sanitizeInput(updatedCharacter.name),
-      description: updatedCharacter.description ? sanitizeInput(updatedCharacter.description) : undefined,
-      attributes: Object.entries(updatedCharacter.attributes).reduce((acc, [key, value]) => {
-        acc[sanitizeInput(key)] = sanitizeInput(String(value));
-        return acc;
-      }, {} as Record<string, any>)
-    };
-
     const newCharacters = [...characters];
-    newCharacters[index] = sanitizedCharacter;
+    newCharacters[index] = updatedCharacter;
     setCharacters(newCharacters);
   };
 
   const handleSaveStory = async () => {
-    if (!validateSaveDialog()) {
+    if (!storyTitle.trim() || !storyDescription.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please provide both title and description.",
+        variant: "destructive"
+      });
       return;
     }
 
-    const sanitizedTitle = sanitizeInput(storyTitle);
-    const sanitizedDescription = sanitizeInput(storyDescription);
-    const sanitizedStoryContent = sanitizeHtml(story);
-
     const savedStory = await saveStory({
-      title: sanitizedTitle,
-      description: sanitizedDescription,
-      storyContent: sanitizedStoryContent,
+      title: storyTitle,
+      description: storyDescription,
+      storyContent: story,
       imageVersions,
       isPublic: false
     });
@@ -302,16 +207,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
         title: "Success! 🎉",
         description: "Your story has been saved and is now available in My Projects."
       });
-    }
-  };
-
-  const handleStoryChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const value = e.target.value;
-    setStory(value);
-    
-    // Clear validation error when user starts typing
-    if (validationErrors.story) {
-      setValidationErrors(prev => ({ ...prev, story: '' }));
     }
   };
 
@@ -345,6 +240,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
             </div>
           )}
 
+          {/* Persistent Error Message */}
           {imageGenerationError && (
             <Card className="p-4 bg-red-50 border-red-200">
               <div className="flex items-start space-x-3">
@@ -358,6 +254,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
             </Card>
           )}
 
+          {/* Image Generation Settings - Show after widgets are generated */}
           {hasGeneratedWidgets && (
             <>
               <ImageGenerationSettingsComponent
@@ -365,6 +262,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                 onSettingsChange={setImageSettings}
               />
               
+              {/* Generate Images Button - Prominently placed */}
               <div className="flex justify-center">
                 <Button
                   onClick={handleGenerateImages}
@@ -404,19 +302,14 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                 
                 <textarea
                   value={story}
-                  onChange={handleStoryChange}
+                  onChange={(e) => setStory(e.target.value)}
                   placeholder="Input Story Here..."
                   className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
-                  maxLength={VALIDATION_RULES.story.content.maxLength}
                 />
-                
-                {validationErrors.story && (
-                  <p className="text-red-600 text-sm mt-2">{validationErrors.story}</p>
-                )}
                 
                 <div className="mt-6 space-y-4">
                   <div className="text-sm text-gray-500 text-center">
-                    {story.length}/{VALIDATION_RULES.story.content.maxLength} characters • {story.split(' ').filter(word => word.length > 0).length} words
+                    {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
                   
                   <div className="flex flex-wrap items-center justify-center gap-4">
@@ -517,35 +410,17 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
               <label className="block text-sm font-medium mb-2">Story Title</label>
               <Input
                 value={storyTitle}
-                onChange={(e) => {
-                  setStoryTitle(e.target.value);
-                  if (validationErrors.title) {
-                    setValidationErrors(prev => ({ ...prev, title: '' }));
-                  }
-                }}
+                onChange={(e) => setStoryTitle(e.target.value)}
                 placeholder="Enter a title for your story"
-                maxLength={VALIDATION_RULES.story.title.maxLength}
               />
-              {validationErrors.title && (
-                <p className="text-red-600 text-xs mt-1">{validationErrors.title}</p>
-              )}
             </div>
             <div>
               <label className="block text-sm font-medium mb-2">Description</label>
               <Input
                 value={storyDescription}
-                onChange={(e) => {
-                  setStoryDescription(e.target.value);
-                  if (validationErrors.description) {
-                    setValidationErrors(prev => ({ ...prev, description: '' }));
-                  }
-                }}
+                onChange={(e) => setStoryDescription(e.target.value)}
                 placeholder="Brief description of your story"
-                maxLength={VALIDATION_RULES.story.description.maxLength}
               />
-              {validationErrors.description && (
-                <p className="text-red-600 text-xs mt-1">{validationErrors.description}</p>
-              )}
             </div>
             <div className="flex gap-2 pt-4">
               <Button
