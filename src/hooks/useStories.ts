@@ -1,4 +1,3 @@
-
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
@@ -15,7 +14,21 @@ export const useStories = (status?: 'personal' | 'community') => {
     queryFn: async () => {
       console.log('Fetching stories with status:', status, 'user:', user?.id);
       
-      let query = supabase.from('stories').select('*');
+      let query = supabase.from('stories').select(`
+        id,
+        title,
+        description,
+        story_content,
+        main_image,
+        additional_images,
+        view_count,
+        like_count,
+        is_public,
+        category,
+        created_at,
+        updated_at,
+        user_id
+      `);
       
       if (status === 'personal' && user) {
         query = query.eq('user_id', user.id);
@@ -23,19 +36,24 @@ export const useStories = (status?: 'personal' | 'community') => {
         query = query.eq('is_public', true);
       }
       
-      const { data, error } = await query.order('created_at', { ascending: false });
+      // Add limit to prevent timeout on large datasets
+      query = query.order('created_at', { ascending: false }).limit(50);
       
-      console.log('Stories query result:', { data, error, status });
+      const { data, error } = await query;
+      
+      console.log('Stories query result:', { data, error, status, count: data?.length });
       
       if (error) {
         console.error('Error fetching stories:', error);
-        throw error;
+        throw new Error(`Failed to fetch stories: ${error.message}`);
       }
       return data as Story[];
     },
     enabled: !!user,
     staleTime: 30000, // Keep data fresh for 30 seconds
-    refetchInterval: 60000 // Refetch every minute to keep counts updated
+    gcTime: 300000, // Keep in cache for 5 minutes
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
   });
 };
 
@@ -52,13 +70,14 @@ export const useStory = (id: string) => {
       
       if (error) {
         console.error('Error fetching story:', error);
-        throw error;
+        throw new Error(`Failed to fetch story: ${error.message}`);
       }
       console.log('Single story result:', data);
       return data as Story | null;
     },
     staleTime: 30000,
-    enabled: !!id
+    enabled: !!id,
+    retry: 2,
   });
 };
 

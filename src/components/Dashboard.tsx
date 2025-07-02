@@ -5,7 +5,8 @@ import { useStories } from '@/hooks/useStories';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BookOpen, Users, Heart, Clock } from 'lucide-react';
+import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface DashboardProps {
   onCreateNew: () => void;
@@ -19,8 +20,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewCommunity
 }) => {
   const { user } = useAuth();
-  const { data: userStories } = useStories('personal');
-  const { data: communityStories } = useStories('community');
+  const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
+  const { data: communityStories, isLoading: communityLoading } = useStories('community');
 
   // Calculate real metrics from database
   const totalStories = userStories?.length || 0;
@@ -30,6 +31,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const minutesSpent = totalStories * 45; // Assume 45 minutes per story
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
+
+  // Show error message if there's an issue loading stories
+  const showError = userStoriesError && !userStoriesLoading;
 
   return (
     <Layout showSidebar={true} currentView="dashboard">
@@ -42,6 +46,16 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </p>
       </div>
 
+      {showError && (
+        <Alert className="mb-6 max-w-2xl mx-auto">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            Having trouble loading your data. This might be due to a slow connection or server issue. 
+            Your stories are safe - try refreshing the page or check back in a moment.
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <Card className="bg-white/80 backdrop-blur-sm border-slate-100">
@@ -50,7 +64,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Clock className="h-4 w-4 text-slate-600" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-600">{minutesSpent}</div>
+            <div className="text-2xl font-bold text-slate-600">
+              {userStoriesLoading ? (
+                <div className="w-6 h-6 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                minutesSpent
+              )}
+            </div>
             <p className="text-xs text-gray-500">Creating amazing content</p>
           </CardContent>
         </Card>
@@ -61,7 +81,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <BookOpen className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">{totalStories}</div>
+            <div className="text-2xl font-bold text-primary">
+              {userStoriesLoading ? (
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                totalStories
+              )}
+            </div>
             <p className="text-xs text-gray-500">Your creative works</p>
           </CardContent>
         </Card>
@@ -72,7 +98,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Heart className="h-4 w-4 text-pink-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-pink-500">{totalLikes}</div>
+            <div className="text-2xl font-bold text-pink-500">
+              {userStoriesLoading ? (
+                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                totalLikes
+              )}
+            </div>
             <p className="text-xs text-gray-500">Community appreciation</p>
           </CardContent>
         </Card>
@@ -83,7 +115,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <Users className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-accent">{totalViews}</div>
+            <div className="text-2xl font-bold text-accent">
+              {userStoriesLoading ? (
+                <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                totalViews
+              )}
+            </div>
             <p className="text-xs text-gray-500">Story engagement</p>
           </CardContent>
         </Card>
@@ -118,7 +156,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
-              View All ({totalStories}) →
+              {userStoriesLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Loading...
+                </div>
+              ) : (
+                `View All (${totalStories}) →`
+              )}
             </Button>
           </CardContent>
         </Card>
@@ -135,14 +180,21 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent className="pt-0">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
-              Explore ({communityStories?.length || 0}) →
+              {communityLoading ? (
+                <div className="flex items-center gap-2">
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  Loading...
+                </div>
+              ) : (
+                `Explore (${communityStories?.length || 0}) →`
+              )}
             </Button>
           </CardContent>
         </Card>
       </div>
 
-      {/* Recent Activity */}
-      {userStories && userStories.length > 0 && (
+      {/* Recent Activity - only show if we have stories and they're loaded */}
+      {userStories && userStories.length > 0 && !userStoriesLoading && (
         <div className="mt-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Recent Stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -173,6 +225,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
               </Card>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Show loading state for recent activity */}
+      {userStoriesLoading && (
+        <div className="mt-12 text-center">
+          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading your stories...</p>
         </div>
       )}
     </Layout>
