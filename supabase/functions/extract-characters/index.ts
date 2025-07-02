@@ -17,17 +17,19 @@ interface Character {
 }
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    console.log('Starting extract-characters function...');
+    console.log('Extract-characters function called');
     
+    // Check if OpenAI API key is configured
     if (!openAIApiKey) {
-      console.error('OpenAI API key not configured');
+      console.error('OpenAI API key not found in environment variables');
       return new Response(JSON.stringify({ 
-        error: 'OpenAI API key not configured',
+        error: 'OpenAI API key not configured. Please check your Supabase secrets.',
         characters: [] 
       }), {
         status: 500,
@@ -35,15 +37,26 @@ serve(async (req) => {
       });
     }
 
-    const requestBody = await req.json().catch(err => {
-      console.error('Failed to parse request body:', err);
-      throw new Error('Invalid request body');
-    });
+    // Parse request body
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      console.error('Failed to parse request body:', parseError);
+      return new Response(JSON.stringify({ 
+        error: 'Invalid JSON in request body',
+        characters: [] 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     const { story } = requestBody;
 
-    if (!story || typeof story !== 'string' || !story.trim()) {
-      console.error('No story provided or story is empty');
+    // Validate story input
+    if (!story || typeof story !== 'string' || story.trim().length === 0) {
+      console.error('Invalid or empty story provided');
       return new Response(JSON.stringify({ 
         error: 'Story is required and cannot be empty',
         characters: [] 
@@ -53,32 +66,37 @@ serve(async (req) => {
       });
     }
 
-    console.log('Processing story for character extraction, story length:', story.length);
+    console.log(`Processing story for character extraction (${story.length} characters)`);
 
-    const prompt = `
-    Analyze the following story and extract all main characters (humans, animals, creatures, objects) with their descriptions and attributes.
+    // Create the prompt for character extraction
+    const prompt = `Analyze this story and extract ALL main characters (humans, animals, creatures, objects that play important roles). Return ONLY a valid JSON array with no additional text.
 
-    Story: "${story}"
+Story: "${story.trim()}"
 
-    Please return a JSON array with characters in this format:
-    [
-      {
-        "name": "character name",
-        "type": "human|animal|creature|object",
-        "description": "brief description from the story",
-        "attributes": {
-          "key physical traits or characteristics mentioned in the story"
-        }
-      }
-    ]
+Return format:
+[
+  {
+    "name": "character name",
+    "type": "human|animal|creature|object",
+    "description": "brief description",
+    "attributes": {
+      "appearance": "physical description",
+      "personality": "character traits",
+      "role": "role in story"
+    }
+  }
+]
 
-    Focus on main characters that are actively involved in the story. Include both explicit descriptions and implied characteristics.
-    Return only valid JSON, no additional text or formatting.
-    `;
+Rules:
+- Return ONLY the JSON array, no markdown, no explanations
+- Include main characters that actively participate in the story
+- Use exact types: human, animal, creature, or object
+- Keep descriptions concise but informative`;
 
-    console.log('Making OpenAI API call...');
+    console.log('Making OpenAI API request...');
 
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    // Make the OpenAI API call
+    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${openAIApiKey}`,
@@ -89,23 +107,23 @@ serve(async (req) => {
         messages: [
           { 
             role: 'system', 
-            content: 'You are an expert at analyzing stories and extracting character information. Return only valid JSON array format.' 
+            content: 'You are an expert story analyzer. Return only valid JSON arrays for character extraction. Never include markdown formatting or explanations.' 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.3,
+        temperature: 0.1,
         max_tokens: 2000,
       }),
     });
 
-    console.log('OpenAI API response status:', response.status);
+    console.log(`OpenAI API responded with status: ${openAIResponse.status}`);
 
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('OpenAI API error:', response.status, errorText);
+    if (!openAIResponse.ok) {
+      const errorText = await openAIResponse.text();
+      console.error('OpenAI API error:', openAIResponse.status, errorText);
       
       return new Response(JSON.stringify({ 
-        error: `OpenAI API error: ${response.status} - ${errorText}`,
+        error: `OpenAI API error (${openAIResponse.status}): ${errorText}`,
         characters: [] 
       }), {
         status: 500,
@@ -113,12 +131,12 @@ serve(async (req) => {
       });
     }
 
-    const data = await response.json();
+    const openAIData = await openAIResponse.json();
     
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      console.error('Invalid OpenAI response structure:', data);
+    if (!openAIData.choices || !openAIData.choices[0] || !openAIData.choices[0].message) {
+      console.error('Invalid OpenAI response structure:', openAIData);
       return new Response(JSON.stringify({ 
-        error: 'Invalid response from OpenAI API',
+        error: 'Invalid response structure from OpenAI',
         characters: [] 
       }), {
         status: 500,
@@ -126,68 +144,81 @@ serve(async (req) => {
       });
     }
 
-    const content = data.choices[0].message.content;
-    console.log('OpenAI response content:', content);
+    const content = openAIData.choices[0].message.content;
+    console.log('OpenAI response content received:', content?.substring(0, 200) + '...');
     
-    // Parse the JSON response
+    // Parse and validate the characters
     let characters: Character[] = [];
+    
     try {
-      // Try to parse the content directly
-      characters = JSON.parse(content);
+      // Clean the content - remove any markdown formatting
+      let cleanContent = content.trim();
+      
+      // Remove markdown code blocks if present
+      if (cleanContent.startsWith('```json')) {
+        cleanContent = cleanContent.replace(/```json\n?/, '').replace(/\n?```$/, '');
+      } else if (cleanContent.startsWith('```')) {
+        cleanContent = cleanContent.replace(/```\n?/, '').replace(/\n?```$/, '');
+      }
+      
+      // Try to find JSON array in the content
+      const jsonMatch = cleanContent.match(/\[[\s\S]*\]/);
+      if (jsonMatch) {
+        cleanContent = jsonMatch[0];
+      }
+      
+      console.log('Attempting to parse cleaned content:', cleanContent.substring(0, 100) + '...');
+      
+      characters = JSON.parse(cleanContent);
       
       // Validate that it's an array
       if (!Array.isArray(characters)) {
         throw new Error('Response is not an array');
       }
       
-      // Validate character structure
-      characters = characters.filter(char => 
-        char && 
-        typeof char === 'object' &&
-        typeof char.name === 'string' &&
-        char.name.trim() !== '' &&
-        ['human', 'animal', 'creature', 'object'].includes(char.type)
-      );
+      // Validate and filter characters
+      characters = characters.filter(char => {
+        if (!char || typeof char !== 'object') return false;
+        if (!char.name || typeof char.name !== 'string' || char.name.trim() === '') return false;
+        if (!['human', 'animal', 'creature', 'object'].includes(char.type)) return false;
+        
+        // Ensure attributes is an object
+        if (!char.attributes || typeof char.attributes !== 'object') {
+          char.attributes = {};
+        }
+        
+        return true;
+      });
+      
+      console.log(`Successfully extracted and validated ${characters.length} characters`);
       
     } catch (parseError) {
-      console.error('Failed to parse OpenAI response as JSON:', parseError);
-      console.log('Raw content:', content);
+      console.error('Failed to parse character data:', parseError);
+      console.error('Raw content that failed to parse:', content);
       
-      // Fallback: try to extract JSON from the response
-      try {
-        const jsonMatch = content.match(/\[[\s\S]*\]/);
-        if (jsonMatch) {
-          characters = JSON.parse(jsonMatch[0]);
-          if (!Array.isArray(characters)) {
-            throw new Error('Extracted content is not an array');
-          }
-        } else {
-          throw new Error('No JSON array found in response');
-        }
-      } catch (fallbackError) {
-        console.error('Fallback JSON parsing failed:', fallbackError);
-        return new Response(JSON.stringify({ 
-          error: 'Could not parse character data from AI response',
-          characters: [] 
-        }), {
-          status: 500,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
+      return new Response(JSON.stringify({ 
+        error: 'Could not parse character data from AI response. Please try again.',
+        characters: [] 
+      }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     }
 
-    console.log('Successfully extracted characters:', characters.length);
-
-    return new Response(JSON.stringify({ characters }), {
+    // Return successful response
+    return new Response(JSON.stringify({ 
+      characters,
+      message: `Successfully extracted ${characters.length} characters`
+    }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
     
   } catch (error: any) {
-    console.error('Error in extract-characters function:', error);
+    console.error('Unexpected error in extract-characters function:', error);
     console.error('Error stack:', error.stack);
     
     return new Response(JSON.stringify({ 
-      error: error.message || 'Unknown error occurred',
+      error: `Unexpected error: ${error.message || 'Unknown error occurred'}`,
       characters: [] 
     }), {
       status: 500,
