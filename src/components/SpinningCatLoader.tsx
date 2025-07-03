@@ -1,7 +1,8 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Loader2, Play, X, Volume2 } from 'lucide-react';
 
 interface SpinningCatLoaderProps {
   isVisible: boolean;
@@ -12,10 +13,53 @@ export const SpinningCatLoader: React.FC<SpinningCatLoaderProps> = ({
   isVisible, 
   message = "Generating your amazing images..." 
 }) => {
+  const [showVideo, setShowVideo] = useState(false);
+
+  useEffect(() => {
+    if (isVisible) {
+      // Show video popup when loading starts
+      setShowVideo(true);
+    } else {
+      // Hide video popup when loading ends
+      setShowVideo(false);
+    }
+  }, [isVisible]);
+
   if (!isVisible) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center">
+      {/* YouTube Video Popup */}
+      {showVideo && (
+        <div className="fixed top-4 right-4 z-60 bg-black rounded-lg overflow-hidden shadow-2xl">
+          <div className="flex items-center justify-between bg-gray-900 px-3 py-2">
+            <div className="flex items-center space-x-2">
+              <Volume2 className="w-4 h-4 text-white" />
+              <span className="text-white text-sm font-medium">Cat Vibes 🎵</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowVideo(false)}
+              className="text-white hover:bg-gray-700 h-6 w-6 p-0"
+            >
+              <X className="w-3 h-3" />
+            </Button>
+          </div>
+          <iframe
+            width="320"
+            height="180"
+            src="https://www.youtube.com/embed/NUYvbT6vTPs?autoplay=1&loop=1&playlist=NUYvbT6vTPs"
+            title="Cat Music for Image Generation"
+            frameBorder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            className="block"
+          />
+        </div>
+      )}
+
+      {/* Main Loading Card */}
       <Card className="p-8 bg-white/95 backdrop-blur-sm border border-white/20 text-center max-w-md mx-4">
         {/* Cat animation container */}
         <div className="relative mb-6">
@@ -46,13 +90,33 @@ export const SpinningCatLoader: React.FC<SpinningCatLoaderProps> = ({
         </p>
         
         {/* Progress indicator */}
-        <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+        <div className="flex items-center justify-center space-x-2 text-sm text-gray-500 mb-4">
           <Loader2 className="w-4 h-4 animate-spin" />
           <span>This might take a moment...</span>
         </div>
+
+        {/* Show/Hide Video Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setShowVideo(!showVideo)}
+          className="mb-4"
+        >
+          {showVideo ? (
+            <>
+              <X className="w-4 h-4 mr-2" />
+              Hide Music
+            </>
+          ) : (
+            <>
+              <Play className="w-4 h-4 mr-2" />
+              Play Cat Music 🎵
+            </>
+          )}
+        </Button>
         
         {/* Fun facts that rotate */}
-        <div className="mt-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
+        <div className="mt-2 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
           <p className="text-xs text-gray-600 italic">
             💡 Fun fact: AI image generation is like teaching a computer to dream in pixels!
           </p>
