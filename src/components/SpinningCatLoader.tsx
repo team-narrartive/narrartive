@@ -49,7 +49,7 @@ export const SpinningCatLoader: React.FC<SpinningCatLoaderProps> = ({
           <iframe
             width="320"
             height="180"
-            src="https://www.youtube.com/embed/NUYvbT6vTPs?autoplay=1&loop=1&playlist=NUYvbT6vTPs"
+            src="https://www.youtube.com/embed/8eZXq2k8UhM?autoplay=1&loop=1&playlist=8eZXq2k8UhM"
             title="Cat Music for Image Generation"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -100,7 +100,6 @@ export const SpinningCatLoader: React.FC<SpinningCatLoaderProps> = ({
           variant="outline"
           size="sm"
           onClick={() => setShowVideo(!showVideo)}
-          className="mb-4"
         >
           {showVideo ? (
             <>
@@ -114,13 +113,6 @@ export const SpinningCatLoader: React.FC<SpinningCatLoaderProps> = ({
             </>
           )}
         </Button>
-        
-        {/* Fun facts that rotate */}
-        <div className="mt-2 p-4 bg-gradient-to-r from-purple-50 to-pink-50 rounded-lg">
-          <p className="text-xs text-gray-600 italic">
-            💡 Fun fact: AI image generation is like teaching a computer to dream in pixels!
-          </p>
-        </div>
       </Card>
     </div>
   );
