@@ -34,6 +34,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const { toast } = useToast();
   const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
   const [showPreviousVersions, setShowPreviousVersions] = useState(false);
+  const [showGallery, setShowGallery] = useState(false);
 
   const userLiked = story && !likesLoading ? isLiked(story.id) : false;
 
@@ -198,7 +199,41 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
               <span className="hidden sm:inline">Back</span>
               <span className="sm:hidden">Back</span>
             </Button>
+
+            {/* Show gallery button */}
+            {story.additional_images && story.additional_images.length > 0 && (
+              <Button 
+                variant="outline" 
+                onClick={() => setShowGallery(!showGallery)} 
+                className="flex items-center gap-2 text-sm md:text-base ml-auto"
+              >
+                <Image className="h-4 w-4" />
+                <span>{showGallery ? "Hide Gallery" : "View Gallery"}</span>
+              </Button>
+            )}
           </div>
+
+          {/* Image Gallery */}
+          {showGallery && story.additional_images && story.additional_images.length > 0 && (
+            <div className="mb-8 bg-white/90 backdrop-blur-sm rounded-xl p-4 shadow-md">
+              <h3 className="text-lg font-semibold mb-4">Story Gallery</h3>
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {story.additional_images.map((img, idx) => (
+                  <div 
+                    key={idx} 
+                    className="aspect-square rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all"
+                    onClick={() => window.open(img, '_blank')}
+                  >
+                    <img 
+                      src={img} 
+                      alt={`Story image ${idx + 1}`} 
+                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           <article className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl overflow-hidden">
             {/* Hero Image */}
@@ -209,6 +244,28 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                   alt={story.title}
                   className="w-full h-full object-cover"
                 />
+                {/* Thumbnail previews of additional images */}
+                {story.additional_images && story.additional_images.length > 0 && (
+                  <div className="absolute bottom-4 right-4 p-2 flex gap-2 bg-black/30 backdrop-blur-sm rounded-lg">
+                    {story.additional_images.slice(0, 3).map((image, index) => (
+                      <img
+                        key={index}
+                        src={image}
+                        alt={`Story image ${index + 1}`}
+                        className="w-12 h-12 rounded-md border-2 border-white/20 hover:border-white/50 transition-all cursor-pointer object-cover"
+                        onClick={() => window.open(image, '_blank')}
+                      />
+                    ))}
+                    {story.additional_images.length > 3 && (
+                      <div 
+                        className="w-12 h-12 rounded-md bg-black/40 text-white flex items-center justify-center cursor-pointer"
+                        onClick={() => setShowGallery(true)}
+                      >
+                        +{story.additional_images.length - 3}
+                      </div>
+                    )}
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
                 
                 {/* Title Overlay with improved mobile layout */}
@@ -346,6 +403,28 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                 {createStoryWithImages(story.story_content, story.additional_images || [])}
               </div>
 
+              {/* Gallery Section */}
+              {story.additional_images && story.additional_images.length > 0 && (
+                <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
+                  <h3 className="text-xl font-semibold mb-4">Story Illustrations</h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {story.additional_images.map((img, idx) => (
+                      <div 
+                        key={idx} 
+                        className="aspect-video rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all"
+                        onClick={() => window.open(img, '_blank')}
+                      >
+                        <img 
+                          src={img} 
+                          alt={`Story image ${idx + 1}`} 
+                          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Story Footer */}
               <div className="mt-12 md:mt-16 pt-6 md:pt-8 border-t border-gray-200">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -409,55 +488,77 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                         variant="ghost" 
                         className="w-full justify-between p-2 h-auto text-left"
                       >
-                        <span className="font-medium text-gray-700">
-                          Previous Versions ({previousVersions.length})
+                        <span className="flex items-center text-sm font-medium">
+                          <span>Previous Versions</span>
+                          <span className="ml-2 text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                            {previousVersions.length}
+                          </span>
                         </span>
-                        {showPreviousVersions ? 
-                          <ChevronDown className="w-4 h-4" /> : 
-                          <ChevronRight className="w-4 h-4" />
-                        }
+                        {showPreviousVersions ? (
+                          <ChevronDown className="h-4 w-4 opacity-50" />
+                        ) : (
+                          <ChevronRight className="h-4 w-4 opacity-50" />
+                        )}
                       </Button>
                     </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-3 mt-2">
-                      {previousVersions.map((version, versionIndex) => (
-                        <Card key={version.id} className="p-3 bg-white/60 border border-gray-200">
-                          <div className="text-xs text-gray-500 mb-2">
-                            Version {versionIndex + 1} • {version.settings.quality} quality • {version.settings.style}
+                    <CollapsibleContent>
+                      <div className="mt-2 space-y-2 pl-2">
+                        {previousVersions.map((version, vIndex) => (
+                          <div key={version.id} className="pt-2">
+                            <div className="text-xs text-gray-500 mb-1">
+                              {new Date(version.created_at).toLocaleDateString()} - 
+                              {version.settings && (
+                                <span className="ml-1">
+                                  {version.settings.quality || 'Standard'} · 
+                                  {version.settings.style || 'Default'}
+                                </span>
+                              )}
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                              {version.images.slice(0, 4).map((img, imgIndex) => (
+                                <div key={imgIndex} className="aspect-square bg-gray-100 rounded-md overflow-hidden">
+                                  <img 
+                                    src={img} 
+                                    alt={`Version ${vIndex + 1} image ${imgIndex + 1}`}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                              ))}
+                              {version.images.length > 4 && (
+                                <div className="col-span-2 text-xs text-center text-gray-500 mt-1">
+                                  +{version.images.length - 4} more images
+                                </div>
+                              )}
+                            </div>
                           </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            {version.images.map((imageUrl, imageIndex) => (
-                              <img
-                                key={imageIndex}
-                                src={imageUrl}
-                                alt={`Version ${versionIndex + 1} - Image ${imageIndex + 1}`}
-                                className="w-full h-20 object-cover rounded border"
-                              />
-                            ))}
-                          </div>
-                        </Card>
-                      ))}
+                        ))}
+                      </div>
                     </CollapsibleContent>
                   </Collapsible>
                 )}
-
+                
                 {/* Current Version */}
                 {currentVersion && (
-                  <div className="space-y-3">
-                    <h3 className="font-medium text-gray-800">Latest Generation</h3>
-                    {currentVersion.images.map((imageUrl, index) => (
-                      <Card key={index} className="p-2 bg-white/80 backdrop-blur-sm border border-white/20">
-                        <img
-                          src={imageUrl}
-                          alt={`Generated scene ${index + 1}`}
-                          className="w-full h-auto rounded-lg object-cover"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200" viewBox="0 0 300 200"><rect width="300" height="200" fill="%23f3f4f6"/><text x="50%" y="50%" text-anchor="middle" dy=".3em" fill="%236b7280">Image failed to load</text></svg>';
-                          }}
-                        />
-                        <p className="text-xs text-gray-600 mt-2 text-center">Scene {index + 1}</p>
-                      </Card>
-                    ))}
+                  <div>
+                    <div className="flex items-center mb-2">
+                      <h3 className="text-sm font-medium text-gray-900">Current Version</h3>
+                      {currentVersion.created_at && (
+                        <span className="ml-2 text-xs text-gray-500">
+                          {new Date(currentVersion.created_at).toLocaleDateString()}
+                        </span>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 gap-2">
+                      {currentVersion.images.map((img, imgIndex) => (
+                        <Card key={imgIndex} className="overflow-hidden">
+                          <img 
+                            src={img} 
+                            alt={`Current version image ${imgIndex + 1}`}
+                            className="w-full aspect-video object-cover"
+                          />
+                        </Card>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>

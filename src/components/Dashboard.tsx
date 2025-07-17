@@ -23,12 +23,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
   const { data: communityStories, isLoading: communityLoading } = useStories('community');
 
-  // Calculate real metrics from database
-  const totalStories = userStories?.length || 0;
-  const totalLikes = userStories?.reduce((sum, story) => sum + (story.like_count || 0), 0) || 0;
+  // Use profile statistics instead of calculating from stories
+  const minutesSpent = user?.user_metadata?.minutes_spent ?? 0;
+  const totalStories = user?.user_metadata?.stories_generated ?? 0;
+  const totalLikes = user?.user_metadata?.likes_received ?? 0;
   const totalViews = userStories?.reduce((sum, story) => sum + (story.view_count || 0), 0) || 0;
-  // Estimate minutes spent based on stories created (rough calculation)
-  const minutesSpent = totalStories * 45; // Assume 45 minutes per story
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
 

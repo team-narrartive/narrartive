@@ -21,6 +21,9 @@ export const useDeleteStory = () => {
       return false;
     }
 
+    // If already deleting, prevent multiple clicks
+    if (isDeleting) return false;
+
     setIsDeleting(true);
     
     try {
@@ -35,12 +38,14 @@ export const useDeleteStory = () => {
         throw error;
       }
 
-      // Invalidate and refetch stories to update the UI
-      await queryClient.invalidateQueries({ queryKey: ['stories'] });
-      await queryClient.refetchQueries({ queryKey: ['stories', 'personal'] });
+      // Immediately update local cache to remove the story
+      queryClient.setQueryData(['stories'], (oldData: any) => {
+        if (!oldData) return oldData;
+        return oldData.filter((story: any) => story.id !== storyId);
+      });
 
       toast({
-        title: "Story deleted successfully! 🗑️",
+        title: "Story deleted successfully",
         description: "Your story has been permanently removed."
       });
 
