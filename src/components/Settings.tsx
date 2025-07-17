@@ -5,16 +5,9 @@ import { Layout } from './Layout';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Switch } from '@/components/ui/switch';
-import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { 
   User, 
-  Bell, 
-  Shield, 
-  Palette, 
-  Download,
-  Trash2,
   Save
 } from 'lucide-react';
 
@@ -25,10 +18,6 @@ interface SettingsProps {
 export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  const [notifications, setNotifications] = useState(true);
-  const [publicProfile, setPublicProfile] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
   
   // Get real user data from auth
   const firstName = user?.user_metadata?.first_name || '';
@@ -51,7 +40,7 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
   }, [user]);
 
   const handleSaveSettings = () => {
-    console.log('Settings saved:', { notifications, publicProfile, darkMode, userName, userEmail });
+    console.log('Settings saved:', { userName, userEmail });
     toast({
       title: "Settings saved!",
       description: "Your preferences have been updated."
@@ -64,7 +53,7 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-            <p className="text-gray-600 mt-2">Manage your account preferences and application settings</p>
+            <p className="text-gray-600 mt-2">Manage your account preferences</p>
           </div>
           <Button onClick={onBack} variant="outline">
             Back to Dashboard
@@ -121,84 +110,6 @@ export const Settings: React.FC<SettingsProps> = ({ onBack }) => {
                 />
                 <p className="text-xs text-gray-500 mt-1">Email cannot be changed here. Use Supabase dashboard to update.</p>
               </div>
-            </div>
-          </Card>
-
-          {/* Notification Settings */}
-          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
-                <Bell className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">Notifications</h3>
-                <p className="text-sm text-gray-600">Control how you receive updates</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Push Notifications</p>
-                  <p className="text-sm text-gray-600">Receive notifications about new features and updates</p>
-                </div>
-                <Switch checked={notifications} onCheckedChange={setNotifications} />
-              </div>
-              <Separator />
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Public Profile</p>
-                  <p className="text-sm text-gray-600">Allow others to see your profile and projects</p>
-                </div>
-                <Switch checked={publicProfile} onCheckedChange={setPublicProfile} />
-              </div>
-            </div>
-          </Card>
-
-          {/* Appearance Settings */}
-          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
-                <Palette className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">Appearance</h3>
-                <p className="text-sm text-gray-600">Customize your interface preferences</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-gray-900">Dark Mode</p>
-                  <p className="text-sm text-gray-600">Toggle between light and dark themes</p>
-                </div>
-                <Switch checked={darkMode} onCheckedChange={setDarkMode} />
-              </div>
-            </div>
-          </Card>
-
-          {/* Data Management */}
-          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h3 className="text-xl font-semibold text-gray-900">Data Management</h3>
-                <p className="text-sm text-gray-600">Export or delete your data</p>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <Button variant="outline" className="w-full justify-start">
-                <Download className="w-4 h-4 mr-3" />
-                Export My Data
-              </Button>
-              <Button variant="outline" className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50">
-                <Trash2 className="w-4 h-4 mr-3" />
-                Delete Account
-              </Button>
             </div>
           </Card>
 

@@ -1,16 +1,22 @@
 
 import React, { useState } from 'react';
-import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
+import { useStories } from '@/hooks/useStories';
 import { useDeleteStory } from '@/hooks/useDeleteStory';
-import { useLikedStories } from '@/hooks/useLikedStories';
+import { useIncrementViews } from '@/hooks/useStories';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { ArrowLeft, Heart, Eye, Share2, BookOpen, PlusCircle, Trash2, MoreVertical } from 'lucide-react';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { useToast } from '@/hooks/use-toast';
+import { 
+  BookOpen, 
+  Eye, 
+  Heart, 
+  Trash2, 
+  Calendar,
+  AlertCircle,
+  Plus
+} from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface MyProjectsProps {
   onBack: () => void;
@@ -23,103 +29,36 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   onCreateNew,
   onViewStory
 }) => {
-  const { data: stories, isLoading } = useStories('personal');
-  const likeStoryMutation = useLikeStory();
+  const { data: stories, isLoading, error } = useStories('personal');
+  const deleteStoryMutation = useDeleteStory();
   const incrementViewsMutation = useIncrementViews();
-  const { deleteStory, isDeleting } = useDeleteStory();
-  const { toast } = useToast();
-  const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
 
-  console.log('Personal stories:', stories);
-
-  const handleLike = async (e: React.MouseEvent, storyId: string) => {
-    e.stopPropagation();
+  const handleDelete = async (storyId: string) => {
+    if (deletingStoryId) return; // Prevent multiple deletions
     
-    if (likesLoading || likeStoryMutation.isPending) return;
-    
-    const userCurrentlyLikes = isLiked(storyId);
-    console.log('HandleLike called:', storyId, 'userCurrentlyLikes:', userCurrentlyLikes);
-    
-    // Toggle local like state for immediate UI feedback
-    toggleLike(storyId);
-    
-    try {
-      // Call the mutation - if user currently likes it, we want to unlike (shouldLike = false)
-      // If user doesn't currently like it, we want to like (shouldLike = true)
-      await likeStoryMutation.mutateAsync({ 
-        storyId, 
-        shouldLike: !userCurrentlyLikes
-      });
-      console.log('Like/Unlike successful for story:', storyId);
-    } catch (error) {
-      // Revert local state if database update fails
-      toggleLike(storyId);
-      console.error('Error with like/unlike:', error);
-    }
-  };
-
-  const handleShare = async (e: React.MouseEvent, story: any) => {
-    e.stopPropagation();
-    
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: story.title,
-          text: story.description,
-          url: window.location.href
-        });
-      } catch (error) {
-        console.log('Error sharing:', error);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      const shareText = `Check out "${story.title}" - ${story.description}`;
-      await navigator.clipboard.writeText(shareText);
-      toast({
-        title: "Link copied!",
-        description: "Story details copied to clipboard."
-      });
-    }
-  };
-
-  const handleDeleteStory = async (storyId: string) => {
     setDeletingStoryId(storyId);
-    const success = await deleteStory(storyId);
-    setDeletingStoryId(null);
-    return success;
+    try {
+      await deleteStoryMutation.mutateAsync(storyId);
+    } catch (error) {
+      console.error('Error deleting story:', error);
+    } finally {
+      setDeletingStoryId(null);
+    }
   };
 
   const handleReadStory = async (storyId: string) => {
-    console.log('Reading story:', storyId);
-    
-    // Increment view count when user clicks read
     try {
       await incrementViewsMutation.mutateAsync(storyId);
-      console.log('View count incremented successfully for story:', storyId);
+      onViewStory(storyId);
     } catch (error) {
       console.error('Error incrementing views:', error);
-      // Continue to story view even if view increment fails
-    }
-    
-    // Navigate to story view
-    onViewStory(storyId);
-  };
-
-  const formatTimeAgo = (dateString: string) => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
-    
-    if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
-    } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      return `${diffInDays}d ago`;
+      // Still navigate to story even if view increment fails
+      onViewStory(storyId);
     }
   };
 
-  if (isLoading || likesLoading) {
+  if (isLoading) {
     return (
       <Layout showSidebar={true} currentView="projects">
         <div className="flex items-center justify-center min-h-96">
@@ -132,171 +71,133 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     );
   }
 
+  if (error) {
+    return (
+      <Layout showSidebar={true} currentView="projects">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
+              <p className="text-gray-600 mt-2">Manage and view your created stories</p>
+            </div>
+            <Button onClick={onBack} variant="outline">
+              Back to Dashboard
+            </Button>
+          </div>
+          
+          <Alert>
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              Having trouble loading your projects. Please try refreshing the page.
+            </AlertDescription>
+          </Alert>
+        </div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout showSidebar={true} currentView="projects">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8 px-4 md:px-0">
-        <Button variant="outline" onClick={onBack} className="flex items-center gap-2 text-sm md:text-base">
-          <ArrowLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Back to Dashboard</span>
-          <span className="sm:hidden">Back</span>
-        </Button>
-        
-        <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground flex items-center gap-2 text-sm md:text-base w-full sm:w-auto">
-          <PlusCircle className="h-4 w-4" />
-          <span className="hidden sm:inline">Create New Story</span>
-          <span className="sm:hidden">Create Story</span>
-        </Button>
-      </div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
+            <p className="text-gray-600 mt-2">Manage and view your created stories</p>
+          </div>
+          <div className="flex gap-3">
+            <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Plus className="w-4 h-4 mr-2" />
+              Create New
+            </Button>
+            <Button onClick={onBack} variant="outline">
+              Back to Dashboard
+            </Button>
+          </div>
+        </div>
 
-      <div className="text-center mb-8 md:mb-12 px-4">
-        <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
-          My Projects 📚
-        </h1>
-        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-          Manage and view all your creative stories in one place.
-        </p>
-      </div>
-
-      {stories && stories.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-4 md:px-0">
-          {stories.map((story) => {
-            const userLiked = isLiked(story.id);
-            
-            return (
-              <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group">
-                <div className="aspect-video gradient-primary relative overflow-hidden">
+        {stories && stories.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {stories.map((story) => (
+              <Card key={story.id} className="group bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+                <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
                   {story.main_image && (
                     <img 
                       src={story.main_image} 
-                      alt={story.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      alt={story.title} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-3 md:top-4 left-3 md:left-4">
-                    <Badge variant={story.is_public ? "default" : "secondary"} className={`${story.is_public ? "bg-accent" : "bg-gray-500"} text-xs md:text-sm`}>
+                  <div className="absolute top-3 right-3">
+                    <Badge variant="secondary" className="bg-white/80 text-gray-700">
                       {story.is_public ? 'Public' : 'Private'}
                     </Badge>
                   </div>
-                  <div className="absolute top-3 md:top-4 right-3 md:right-4">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0 bg-white/20 hover:bg-white/30 backdrop-blur-sm">
-                          <MoreVertical className="h-4 w-4 text-white" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <DropdownMenuItem 
-                              className="text-red-600 focus:text-red-600 cursor-pointer"
-                              onSelect={(e) => e.preventDefault()}
-                            >
-                              <Trash2 className="h-4 w-4 mr-2" />
-                              Delete Project
-                            </DropdownMenuItem>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Delete Project</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to delete "{story.title}"? This action cannot be undone and will permanently remove the story and all its associated data.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={() => handleDeleteStory(story.id)}
-                                disabled={isDeleting || deletingStoryId === story.id}
-                                className="bg-red-600 hover:bg-red-700"
-                              >
-                                {deletingStoryId === story.id ? 'Deleting...' : 'Delete'}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
-                <CardHeader className="p-4 md:p-6">
-                  <CardTitle className="text-lg md:text-xl group-hover:text-primary transition-colors line-clamp-2">
-                    {story.title}
-                  </CardTitle>
-                  <CardDescription className="text-gray-600 line-clamp-2 text-sm md:text-base">
+                <CardHeader className="pb-3">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-lg line-clamp-1">{story.title}</CardTitle>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleDelete(story.id)}
+                      disabled={deletingStoryId === story.id}
+                      className="text-red-500 hover:text-red-700 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      {deletingStoryId === story.id ? (
+                        <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </Button>
+                  </div>
+                  <CardDescription className="text-sm text-gray-600 line-clamp-2">
                     {story.description}
                   </CardDescription>
                 </CardHeader>
                 
-                <CardContent className="p-4 md:p-6 pt-0">
-                  <div className="flex items-center justify-between mb-4 text-xs md:text-sm text-gray-500">
-                    <div className="flex items-center gap-3 md:gap-4">
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-4">
                       <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3 md:h-4 md:w-4" />
+                        <Eye className="w-4 h-4" />
                         {story.view_count || 0}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3 md:h-4 md:w-4" />
+                        <Heart className="w-4 h-4" />
                         {story.like_count || 0}
                       </span>
                     </div>
-                    <span className="hidden sm:inline">{formatTimeAgo(story.created_at)}</span>
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(story.created_at).toLocaleDateString()}
+                    </div>
                   </div>
                   
-                  <div className="flex gap-2">
-                    <Button 
-                      onClick={() => handleReadStory(story.id)}
-                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-sm md:text-base h-8 md:h-10"
-                      disabled={incrementViewsMutation.isPending}
-                    >
-                      <BookOpen className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
-                      {incrementViewsMutation.isPending ? 'Loading...' : 'Read'}
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => handleLike(e, story.id)}
-                      disabled={likeStoryMutation.isPending || likesLoading}
-                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors h-8 md:h-10 w-8 md:w-10 p-0 ${
-                        userLiked 
-                          ? 'bg-pink-50 text-pink-600 border-pink-200' 
-                          : 'hover:text-pink-600'
-                      }`}
-                    >
-                      <Heart className={`h-3 w-3 md:h-4 md:w-4 ${userLiked ? 'fill-current' : ''}`} />
-                    </Button>
-                    
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={(e) => handleShare(e, story)}
-                      className="hover:bg-primary/10 hover:text-primary hover:border-primary/30 h-8 md:h-10 w-8 md:w-10 p-0"
-                    >
-                      <Share2 className="h-3 w-3 md:h-4 md:w-4" />
-                    </Button>
-                  </div>
+                  <Button 
+                    onClick={() => handleReadStory(story.id)}
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
+                  >
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Read
+                  </Button>
                 </CardContent>
               </Card>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="text-center py-12 px-4">
-          <div className="w-16 h-16 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <BookOpen className="h-8 w-8 md:h-12 md:w-12 text-primary" />
+            ))}
           </div>
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">No Stories Yet</h3>
-          <p className="text-gray-600 max-w-md mx-auto mb-6 text-sm md:text-base">
-            You haven't created any stories yet. Start your creative journey by creating your first interactive story!
-          </p>
-          <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground text-sm md:text-base">
-            <PlusCircle className="h-4 w-4 mr-2" />
-            Create Your First Story
-          </Button>
-        </div>
-      )}
+        ) : (
+          <div className="text-center py-12">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No projects yet</h3>
+            <p className="text-gray-600 mb-6">Create your first story to get started</p>
+            <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Your First Story
+            </Button>
+          </div>
+        )}
+      </div>
     </Layout>
   );
 };
