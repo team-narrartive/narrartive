@@ -29,35 +29,32 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
-        
-        if (session?.user) {
-          // Fetch profile data and merge with user data
-          const { data: profileData } = await supabase
-            .from('profiles')
-            .select('minutes_spent, stories_generated, likes_received')
-            .eq('id', session.user.id)
-            .single();
-            
-          if (profileData) {
-            const enhancedUser = {
-              ...session.user,
-              user_metadata: {
-                ...session.user.user_metadata,
-                minutes_spent: profileData.minutes_spent,
-                stories_generated: profileData.stories_generated,
-                likes_received: profileData.likes_received
-              }
-            };
-            setUser(enhancedUser);
-          } else {
-            setUser(session.user);
-          }
-        } else {
-          setUser(null);
-        }
-        
         setSession(session);
+        setUser(session?.user ?? null);
         setLoading(false);
+
+        // Fetch profile data in a separate setTimeout to avoid deadlock
+        if (session?.user) {
+          setTimeout(async () => {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('minutes_spent, stories_generated, likes_received')
+              .eq('id', session.user.id)
+              .single();
+              
+            if (profileData) {
+              setUser({
+                ...session.user,
+                user_metadata: {
+                  ...session.user.user_metadata,
+                  minutes_spent: profileData.minutes_spent,
+                  stories_generated: profileData.stories_generated,
+                  likes_received: profileData.likes_received
+                }
+              });
+            }
+          }, 0);
+        }
 
         if (event === 'SIGNED_IN') {
           console.log('User successfully signed in:', session?.user?.email);
@@ -87,34 +84,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('Error getting session:', error);
         } else {
           console.log('Initial session check:', session?.user?.email || 'No session');
-          
-          if (session?.user) {
-            // Fetch profile data for initial session too
-            const { data: profileData } = await supabase
-              .from('profiles')
-              .select('minutes_spent, stories_generated, likes_received')
-              .eq('id', session.user.id)
-              .single();
-              
-            if (profileData) {
-              const enhancedUser = {
-                ...session.user,
-                user_metadata: {
-                  ...session.user.user_metadata,
-                  minutes_spent: profileData.minutes_spent,
-                  stories_generated: profileData.stories_generated,
-                  likes_received: profileData.likes_received
-                }
-              };
-              setUser(enhancedUser);
-            } else {
-              setUser(session.user);
-            }
-          } else {
-            setUser(null);
-          }
-          
           setSession(session);
+          setUser(session?.user ?? null);
         }
       } catch (error) {
         console.error('Error in getInitialSession:', error);
