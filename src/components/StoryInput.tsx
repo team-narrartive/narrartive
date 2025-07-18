@@ -194,20 +194,37 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
-    const savedStory = await saveStory({
-      title: storyTitle,
-      description: storyDescription,
-      storyContent: story,
-      imageVersions,
-      isPublic: false
+    // Close dialog immediately and show saving feedback
+    setShowSaveDialog(false);
+    toast({
+      title: "Saving your story...",
+      description: "Your project is being saved in the background."
     });
 
-    if (savedStory) {
-      setShowSaveDialog(false);
-      toast({
-        title: "Success! 🎉",
-        description: "Your story has been saved and is now available in My Projects."
+    // Redirect to dashboard after a short delay
+    setTimeout(() => {
+      onBack(); // This will navigate back to dashboard
+    }, 2000);
+
+    // Save in background
+    try {
+      const savedStory = await saveStory({
+        title: storyTitle,
+        description: storyDescription,
+        storyContent: story,
+        imageVersions,
+        isPublic: false
       });
+
+      if (savedStory) {
+        toast({
+          title: "Success! 🎉",
+          description: "Your story has been saved and is now available in My Projects."
+        });
+      }
+    } catch (error) {
+      // Don't show error since user is already on dashboard
+      console.error('Background save failed:', error);
     }
   };
 
@@ -235,19 +252,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
           {/* Main Content */}
           <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
-            {/* Save Button - Top Right */}
-            {hasImages && (
-              <div className="flex justify-end">
-                <Button
-                  onClick={() => setShowSaveDialog(true)}
-                  className="bg-green-600 hover:bg-green-700 text-white"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Project
-                </Button>
-              </div>
-            )}
-
             {/* Persistent Error Message */}
             {imageGenerationError && (
               <Card className="p-4 bg-red-50 border-red-200">
@@ -262,60 +266,40 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
               </Card>
             )}
 
-            {/* Image Generation Settings - Show after widgets are generated */}
-            {hasGeneratedWidgets && (
-              <>
-                <ImageGenerationSettingsComponent
-                  settings={imageSettings}
-                  onSettingsChange={setImageSettings}
-                />
-                
-                {/* Generate Images Button - Prominently placed */}
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleGenerateImages}
-                    disabled={!story.trim() || isGeneratingImages}
-                    size="lg"
-                    className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    {isGeneratingImages ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                        Generating Images...
-                      </>
-                    ) : (
-                      <>
-                        <Image className="w-5 h-5 mr-3" />
-                        Generate Images
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </>
-            )}
-
-            {/* Story Input */}
+            {/* Story Input - Now prominently placed */}
             <div className={`grid ${shouldShowRightSidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
               <div className={shouldShowRightSidebar ? 'lg:col-span-2' : ''}>
                 <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                  <div className="flex items-center space-x-3 mb-4">
-                    <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white" />
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
+                        <FileText className="w-5 h-5 text-white" />
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
+                        <p className="text-sm text-gray-600">Paste or write your story below</p>
+                      </div>
                     </div>
-                    <div>
-                      <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
-                      <p className="text-sm text-gray-600">Paste or write your story below</p>
-                    </div>
+                    {/* Save Button - Top Right of Story Section */}
+                    {hasImages && (
+                      <Button
+                        onClick={() => setShowSaveDialog(true)}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Project
+                      </Button>
+                    )}
                   </div>
                   
                   <textarea
                     value={story}
                     onChange={(e) => setStory(e.target.value)}
                     placeholder="Input Story Here..."
-                    className="w-full h-96 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
+                    className="w-full h-64 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
                   />
                   
-                  <div className="mt-6 space-y-4">
+                  <div className="mt-4 space-y-4">
                     <div className="text-sm text-gray-500 text-center">
                       {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                     </div>
@@ -395,6 +379,38 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                 </div>
               )}
             </div>
+
+            {/* Image Generation Settings - Show after widgets are generated and after story input */}
+            {hasGeneratedWidgets && (
+              <>
+                <ImageGenerationSettingsComponent
+                  settings={imageSettings}
+                  onSettingsChange={setImageSettings}
+                />
+                
+                {/* Generate Images Button - Prominently placed */}
+                <div className="flex justify-center">
+                  <Button
+                    onClick={handleGenerateImages}
+                    disabled={!story.trim() || isGeneratingImages}
+                    size="lg"
+                    className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                  >
+                    {isGeneratingImages ? (
+                      <>
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                        Generating Images...
+                      </>
+                    ) : (
+                      <>
+                        <Image className="w-5 h-5 mr-3" />
+                        Generate Images
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Enhanced Generated Images Sidebar */}
