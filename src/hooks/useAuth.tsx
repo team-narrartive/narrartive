@@ -49,12 +49,15 @@ const useAuthInternal = () => {
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         
         if (session?.user) {
-          await fetchUserWithProfile(session.user);
+          // Use setTimeout to defer async calls and prevent deadlocks
+          setTimeout(() => {
+            fetchUserWithProfile(session.user);
+          }, 0);
         } else {
           setUser(null);
         }
