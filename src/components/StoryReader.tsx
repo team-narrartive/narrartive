@@ -275,21 +275,83 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
             {/* Story Illustrations Album */}
             {story.additional_images && story.additional_images.length > 0 && (
               <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-gray-200">
-                <h3 className="text-xl font-semibold mb-6">Story Illustrations</h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {story.additional_images.map((img, idx) => (
-                    <div 
-                      key={idx} 
-                      className="aspect-square rounded-lg overflow-hidden cursor-pointer shadow-sm hover:shadow-md transition-all group"
-                      onClick={() => openGallery(idx)}
-                    >
+                <h3 className="text-xl font-semibold mb-6">Story Illustrations ({story.additional_images.length})</h3>
+                
+                {/* Album View with Navigation */}
+                <div className="bg-gray-50 rounded-xl p-6 mb-6">
+                  <div className="relative">
+                    {/* Main Image Display */}
+                    <div className="aspect-[4/3] bg-white rounded-lg overflow-hidden shadow-lg mb-4">
                       <img 
-                        src={img} 
-                        alt={`Story image ${idx + 1}`} 
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        src={story.additional_images[currentImageIndex]} 
+                        alt={`Story illustration ${currentImageIndex + 1}`}
+                        className="w-full h-full object-contain cursor-pointer"
+                        onClick={() => openGallery(currentImageIndex)}
                       />
                     </div>
-                  ))}
+                    
+                    {/* Navigation Buttons */}
+                    {story.additional_images.length > 1 && (
+                      <div className="flex justify-center gap-4 mb-4">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={prevImage}
+                          className="flex items-center gap-2"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                          Previous
+                        </Button>
+                        
+                        <span className="flex items-center px-4 py-2 bg-white rounded-md shadow-sm text-sm font-medium">
+                          {currentImageIndex + 1} of {story.additional_images.length}
+                        </span>
+                        
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={nextImage}
+                          className="flex items-center gap-2"
+                        >
+                          Next
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
+                    
+                    {/* Thumbnail Navigation */}
+                    <div className="flex justify-center">
+                      <div className="flex gap-2 overflow-x-auto max-w-full pb-2">
+                        {story.additional_images.map((img, idx) => (
+                          <button
+                            key={idx}
+                            onClick={() => setCurrentImageIndex(idx)}
+                            className={`flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                              idx === currentImageIndex 
+                                ? 'border-primary shadow-md scale-110' 
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <img 
+                              src={img} 
+                              alt={`Thumbnail ${idx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="text-center mt-4">
+                    <Button
+                      variant="outline"
+                      onClick={() => openGallery(currentImageIndex)}
+                      className="text-sm"
+                    >
+                      View Full Screen
+                    </Button>
+                  </div>
                 </div>
               </div>
             )}

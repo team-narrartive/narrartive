@@ -23,9 +23,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
   const { data: communityStories, isLoading: communityLoading } = useStories('community');
 
-  // Use profile statistics instead of calculating from stories
+  // Use profile statistics and fallback to calculated values
   const minutesSpent = user?.user_metadata?.minutes_spent ?? 0;
-  const totalStories = user?.user_metadata?.stories_generated ?? 0;
+  const totalStories = user?.user_metadata?.stories_generated ?? (userStories?.length || 0);
   const totalLikes = user?.user_metadata?.likes_received ?? 0;
   const totalViews = userStories?.reduce((sum, story) => sum + (story.view_count || 0), 0) || 0;
 
