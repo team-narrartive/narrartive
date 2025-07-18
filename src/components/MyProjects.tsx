@@ -39,7 +39,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     
     setDeletingStoryId(storyId);
     try {
-      await deleteStoryMutation.mutateAsync(storyId);
+      await deleteStoryMutation.deleteStory(storyId);
     } catch (error) {
       console.error('Error deleting story:', error);
     } finally {
