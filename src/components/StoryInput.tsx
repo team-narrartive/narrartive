@@ -337,47 +337,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                 </Card>
               </div>
 
-              {/* Tips Sidebar - Only show when images haven't been generated */}
-              {shouldShowRightSidebar && (
-                <div className="space-y-6">
-                  <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-4">✨ Tips for Better Results</h3>
-                    <ul className="space-y-3 text-sm text-gray-600">
-                      <li className="flex items-start space-x-2">
-                        <span className="text-sky-500">•</span>
-                        <span>Include character descriptions in your story</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <span className="text-sky-500">•</span>
-                        <span>Mention physical attributes, clothing, and personality traits</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <span className="text-sky-500">•</span>
-                        <span>Use character names consistently throughout</span>
-                      </li>
-                      <li className="flex items-start space-x-2">
-                        <span className="text-sky-500">•</span>
-                        <span>Include animals, creatures, or objects you want visualized</span>
-                      </li>
-                    </ul>
-                  </Card>
-
-                  <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                    <div className="text-center">
-                      <Users className="w-12 h-12 text-emerald-500 mx-auto mb-4" />
-                      <h3 className="text-lg font-semibold text-gray-900 mb-2">Character Widgets</h3>
-                      <p className="text-sm text-gray-600 mb-4">
-                        Click "Generate Widgets" to automatically extract characters from your story and create customizable attribute forms.
-                      </p>
-                      {characters.length > 0 && (
-                        <div className="text-sm text-emerald-600 font-medium">
-                          {characters.length} characters detected!
-                        </div>
-                      )}
-                    </div>
-                  </Card>
-                </div>
-              )}
             </div>
 
             {/* Image Generation Settings - Show after widgets are generated and after story input */}
