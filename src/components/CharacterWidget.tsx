@@ -47,7 +47,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
   }).length;
 
   // Get total possible attributes based on type
-  const getTotalAttributes = (type: string) => {
+  const getBaseAttributes = (type: string) => {
     switch (type) {
       case 'human': return 12; // Based on HUMAN_ATTRIBUTES count
       case 'animal': return 8;  // Based on ANIMAL_ATTRIBUTES count
@@ -57,7 +57,9 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
     }
   };
 
-  const totalAttributes = getTotalAttributes(character.type);
+  const baseAttributes = getBaseAttributes(character.type);
+  // Use the higher of filled attributes or base attributes to avoid confusing display
+  const totalAttributes = Math.max(filledAttributes, baseAttributes);
 
   const handleSaveAttributes = (updatedCharacter: Character) => {
     onUpdate(updatedCharacter);

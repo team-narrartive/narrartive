@@ -251,7 +251,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
           />
 
           {/* Main Content */}
-          <div className={`flex-1 space-y-6 p-6 ${shouldShowRightSidebar ? 'max-w-4xl mx-auto' : ''}`}>
+          <div className="flex-1 space-y-6 p-6 max-w-6xl mx-auto">
             {/* Persistent Error Message */}
             {imageGenerationError && (
               <Card className="p-4 bg-red-50 border-red-200">
@@ -292,47 +292,57 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                     )}
                   </div>
                   
-                  <textarea
-                    value={story}
-                    onChange={(e) => setStory(e.target.value)}
-                    placeholder="Input Story Here..."
-                    className="w-full h-64 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
-                  />
+                   <textarea
+                     value={story}
+                     onChange={(e) => setStory(e.target.value)}
+                     placeholder="Input Story Here..."
+                     className="w-full h-48 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
+                   />
                   
                   <div className="mt-4 space-y-4">
                     <div className="text-sm text-gray-500 text-center">
                       {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                     </div>
                     
-                    <div className="flex flex-wrap items-center justify-center gap-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => setStory(exampleStory)}
-                        className="text-sky-500 border-sky-200 hover:bg-sky-50 px-6 h-11"
-                      >
-                        Try Example
-                      </Button>
-                      
-                      {!hasGeneratedWidgets && (
-                        <Button
-                          onClick={handleExtractCharacters}
-                          disabled={!story.trim() || isExtractingCharacters}
-                          className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                        >
-                          {isExtractingCharacters ? (
-                            <>
-                              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                              Extracting...
-                            </>
-                          ) : (
-                            <>
-                              <Users className="w-4 h-4 mr-2" />
-                              Generate Widgets
-                            </>
-                          )}
-                        </Button>
-                      )}
-                    </div>
+                     <div className="flex flex-wrap items-center justify-center gap-4">
+                       {hasGeneratedWidgets ? (
+                         <Button
+                           onClick={handleGenerateImages}
+                           disabled={!story.trim() || isGeneratingImages}
+                           className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                         >
+                           {isGeneratingImages ? (
+                             <>
+                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                               Generating Images...
+                             </>
+                           ) : (
+                             <>
+                               <Image className="w-4 h-4 mr-2" />
+                               Generate Images
+                             </>
+                           )}
+                         </Button>
+                       ) : (
+                         <Button
+                           onClick={handleExtractCharacters}
+                           disabled={!story.trim() || isExtractingCharacters}
+                           className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                         >
+                           {isExtractingCharacters ? (
+                             <>
+                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                               Extracting...
+                             </>
+                           ) : (
+                             <>
+                               <Users className="w-4 h-4 mr-2" />
+                               Generate Widgets
+                             </>
+                           )}
+                         </Button>
+                       )}
+                     </div>
                   </div>
                 </Card>
               </div>
@@ -341,34 +351,12 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
             {/* Image Generation Settings - Show after widgets are generated and after story input */}
             {hasGeneratedWidgets && (
-              <>
+              <div className="max-w-4xl mx-auto">
                 <ImageGenerationSettingsComponent
                   settings={imageSettings}
                   onSettingsChange={setImageSettings}
                 />
-                
-                {/* Generate Images Button - Prominently placed */}
-                <div className="flex justify-center">
-                  <Button
-                    onClick={handleGenerateImages}
-                    disabled={!story.trim() || isGeneratingImages}
-                    size="lg"
-                    className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-8 py-3 text-lg shadow-lg hover:shadow-xl transition-all duration-300"
-                  >
-                    {isGeneratingImages ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                        Generating Images...
-                      </>
-                    ) : (
-                      <>
-                        <Image className="w-5 h-5 mr-3" />
-                        Generate Images
-                      </>
-                    )}
-                  </Button>
-                </div>
-              </>
+              </div>
             )}
           </div>
 
