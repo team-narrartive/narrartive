@@ -121,7 +121,30 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
+    // Validate story length to prevent edge function timeouts
+    if (story.length > 8000) {
+      toast({
+        title: "Story too long",
+        description: "Please shorten your story to under 8000 characters for better image generation.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    // Filter characters to reduce payload size and prevent timeouts
+    const filteredCharacters = characters.map(char => ({
+      name: char.name,
+      type: char.type,
+      description: char.description,
+      attributes: Object.fromEntries(
+        Object.entries(char.attributes)
+          .filter(([_, value]) => value !== undefined && value !== null && value !== '')
+          .slice(0, 15) // Limit to 15 attributes per character
+      )
+    }));
+
     console.log('Starting image generation with settings:', imageSettings);
+    console.log('Filtered characters count:', filteredCharacters.length);
     setIsGeneratingImages(true);
     setImageGenerationError(null);
     
@@ -129,7 +152,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       const { data, error } = await supabase.functions.invoke('generate-images', {
         body: { 
           story: story.trim(),
-          characters: characters,
+          characters: filteredCharacters,
           settings: imageSettings
         }
       });
@@ -138,6 +161,10 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
       if (error) {
         console.error('Supabase function error:', error);
+        // More specific error handling
+        if (error.message?.includes('timeout') || error.message?.includes('FunctionsNetworkError')) {
+          throw new Error('Request timed out. Try with fewer characters or a shorter story.');
+        }
         throw error;
       }
 
@@ -166,7 +193,15 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       });
     } catch (error: any) {
       console.error('Error generating images:', error);
-      const errorMessage = error.message || "Failed to generate images from your story.";
+      let errorMessage = error.message || "Failed to generate images from your story.";
+      
+      // Provide helpful error messages
+      if (errorMessage.includes('timeout') || errorMessage.includes('FunctionsNetworkError')) {
+        errorMessage = "Request timed out. Try reducing story length or character attributes.";
+      } else if (errorMessage.includes('Failed to send a request')) {
+        errorMessage = "Network error. Please check your connection and try again.";
+      }
+      
       setImageGenerationError(errorMessage);
       toast({
         title: "Image generation failed",
@@ -250,11 +285,11 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
             onCharacterUpdate={handleCharacterUpdate}
           />
 
-          {/* Main Content */}
-          <div className="flex-1 space-y-6 p-6 max-w-6xl mx-auto">
+          {/* Main Content - Aligned layout */}
+          <div className="flex-1 p-6">
             {/* Persistent Error Message */}
             {imageGenerationError && (
-              <Card className="p-4 bg-red-50 border-red-200">
+              <Card className="p-4 bg-red-50 border-red-200 mb-6">
                 <div className="flex items-start space-x-3">
                   <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                   <div>
@@ -266,21 +301,25 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
               </Card>
             )}
 
-            {/* Story Input - Now prominently placed */}
-            <div className={`grid ${shouldShowRightSidebar ? 'lg:grid-cols-3' : 'lg:grid-cols-1'} gap-6`}>
-              <div className={shouldShowRightSidebar ? 'lg:col-span-2' : ''}>
-                <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
-                        <FileText className="w-5 h-5 text-white" />
-                      </div>
-                      <div>
-                        <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
-                        <p className="text-sm text-gray-600">Paste or write your story below</p>
-                      </div>
+            {/* Story Input - Aligned with sidebar tops */}
+            <div className="grid lg:grid-cols-1 gap-6">
+              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-white" />
                     </div>
-                    {/* Save Button - Top Right of Story Section */}
+                    <div>
+                      <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
+                      <p className="text-sm text-gray-600">Paste or write your story below</p>
+                    </div>
+                  </div>
+                  
+                  {/* Character and word count - Top right */}
+                  <div className="flex items-center gap-4">
+                    <div className="text-sm text-gray-500">
+                      {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
+                    </div>
                     {hasImages && (
                       <Button
                         onClick={() => setShowSaveDialog(true)}
@@ -291,71 +330,68 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                       </Button>
                     )}
                   </div>
-                  
-                   <textarea
-                     value={story}
-                     onChange={(e) => setStory(e.target.value)}
-                     placeholder="Input Story Here..."
-                     className="w-full h-48 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
-                   />
-                  
-                  <div className="mt-4 space-y-4">
-                    <div className="text-sm text-gray-500 text-center">
-                      {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
-                    </div>
-                    
-                     <div className="flex flex-wrap items-center justify-center gap-4">
-                       {hasGeneratedWidgets ? (
-                         <Button
-                           onClick={handleGenerateImages}
-                           disabled={!story.trim() || isGeneratingImages}
-                           className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                         >
-                           {isGeneratingImages ? (
-                             <>
-                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                               Generating Images...
-                             </>
-                           ) : (
-                             <>
-                               <Image className="w-4 h-4 mr-2" />
-                               Generate Images
-                             </>
-                           )}
-                         </Button>
-                       ) : (
-                         <Button
-                           onClick={handleExtractCharacters}
-                           disabled={!story.trim() || isExtractingCharacters}
-                           className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                         >
-                           {isExtractingCharacters ? (
-                             <>
-                               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                               Extracting...
-                             </>
-                           ) : (
-                             <>
-                               <Users className="w-4 h-4 mr-2" />
-                               Generate Widgets
-                             </>
-                           )}
-                         </Button>
-                       )}
-                     </div>
+                </div>
+                
+                <textarea
+                  value={story}
+                  onChange={(e) => setStory(e.target.value)}
+                  placeholder="Input Story Here..."
+                  className="w-full h-56 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
+                />
+                
+                <div className="mt-4">
+                  <div className="flex flex-wrap items-center justify-center gap-4">
+                    {hasGeneratedWidgets ? (
+                      <Button
+                        onClick={handleGenerateImages}
+                        disabled={!story.trim() || isGeneratingImages}
+                        className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        {isGeneratingImages ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Generating Images...
+                          </>
+                        ) : (
+                          <>
+                            <Image className="w-4 h-4 mr-2" />
+                            Generate Images
+                          </>
+                        )}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleExtractCharacters}
+                        disabled={!story.trim() || isExtractingCharacters}
+                        className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        {isExtractingCharacters ? (
+                          <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Extracting...
+                          </>
+                        ) : (
+                          <>
+                            <Users className="w-4 h-4 mr-2" />
+                            Generate Widgets
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
-                </Card>
-              </div>
-
+                </div>
+              </Card>
             </div>
 
-            {/* Image Generation Settings - Show after widgets are generated and after story input */}
+            {/* Image Generation Settings - Centered below story */}
             {hasGeneratedWidgets && (
-              <div className="max-w-4xl mx-auto">
-                <ImageGenerationSettingsComponent
-                  settings={imageSettings}
-                  onSettingsChange={setImageSettings}
-                />
+              <div className="mt-6 flex justify-center">
+                <div className="w-full max-w-3xl">
+                  <ImageGenerationSettingsComponent
+                    settings={imageSettings}
+                    onSettingsChange={setImageSettings}
+                  />
+                </div>
               </div>
             )}
           </div>
