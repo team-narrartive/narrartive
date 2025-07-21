@@ -156,25 +156,19 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
 
   return (
     <Layout showSidebar={true} currentView="community">
-      <div className="flex items-center gap-4 mb-6 md:mb-8">
-        <Button variant="outline" onClick={onBack} className="flex items-center gap-2 text-sm md:text-base">
-          <ArrowLeft className="h-4 w-4" />
-          <span className="hidden sm:inline">Back to Dashboard</span>
-          <span className="sm:hidden">Back</span>
-        </Button>
-      </div>
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Community Showcase ✨</h1>
+            <p className="text-gray-600 mt-2">Discover amazing stories created by our talented community of storytellers</p>
+          </div>
+          <Button onClick={onBack} variant="outline">
+            Back to Dashboard
+          </Button>
+        </div>
 
-      <div className="text-center mb-8 md:mb-12 px-4">
-        <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-2 md:mb-4">
-          Community Showcase ✨
-        </h1>
-        <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
-          Discover amazing stories created by our talented community of storytellers.
-        </p>
-      </div>
-
-      {publicStories.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {publicStories.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {publicStories.map((story) => {
             const userLiked = isLiked(story.id);
             
@@ -257,18 +251,19 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
               </Card>
             );
           })}
-        </div>
-      ) : (
-        <div className="text-center py-12 px-4">
+          </div>
+        ) : (
+          <div className="text-center py-12 px-4">
           <div className="w-16 h-16 md:w-24 md:h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <BookOpen className="h-8 w-8 md:h-12 md:w-12 text-white" />
           </div>
           <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">No Public Stories Yet</h3>
           <p className="text-gray-600 max-w-md mx-auto text-sm md:text-base">
             Be the first to share your story with the community! Create your first story and make it public to help build our creative community.
-          </p>
-        </div>
-      )}
+            </p>
+          </div>
+        )}
+      </div>
     </Layout>
   );
 };

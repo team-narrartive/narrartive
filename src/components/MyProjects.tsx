@@ -7,6 +7,10 @@ import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { 
   BookOpen, 
@@ -15,7 +19,8 @@ import {
   Trash2, 
   Calendar,
   AlertCircle,
-  Plus
+  Plus,
+  Edit
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
@@ -38,7 +43,8 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   const deleteStoryMutation = useDeleteStory();
   const incrementViewsMutation = useIncrementViews();
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
-  const [togglingPrivacy, setTogglingPrivacy] = useState<string | null>(null);
+  const [editingStory, setEditingStory] = useState<{id: string, title: string, description: string, isPublic: boolean} | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -66,35 +72,48 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     }
   };
 
-  const handlePrivacyToggle = async (storyId: string, currentValue: boolean) => {
-    if (togglingPrivacy === storyId) return;
+  const handleEdit = (story: any) => {
+    setEditingStory({
+      id: story.id,
+      title: story.title,
+      description: story.description,
+      isPublic: story.is_public
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingStory || isSaving) return;
     
-    setTogglingPrivacy(storyId);
-    const newValue = !currentValue;
-    
+    setIsSaving(true);
     try {
       const { error } = await supabase
         .from('stories')
-        .update({ is_public: newValue })
-        .eq('id', storyId);
+        .update({ 
+          title: editingStory.title,
+          description: editingStory.description,
+          is_public: editingStory.isPublic
+        })
+        .eq('id', editingStory.id);
 
       if (error) throw error;
 
       await queryClient.invalidateQueries({ queryKey: ['stories'] });
       
       toast({
-        title: "Privacy updated",
-        description: `Story is now ${newValue ? 'public' : 'private'}.`
+        title: "Story updated",
+        description: "Your changes have been saved successfully."
       });
+      
+      setEditingStory(null);
     } catch (error) {
-      console.error('Privacy toggle error:', error);
+      console.error('Edit error:', error);
       toast({
         title: "Update failed",
-        description: "Failed to update story privacy. Please try again.",
+        description: "Failed to update story. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setTogglingPrivacy(null);
+      setIsSaving(false);
     }
   };
 
@@ -170,58 +189,95 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     />
                   )}
                   <div className="absolute top-3 right-3">
-                    <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1">
-                      <Switch
-                        checked={story.is_public}
-                        onCheckedChange={() => handlePrivacyToggle(story.id, story.is_public)}
-                        disabled={togglingPrivacy === story.id}
-                        className="scale-75"
-                      />
-                      <span className="text-xs font-medium text-gray-700">
-                        {togglingPrivacy === story.id ? '...' : story.is_public ? 'Public' : 'Private'}
-                      </span>
-                    </div>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => handleEdit(story)}
+                          className="bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 rounded-full w-8 h-8 p-0"
+                        >
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Edit Story</DialogTitle>
+                        </DialogHeader>
+                        {editingStory && (
+                          <div className="space-y-4">
+                            <div>
+                              <Label htmlFor="title">Title</Label>
+                              <Input
+                                id="title"
+                                value={editingStory.title}
+                                onChange={(e) => setEditingStory(prev => prev ? {...prev, title: e.target.value} : null)}
+                                className="mt-1"
+                              />
+                            </div>
+                            <div>
+                              <Label htmlFor="description">Description</Label>
+                              <Textarea
+                                id="description"
+                                value={editingStory.description}
+                                onChange={(e) => setEditingStory(prev => prev ? {...prev, description: e.target.value} : null)}
+                                className="mt-1"
+                                rows={3}
+                              />
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <Label htmlFor="privacy">Privacy Settings</Label>
+                              <div className="flex items-center gap-2">
+                                <Switch
+                                  id="privacy"
+                                  checked={editingStory.isPublic}
+                                  onCheckedChange={(checked) => setEditingStory(prev => prev ? {...prev, isPublic: checked} : null)}
+                                />
+                                <span className="text-sm text-gray-600">
+                                  {editingStory.isPublic ? 'Public' : 'Private'}
+                                </span>
+                              </div>
+                            </div>
+                            <div className="flex justify-between pt-4">
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button variant="destructive" disabled={isSaving}>
+                                    <Trash2 className="w-4 h-4 mr-2" />
+                                    Delete Story
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>Delete Story</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Are you sure you want to delete "{editingStory.title}"? This action cannot be undone.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction
+                                      onClick={() => handleDelete(editingStory.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                    >
+                                      Delete
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
+                              <Button onClick={handleSaveEdit} disabled={isSaving}>
+                                {isSaving ? 'Saving...' : 'Save Changes'}
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                      </DialogContent>
+                    </Dialog>
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg line-clamp-1">{story.title}</CardTitle>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          disabled={deletingStoryId === story.id}
-                          className="text-red-500 hover:text-red-700 hover:bg-red-50 opacity-0 group-hover:opacity-100 transition-opacity"
-                        >
-                          {deletingStoryId === story.id ? (
-                            <div className="w-4 h-4 border-2 border-red-500 border-t-transparent rounded-full animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4" />
-                          )}
-                        </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>Delete Story</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Are you sure you want to delete "{story.title}"? This action cannot be undone and will permanently remove the story and all its content.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancel</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => handleDelete(story.id)}
-                            className="bg-red-600 hover:bg-red-700"
-                          >
-                            Delete
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
-                  </div>
+                  <CardTitle className="text-lg line-clamp-1">{story.title}</CardTitle>
                   <CardDescription className="text-sm text-gray-600 line-clamp-2">
                     {story.description}
                   </CardDescription>
