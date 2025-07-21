@@ -66,7 +66,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     }
   };
 
-  const handlePrivacyToggle = async (storyId: string, currentIsPublic: boolean) => {
+  const handlePrivacyToggle = async (storyId: string, newIsPublic: boolean) => {
     if (updatingPrivacy) return;
     
     setUpdatingPrivacy(storyId);
@@ -74,7 +74,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     try {
       const { error } = await supabase
         .from('stories')
-        .update({ is_public: !currentIsPublic })
+        .update({ is_public: newIsPublic })
         .eq('id', storyId);
 
       if (error) throw error;
@@ -84,7 +84,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       
       toast({
         title: "Privacy updated",
-        description: `Story is now ${!currentIsPublic ? 'public' : 'private'}.`
+        description: `Story is now ${newIsPublic ? 'public' : 'private'}.`
       });
     } catch (error) {
       console.error('Error updating privacy:', error);
@@ -171,7 +171,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1">
                       <Switch
                         checked={story.is_public}
-                        onCheckedChange={(checked) => handlePrivacyToggle(story.id, !checked)}
+                        onCheckedChange={(checked) => handlePrivacyToggle(story.id, checked)}
                         disabled={updatingPrivacy === story.id}
                         className="scale-75"
                       />
