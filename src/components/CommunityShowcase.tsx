@@ -115,16 +115,19 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   const formatTimeAgo = (dateString: string) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60));
     
-    if (diffInHours < 24) {
-      return `${diffInHours}h ago`;
+    if (diffInMinutes < 1) {
+      return "a few seconds ago";
+    } else if (diffInMinutes < 60) {
+      return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
     } else {
-      const diffInDays = Math.floor(diffInHours / 24);
-      if (diffInDays === 1) return "1 day ago";
-      if (diffInDays < 7) return `${diffInDays} days ago`;
-      if (diffInDays < 30) return `${Math.floor(diffInDays / 7)} week${Math.floor(diffInDays / 7) > 1 ? 's' : ''} ago`;
-      return `${Math.floor(diffInDays / 30)} month${Math.floor(diffInDays / 30) > 1 ? 's' : ''} ago`;
+      const diffInHours = Math.floor(diffInMinutes / 60);
+      if (diffInHours < 24) {
+        return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+      } else {
+        return new Date(dateString).toLocaleDateString();
+      }
     }
   };
 

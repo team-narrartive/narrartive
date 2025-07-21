@@ -23,11 +23,14 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
   const { data: communityStories, isLoading: communityLoading } = useStories('community');
 
-  // Use profile statistics and fallback to calculated values
-  const minutesSpent = user?.user_metadata?.minutes_spent ?? 0;
-  const totalStories = user?.user_metadata?.stories_generated ?? (userStories?.length || 0);
+  // Calculate statistics based on actual data
+  const totalStories = userStories?.length || 0;
   const totalLikes = user?.user_metadata?.likes_received ?? 0;
   const totalViews = userStories?.reduce((sum, story) => sum + (story.view_count || 0), 0) || 0;
+  
+  // For now, show minutes as stories * 45 (estimated time per story)
+  // TODO: Implement proper activity tracking
+  const minutesSpent = totalStories * 45;
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
 
