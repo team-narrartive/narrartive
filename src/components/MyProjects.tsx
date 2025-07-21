@@ -38,7 +38,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   const deleteStoryMutation = useDeleteStory();
   const incrementViewsMutation = useIncrementViews();
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
-  const [updatingPrivacy, setUpdatingPrivacy] = useState<string | null>(null);
+  const [togglingPrivacy, setTogglingPrivacy] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -66,37 +66,38 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     }
   };
 
-  const handlePrivacyToggle = async (storyId: string, newIsPublic: boolean) => {
-    if (updatingPrivacy) return;
+  const handlePrivacyToggle = async (storyId: string, currentValue: boolean) => {
+    if (togglingPrivacy === storyId) return;
     
-    setUpdatingPrivacy(storyId);
+    setTogglingPrivacy(storyId);
+    const newValue = !currentValue;
     
     try {
       const { error } = await supabase
         .from('stories')
-        .update({ is_public: newIsPublic })
+        .update({ is_public: newValue })
         .eq('id', storyId);
 
       if (error) throw error;
 
-      // Invalidate and refetch stories to show updated status
       await queryClient.invalidateQueries({ queryKey: ['stories'] });
       
       toast({
         title: "Privacy updated",
-        description: `Story is now ${newIsPublic ? 'public' : 'private'}.`
+        description: `Story is now ${newValue ? 'public' : 'private'}.`
       });
     } catch (error) {
-      console.error('Error updating privacy:', error);
+      console.error('Privacy toggle error:', error);
       toast({
         title: "Update failed",
         description: "Failed to update story privacy. Please try again.",
         variant: "destructive"
       });
     } finally {
-      setUpdatingPrivacy(null);
+      setTogglingPrivacy(null);
     }
   };
+
 
   if (isLoading) {
     return (
@@ -167,16 +168,16 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
-                  <div className="absolute top-3 right-3 flex items-center gap-2">
+                  <div className="absolute top-3 right-3">
                     <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1">
                       <Switch
                         checked={story.is_public}
-                        onCheckedChange={(checked) => handlePrivacyToggle(story.id, checked)}
-                        disabled={updatingPrivacy === story.id}
+                        onCheckedChange={() => handlePrivacyToggle(story.id, story.is_public)}
+                        disabled={togglingPrivacy === story.id}
                         className="scale-75"
                       />
                       <span className="text-xs font-medium text-gray-700">
-                        {updatingPrivacy === story.id ? '...' : story.is_public ? 'Public' : 'Private'}
+                        {togglingPrivacy === story.id ? '...' : story.is_public ? 'Public' : 'Private'}
                       </span>
                     </div>
                   </div>
