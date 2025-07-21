@@ -171,7 +171,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1">
                       <Switch
                         checked={story.is_public}
-                        onCheckedChange={() => handlePrivacyToggle(story.id, story.is_public)}
+                        onCheckedChange={(checked) => handlePrivacyToggle(story.id, !checked)}
                         disabled={updatingPrivacy === story.id}
                         className="scale-75"
                       />
