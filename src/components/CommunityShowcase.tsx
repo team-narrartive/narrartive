@@ -148,6 +148,9 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
     );
   }
 
+  // Filter to only show public stories from the database
+  const publicStories = stories?.filter(story => story.is_public) || [];
+
   return (
     <Layout showSidebar={true} currentView="community">
       <div className="flex items-center gap-4 mb-6 md:mb-8">
@@ -167,9 +170,9 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
         </p>
       </div>
 
-      {stories && stories.length > 0 ? (
+      {publicStories.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-4 md:px-0">
-          {stories.map((story) => {
+          {publicStories.map((story) => {
             const userLiked = isLiked(story.id);
             
             return (
@@ -184,8 +187,8 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute top-3 md:top-4 right-3 md:right-4">
-                    <Badge variant="secondary" className="bg-yellow-100 text-yellow-800 hover:bg-yellow-200 border-yellow-300 text-xs md:text-sm">
-                      {story.category || 'Story'}
+                    <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300 text-xs md:text-sm">
+                      Public
                     </Badge>
                   </div>
                 </div>
@@ -257,9 +260,9 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
           <div className="w-16 h-16 md:w-24 md:h-24 gradient-primary rounded-full flex items-center justify-center mx-auto mb-4">
             <BookOpen className="h-8 w-8 md:h-12 md:w-12 text-white" />
           </div>
-          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">No Stories Yet</h3>
+          <h3 className="text-lg md:text-xl font-semibold text-gray-900 mb-2">No Public Stories Yet</h3>
           <p className="text-gray-600 max-w-md mx-auto text-sm md:text-base">
-            Be the first to share your story with the community! Create your first story and help build our creative community.
+            Be the first to share your story with the community! Create your first story and make it public to help build our creative community.
           </p>
         </div>
       )}

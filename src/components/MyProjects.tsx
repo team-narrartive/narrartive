@@ -7,6 +7,7 @@ import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { 
   BookOpen, 
   Eye, 
@@ -18,6 +19,9 @@ import {
 } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface MyProjectsProps {
   onBack: () => void;
@@ -34,6 +38,9 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   const deleteStoryMutation = useDeleteStory();
   const incrementViewsMutation = useIncrementViews();
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
+  const [updatingPrivacy, setUpdatingPrivacy] = useState<string | null>(null);
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
 
   const handleDelete = async (storyId: string) => {
     if (deletingStoryId) return; // Prevent multiple deletions
@@ -56,6 +63,38 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       console.error('Error incrementing views:', error);
       // Still navigate to story even if view increment fails
       onViewStory(storyId);
+    }
+  };
+
+  const handlePrivacyToggle = async (storyId: string, currentIsPublic: boolean) => {
+    if (updatingPrivacy) return;
+    
+    setUpdatingPrivacy(storyId);
+    
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .update({ is_public: !currentIsPublic })
+        .eq('id', storyId);
+
+      if (error) throw error;
+
+      // Invalidate and refetch stories to show updated status
+      await queryClient.invalidateQueries({ queryKey: ['stories'] });
+      
+      toast({
+        title: "Privacy updated",
+        description: `Story is now ${!currentIsPublic ? 'public' : 'private'}.`
+      });
+    } catch (error) {
+      console.error('Error updating privacy:', error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update story privacy. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setUpdatingPrivacy(null);
     }
   };
 
@@ -128,10 +167,18 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
-                  <div className="absolute top-3 right-3">
-                    <Badge variant="secondary" className="bg-white/80 text-gray-700">
-                      {story.is_public ? 'Public' : 'Private'}
-                    </Badge>
+                  <div className="absolute top-3 right-3 flex items-center gap-2">
+                    <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1">
+                      <Switch
+                        checked={story.is_public}
+                        onCheckedChange={() => handlePrivacyToggle(story.id, story.is_public)}
+                        disabled={updatingPrivacy === story.id}
+                        className="scale-75"
+                      />
+                      <span className="text-xs font-medium text-gray-700">
+                        {updatingPrivacy === story.id ? '...' : story.is_public ? 'Public' : 'Private'}
+                      </span>
+                    </div>
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>

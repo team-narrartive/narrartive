@@ -1,8 +1,11 @@
+
 import React, { useState } from 'react';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { CharacterSidebar } from './CharacterSidebar';
 import { EnhancedGeneratedImages } from './EnhancedGeneratedImages';
 import { ImageGenerationSettingsComponent } from './ImageGenerationSettings';
@@ -50,6 +53,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
   const [showSaveDialog, setShowSaveDialog] = useState(false);
   const [storyTitle, setStoryTitle] = useState('');
   const [storyDescription, setStoryDescription] = useState('');
+  const [isPublic, setIsPublic] = useState(false);
   const [imageSettings, setImageSettings] = useState<ImageGenerationSettings>({
     numImages: 3,
     quality: 'medium',
@@ -229,43 +233,45 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
       return;
     }
 
-    // Close dialog immediately and show saving feedback
+    // Close dialog immediately
     setShowSaveDialog(false);
+    
+    // Show immediate feedback
     toast({
       title: "Saving your story...",
-      description: "Your project is being saved in the background."
+      description: "Your project is being saved."
     });
 
-    // Redirect to dashboard after a short delay
-    setTimeout(() => {
-      onBack(); // This will navigate back to dashboard
-    }, 2000);
-
-    // Save in background
     try {
       const savedStory = await saveStory({
         title: storyTitle,
         description: storyDescription,
         storyContent: story,
         imageVersions,
-        isPublic: false
+        isPublic: isPublic
       });
 
       if (savedStory) {
         toast({
           title: "Success! 🎉",
-          description: "Your story has been saved and is now available in My Projects."
+          description: "Your story has been saved successfully."
         });
+        
+        // Navigate back to dashboard after successful save
+        setTimeout(() => {
+          onBack();
+        }, 1000);
       }
     } catch (error) {
-      // Don't show error since user is already on dashboard
-      console.error('Background save failed:', error);
+      console.error('Save failed:', error);
+      toast({
+        title: "Save failed",
+        description: "There was an error saving your story. Please try again.",
+        variant: "destructive"
+      });
     }
   };
 
-  const exampleStory = `In the mystical realm of Aethermoor, Princess Luna discovered an ancient crystal that pulsed with otherworldly energy. Her loyal companion, a silver wolf named Asher, sensed danger approaching. The evil sorcerer Malachar had been searching for this very artifact for centuries, and now his dark magic grew stronger with each passing moment. Luna knew she had to protect her kingdom, but she would need the help of her childhood friend Marcus, a brave knight with a mysterious past.`;
-
-  const shouldShowRightSidebar = imageVersions.length === 0 && !isGeneratingImages;
   const hasImages = imageVersions.length > 0;
 
   return (
@@ -285,8 +291,8 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
             onCharacterUpdate={handleCharacterUpdate}
           />
 
-          {/* Main Content - Aligned layout */}
-          <div className="flex-1 p-6">
+          {/* Main Content */}
+          <div className={`flex-1 p-6 ${hasImages ? 'max-w-[calc(100%-640px)]' : ''}`}>
             {/* Persistent Error Message */}
             {imageGenerationError && (
               <Card className="p-4 bg-red-50 border-red-200 mb-6">
@@ -301,97 +307,104 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
               </Card>
             )}
 
-            {/* Story Input - Aligned with sidebar tops */}
-            <div className="grid lg:grid-cols-1 gap-6">
-              <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
+            {/* Story Input */}
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
+                    <FileText className="w-5 h-5 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4">
                       <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
-                      <p className="text-sm text-gray-600">Paste or write your story below</p>
+                      <div className="flex items-center space-x-2">
+                        <Switch
+                          id="privacy-toggle"
+                          checked={isPublic}
+                          onCheckedChange={setIsPublic}
+                        />
+                        <Label htmlFor="privacy-toggle" className="text-sm font-medium">
+                          {isPublic ? 'Public' : 'Private'}
+                        </Label>
+                      </div>
                     </div>
-                  </div>
-                  
-                  {/* Character and word count - Top right */}
-                  <div className="flex items-center gap-4">
-                    <div className="text-sm text-gray-500">
-                      {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
-                    </div>
-                    {hasImages && (
-                      <Button
-                        onClick={() => setShowSaveDialog(true)}
-                        className="bg-green-600 hover:bg-green-700 text-white"
-                      >
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Project
-                      </Button>
-                    )}
                   </div>
                 </div>
                 
-                <textarea
-                  value={story}
-                  onChange={(e) => setStory(e.target.value)}
-                  placeholder="Input Story Here..."
-                  className="w-full h-56 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
-                />
-                
-                <div className="mt-4">
-                  <div className="flex flex-wrap items-center justify-center gap-4">
-                    {hasGeneratedWidgets ? (
-                      <Button
-                        onClick={handleGenerateImages}
-                        disabled={!story.trim() || isGeneratingImages}
-                        className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        {isGeneratingImages ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Generating Images...
-                          </>
-                        ) : (
-                          <>
-                            <Image className="w-4 h-4 mr-2" />
-                            Generate Images
-                          </>
-                        )}
-                      </Button>
-                    ) : (
-                      <Button
-                        onClick={handleExtractCharacters}
-                        disabled={!story.trim() || isExtractingCharacters}
-                        className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                      >
-                        {isExtractingCharacters ? (
-                          <>
-                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                            Extracting...
-                          </>
-                        ) : (
-                          <>
-                            <Users className="w-4 h-4 mr-2" />
-                            Generate Widgets
-                          </>
-                        )}
-                      </Button>
-                    )}
+                {/* Character and word count - Top right */}
+                <div className="flex items-center gap-4">
+                  <div className="text-sm text-gray-500">
+                    {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
+                  {hasImages && (
+                    <Button
+                      onClick={() => setShowSaveDialog(true)}
+                      className="bg-green-600 hover:bg-green-700 text-white"
+                    >
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Project
+                    </Button>
+                  )}
                 </div>
-              </Card>
-            </div>
+              </div>
+              
+              <textarea
+                value={story}
+                onChange={(e) => setStory(e.target.value)}
+                placeholder="Input Story Here..."
+                className="w-full h-48 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500"
+              />
+              
+              <div className="mt-4">
+                <div className="flex flex-wrap items-center justify-center gap-4">
+                  {hasGeneratedWidgets ? (
+                    <Button
+                      onClick={handleGenerateImages}
+                      disabled={!story.trim() || isGeneratingImages}
+                      className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      {isGeneratingImages ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Generating Images...
+                        </>
+                      ) : (
+                        <>
+                          <Image className="w-4 h-4 mr-2" />
+                          Generate Images
+                        </>
+                      )}
+                    </Button>
+                  ) : (
+                    <Button
+                      onClick={handleExtractCharacters}
+                      disabled={!story.trim() || isExtractingCharacters}
+                      className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
+                    >
+                      {isExtractingCharacters ? (
+                        <>
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                          Extracting...
+                        </>
+                      ) : (
+                        <>
+                          <Users className="w-4 h-4 mr-2" />
+                          Generate Widgets
+                        </>
+                      )}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
 
-            {/* Image Generation Settings - Centered below story */}
+            {/* Image Generation Settings */}
             {hasGeneratedWidgets && (
-              <div className="mt-6 flex justify-center">
-                <div className="w-full max-w-3xl">
-                  <ImageGenerationSettingsComponent
-                    settings={imageSettings}
-                    onSettingsChange={setImageSettings}
-                  />
-                </div>
+              <div className="max-w-4xl mx-auto">
+                <ImageGenerationSettingsComponent
+                  settings={imageSettings}
+                  onSettingsChange={setImageSettings}
+                />
               </div>
             )}
           </div>

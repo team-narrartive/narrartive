@@ -66,6 +66,8 @@ export const useStorySaving = () => {
         )) // Convert to JSON
       };
 
+      console.log('Saving story with data:', storyData);
+
       const { data: savedStory, error } = await supabase
         .from('stories')
         .insert(storyData)
@@ -77,14 +79,12 @@ export const useStorySaving = () => {
         throw error;
       }
 
+      console.log('Story saved successfully:', savedStory);
+
       // Immediately invalidate and refetch stories to show the new project quickly
       await queryClient.invalidateQueries({ queryKey: ['stories'] });
       await queryClient.refetchQueries({ queryKey: ['stories', 'personal'] });
-
-      toast({
-        title: "Story saved successfully! 🎉",
-        description: "Your story and images have been saved to your projects."
-      });
+      await queryClient.refetchQueries({ queryKey: ['stories', 'community'] });
 
       return savedStory;
     } catch (error: any) {
@@ -94,7 +94,7 @@ export const useStorySaving = () => {
         description: error.message || "Please try again.",
         variant: "destructive"
       });
-      return null;
+      throw error; // Re-throw so the calling component can handle it
     } finally {
       setIsSaving(false);
     }
