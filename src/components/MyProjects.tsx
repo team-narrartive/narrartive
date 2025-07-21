@@ -7,6 +7,7 @@ import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Switch } from '@/components/ui/switch';
 import { 
   BookOpen, 
   Eye, 
@@ -37,6 +38,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
   const deleteStoryMutation = useDeleteStory();
   const incrementViewsMutation = useIncrementViews();
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
+  const [togglingPrivacy, setTogglingPrivacy] = useState<string | null>(null);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -61,6 +63,38 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       console.error('Error incrementing views:', error);
       // Still navigate to story even if view increment fails
       onViewStory(storyId);
+    }
+  };
+
+  const handlePrivacyToggle = async (storyId: string, currentValue: boolean) => {
+    if (togglingPrivacy === storyId) return;
+    
+    setTogglingPrivacy(storyId);
+    const newValue = !currentValue;
+    
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .update({ is_public: newValue })
+        .eq('id', storyId);
+
+      if (error) throw error;
+
+      await queryClient.invalidateQueries({ queryKey: ['stories'] });
+      
+      toast({
+        title: "Privacy updated",
+        description: `Story is now ${newValue ? 'public' : 'private'}.`
+      });
+    } catch (error) {
+      console.error('Privacy toggle error:', error);
+      toast({
+        title: "Update failed",
+        description: "Failed to update story privacy. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setTogglingPrivacy(null);
     }
   };
 
@@ -135,6 +169,19 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
+                  <div className="absolute top-3 right-3">
+                    <div className="flex items-center gap-1 bg-white/90 rounded-full px-2 py-1">
+                      <Switch
+                        checked={story.is_public}
+                        onCheckedChange={() => handlePrivacyToggle(story.id, story.is_public)}
+                        disabled={togglingPrivacy === story.id}
+                        className="scale-75"
+                      />
+                      <span className="text-xs font-medium text-gray-700">
+                        {togglingPrivacy === story.id ? '...' : story.is_public ? 'Public' : 'Private'}
+                      </span>
+                    </div>
+                  </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 

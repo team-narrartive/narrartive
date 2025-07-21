@@ -174,7 +174,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
       </div>
 
       {publicStories.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 lg:gap-8 px-4 md:px-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {publicStories.map((story) => {
             const userLiked = isLiked(story.id);
             
@@ -196,37 +196,37 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   </div>
                 </div>
                 
-                <CardHeader className="p-4 md:p-6">
-                  <CardTitle className="text-lg md:text-xl group-hover:text-primary transition-colors line-clamp-2">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg line-clamp-1">
                     {story.title}
                   </CardTitle>
-                  <CardDescription className="text-gray-600 line-clamp-2 text-sm md:text-base">
+                  <CardDescription className="text-sm text-gray-600 line-clamp-2">
                     {story.description}
                   </CardDescription>
                 </CardHeader>
                 
-                <CardContent className="p-4 md:p-6 pt-0">
-                  <div className="flex items-center justify-between mb-4 text-xs md:text-sm text-gray-500">
-                    <div className="flex items-center gap-3 md:gap-4">
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-4">
                       <span className="flex items-center gap-1">
-                        <Eye className="h-3 w-3 md:h-4 md:w-4" />
+                        <Eye className="w-4 h-4" />
                         {formatCount(story.view_count || 0)}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Heart className="h-3 w-3 md:h-4 md:w-4" />
+                        <Heart className="w-4 h-4" />
                         {story.like_count || 0}
                       </span>
                     </div>
-                    <span className="hidden sm:inline">{formatTimeAgo(story.created_at)}</span>
+                    <span>{formatTimeAgo(story.created_at)}</span>
                   </div>
                   
                   <div className="flex gap-2">
                     <Button 
                       onClick={() => handleReadStory(story.id)}
-                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground text-sm md:text-base h-8 md:h-10"
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                       disabled={incrementViewsMutation.isPending}
                     >
-                      <BookOpen className="h-3 w-3 md:h-4 md:w-4 mr-1 md:mr-2" />
+                      <BookOpen className="w-4 h-4 mr-2" />
                       {incrementViewsMutation.isPending ? 'Loading...' : 'Read'}
                     </Button>
                     
@@ -235,22 +235,22 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                       size="sm"
                       onClick={(e) => handleLike(e, story.id)}
                       disabled={likeStoryMutation.isPending || likesLoading}
-                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors h-8 md:h-10 w-8 md:w-10 p-0 ${
+                      className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${
                         userLiked 
                           ? 'bg-pink-50 text-pink-600 border-pink-200' 
                           : 'hover:text-pink-600'
                       }`}
                     >
-                      <Heart className={`h-3 w-3 md:h-4 md:w-4 ${userLiked ? 'fill-current' : ''}`} />
+                      <Heart className={`w-4 h-4 ${userLiked ? 'fill-current' : ''}`} />
                     </Button>
                     
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={(e) => handleShare(e, story)}
-                      className="hover:bg-primary/10 hover:text-primary hover:border-primary/30 h-8 md:h-10 w-8 md:w-10 p-0"
+                      className="hover:bg-primary/10 hover:text-primary hover:border-primary/30"
                     >
-                      <Share2 className="h-3 w-3 md:h-4 md:w-4" />
+                      <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
                 </CardContent>
