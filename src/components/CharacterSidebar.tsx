@@ -39,7 +39,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
   if (characters.length === 0) {
     return (
       <div className="w-80 bg-white/60 backdrop-blur-sm border-r border-white/30 p-4 h-screen flex flex-col">
-        <div className="flex-1 flex items-center justify-center">
+        <div className="flex-1 flex items-center justify-center" style={{ marginTop: '-20%' }}>
           <Card className="p-6 text-center bg-white/80 max-w-sm">
             <Users className="w-8 h-8 text-gray-400 mx-auto mb-3" />
             <h3 className="font-semibold text-gray-700 mb-2">No Characters Found</h3>

@@ -292,7 +292,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
           />
 
           {/* Main Content */}
-          <div className={`flex-1 p-6 ${hasImages ? 'max-w-[calc(100%-640px)]' : ''}`}>
+          <div className={`flex-1 p-6 transition-all duration-300 ${hasImages ? 'max-w-[calc(100%-640px)]' : 'max-w-4xl mx-auto'}`}>
             {/* Persistent Error Message */}
             {imageGenerationError && (
               <Card className="p-4 bg-red-50 border-red-200 mb-6">
@@ -400,12 +400,10 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
 
             {/* Image Generation Settings */}
             {hasGeneratedWidgets && (
-              <div className="max-w-4xl mx-auto">
-                <ImageGenerationSettingsComponent
-                  settings={imageSettings}
-                  onSettingsChange={setImageSettings}
-                />
-              </div>
+              <ImageGenerationSettingsComponent
+                settings={imageSettings}
+                onSettingsChange={setImageSettings}
+              />
             )}
           </div>
 

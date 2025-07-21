@@ -45,25 +45,24 @@ export const useStorySaving = () => {
     setIsSaving(true);
     
     try {
+      // Get only the latest generation for database storage
+      const latestVersion = data.imageVersions[data.imageVersions.length - 1];
+      
       const storyData = {
         user_id: user.id,
         title: data.title,
         description: data.description,
         story_content: data.storyContent,
-        main_image: data.mainImage || (data.imageVersions[0]?.images[0] || null),
-        additional_images: data.imageVersions.length > 0 
-          ? data.imageVersions[data.imageVersions.length - 1].images 
-          : [],
-        image_versions: JSON.parse(JSON.stringify(data.imageVersions)), // Convert to JSON - ALWAYS save all versions
-        is_public: data.isPublic || false,
-        canvas_data: JSON.parse(JSON.stringify(data.canvasData || null)), // Convert to JSON
-        like_count: 0,
-        view_count: 0,
+        main_image: data.mainImage || (latestVersion?.images[0] || null),
+        additional_images: latestVersion?.images.slice(1) || [],
+        // Only save the latest version's settings, not all versions
         generation_settings: JSON.parse(JSON.stringify(
-          data.imageVersions.length > 0 
-            ? data.imageVersions[data.imageVersions.length - 1].settings 
-            : {}
-        )) // Convert to JSON
+          latestVersion?.settings || {}
+        )),
+        is_public: data.isPublic || false,
+        canvas_data: JSON.parse(JSON.stringify(data.canvasData || null)),
+        like_count: 0,
+        view_count: 0
       };
 
       console.log('Saving story with data:', storyData);

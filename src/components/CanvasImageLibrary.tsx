@@ -80,7 +80,7 @@ export const CanvasImageLibrary: React.FC<CanvasImageLibraryProps> = ({
               <CollapsibleTrigger asChild>
                 <Button 
                   variant="ghost" 
-                  className="w-full justify-between p-2 h-auto text-left"
+                  className="w-full justify-between p-2 h-auto text-left focus:outline-none focus:ring-0 focus-visible:ring-0"
                 >
                   <span className="font-medium text-gray-700">
                     Previous Versions ({previousVersions.length})

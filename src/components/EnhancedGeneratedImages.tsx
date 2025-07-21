@@ -174,9 +174,6 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
                     <span className="text-xs text-gray-500">
                       {formatDate(latestVersion.created_at)}
                     </span>
-                    <div className="flex items-center gap-1">
-                      <Settings className="w-3 h-3 text-gray-400" />
-                    </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-2 text-xs">
@@ -232,9 +229,6 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
                       
                       <div className="flex items-center justify-between mt-2">
                         <p className="text-xs text-gray-600">Scene {index + 1}</p>
-                        <Badge variant="outline" className="text-xs">
-                          AI Generated
-                        </Badge>
                       </div>
                     </Card>
                   ))}
@@ -268,6 +262,21 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
                             className="w-full h-16 object-cover rounded cursor-pointer hover:scale-105 transition-transform duration-200"
                             onClick={() => handleOpenCanvas(imageUrl)}
                           />
+                          
+                          {/* Overlay with download button for small images */}
+                          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded flex items-center justify-center">
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                downloadImage(imageUrl, index);
+                              }}
+                              className="bg-white/90 text-gray-800 hover:bg-white p-1 h-auto"
+                            >
+                              <Download className="w-3 h-3" />
+                            </Button>
+                          </div>
                         </div>
                       ))}
                     </div>

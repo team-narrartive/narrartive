@@ -57,6 +57,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const [showImageLibrary, setShowImageLibrary] = useState(true);
   const [showStoryElements, setShowStoryElements] = useState(true);
+  const [showPreviousVersions, setShowPreviousVersions] = useState(false);
   const [newTextContent, setNewTextContent] = useState('');
   const [zoomLevel, setZoomLevel] = useState(1);
   const [isResizing, setIsResizing] = useState(false);
@@ -562,8 +563,8 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
               <CanvasImageLibrary
                 imageVersions={imageVersions}
                 onImageDragStart={() => {}}
-                showPreviousVersions={false}
-                onTogglePreviousVersions={() => {}}
+                showPreviousVersions={showPreviousVersions}
+                onTogglePreviousVersions={setShowPreviousVersions}
               />
             </div>
           )}
