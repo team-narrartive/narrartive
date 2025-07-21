@@ -124,8 +124,9 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
   if (showCanvas && selectedImageUrl) {
     return (
       <EnhancedCanvasEditor
-        initialImageUrl={selectedImageUrl}
+        images={[selectedImageUrl]}
         story={story}
+        imageVersions={imageVersions}
         onClose={handleCloseCanvas}
       />
     );
