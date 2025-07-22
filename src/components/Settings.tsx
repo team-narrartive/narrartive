@@ -50,12 +50,12 @@ export const Settings: React.FC<SettingsProps> = ({
   return <Layout showSidebar={true} currentView="settings">
       <div className="space-y-8">
         <div className="flex items-center justify-start gap-4">
-          <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
+          <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted/50 rounded-xl">
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold text-primary">Settings</h1>
+            <h1 className="text-3xl font-bold text-foreground">Settings</h1>
             <p className="text-muted-foreground mt-2">Manage your account preferences</p>
           </div>
         </div>
@@ -64,34 +64,44 @@ export const Settings: React.FC<SettingsProps> = ({
 
         <div className="grid gap-6">
           {/* Profile Settings */}
-          <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+          <Card className="p-8 bg-card/90 backdrop-blur-sm border border-primary/10 rounded-xl">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
-                <User className="w-5 h-5 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
+                <User className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-gray-900">Profile Settings</h3>
-                <p className="text-sm text-gray-600">Update your personal information</p>
+                <h3 className="text-xl font-semibold text-foreground">Profile Settings</h3>
+                <p className="text-sm text-muted-foreground">Update your personal information</p>
               </div>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                <Input value={userName} onChange={e => setUserName(e.target.value)} placeholder="Enter your full name" />
-                
+                <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
+                <Input 
+                  value={userName} 
+                  onChange={e => setUserName(e.target.value)} 
+                  placeholder="Enter your full name" 
+                  className="rounded-xl border-border focus:ring-primary focus:border-primary"
+                />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                <Input type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} placeholder="Enter your email" disabled />
-                
+                <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
+                <Input 
+                  type="email" 
+                  value={userEmail} 
+                  onChange={e => setUserEmail(e.target.value)} 
+                  placeholder="Enter your email" 
+                  disabled 
+                  className="rounded-xl border-border bg-muted/50"
+                />
               </div>
             </div>
           </Card>
 
           {/* Save Button */}
           <div className="flex justify-end">
-            <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8">
+            <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 rounded-xl">
               <Save className="w-4 h-4 mr-2" />
               Save Changes
             </Button>
