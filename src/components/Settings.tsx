@@ -50,9 +50,7 @@ export const Settings: React.FC<SettingsProps> = ({
   return <Layout showSidebar={true} currentView="settings">
       <div className="space-y-8">
         <div className="flex items-center justify-start gap-4">
-          <Button onClick={onBack} variant="outline">
-            Back to Dashboard
-          </Button>
+          
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
             <p className="text-gray-600 mt-2">Manage your account preferences</p>
