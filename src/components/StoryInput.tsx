@@ -10,7 +10,7 @@ import { EnhancedGeneratedImages } from './EnhancedGeneratedImages';
 import { ImageGenerationSettingsComponent } from './ImageGenerationSettings';
 import { SpinningCatLoader } from './SpinningCatLoader';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { FileText, Users, Image, AlertCircle, Save, CheckCircle } from 'lucide-react';
+import { FileText, Users, Image, AlertCircle, Save, CheckCircle, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useStorySaving } from '@/hooks/useStorySaving';

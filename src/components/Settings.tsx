@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { User, Save } from 'lucide-react';
+import { User, Save, ArrowLeft } from 'lucide-react';
 interface SettingsProps {
   onBack: () => void;
 }

@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
-import { MessageSquare, Star, Send, ThumbsUp, Bug, Lightbulb } from 'lucide-react';
+import { MessageSquare, Star, Send, ThumbsUp, Bug, Lightbulb, ArrowLeft } from 'lucide-react';
 interface FeedbackProps {
   onBack: () => void;
 }
