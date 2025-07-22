@@ -190,7 +190,8 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
-                  <div className="absolute top-3 right-3">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute top-3 right-3 relative z-10">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -203,7 +204,6 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 
                 <CardHeader className="pb-3">
