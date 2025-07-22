@@ -27,7 +27,13 @@ export const useStories = (status?: 'personal' | 'community') => {
         category,
         created_at,
         updated_at,
-        user_id
+        user_id,
+        profiles:user_id (
+          id,
+          first_name,
+          last_name,
+          display_name
+        )
       `);
       
       if (status === 'personal' && user) {
@@ -47,7 +53,7 @@ export const useStories = (status?: 'personal' | 'community') => {
         console.error('Error fetching stories:', error);
         throw new Error(`Failed to fetch stories: ${error.message}`);
       }
-      return data as Story[];
+      return data as any[];
     },
     enabled: !!user,
     staleTime: 30000, // Keep data fresh for 30 seconds
