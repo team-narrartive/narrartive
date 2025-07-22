@@ -43,6 +43,7 @@ export const useUserLikes = () => {
       toast({ title: action === 'liked' ? 'Liked!' : 'Unliked' });
     },
     onError: (error) => {
+      console.error('Like update failed:', error);
       toast({ title: 'Failed to update like', description: error.message, variant: 'destructive' });
     },
   });
