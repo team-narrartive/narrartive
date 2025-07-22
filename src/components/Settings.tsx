@@ -78,12 +78,12 @@ export const Settings: React.FC<SettingsProps> = ({
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
                 <Input value={userName} onChange={e => setUserName(e.target.value)} placeholder="Enter your full name" />
-                <p className="text-xs text-gray-500 mt-1">Note: Name updates are for display only</p>
+                
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
                 <Input type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} placeholder="Enter your email" disabled />
-                <p className="text-xs text-gray-500 mt-1">Email cannot be changed here. Use Supabase dashboard to update.</p>
+                
               </div>
             </div>
           </Card>
