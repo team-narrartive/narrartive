@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Satoshi', 'system-ui', '-apple-system', 'sans-serif'],
-				satoshi: ['Satoshi', 'system-ui', '-apple-system', 'sans-serif'],
+				sans: ['Work Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
+				canva: ['Work Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -33,6 +33,18 @@ export default {
 					DEFAULT: 'hsl(var(--primary))',
 					foreground: 'hsl(var(--primary-foreground))',
 					glow: 'hsl(var(--primary-glow))',
+					light: 'hsl(var(--primary-light))',
+				},
+				brand: {
+					DEFAULT: 'hsl(var(--brand))',
+					foreground: 'hsl(var(--brand-foreground))',
+					light: 'hsl(var(--brand-light))',
+					dark: 'hsl(var(--brand-dark))',
+				},
+				success: {
+					DEFAULT: 'hsl(var(--success))',
+					foreground: 'hsl(var(--success-foreground))',
+					light: 'hsl(var(--success-light))',
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',

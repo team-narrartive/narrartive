@@ -5,7 +5,7 @@ import { useUserStats } from '@/hooks/useUserStats';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle } from 'lucide-react';
+import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle, Eye } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface DashboardProps {
@@ -37,11 +37,11 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <Layout showSidebar={true} currentView="dashboard">
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-primary mb-4">
+      <div className="text-center mb-16">
+        <h1 className="text-5xl md:text-6xl font-display text-brand mb-6">
           Welcome back, {firstName}!
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
           Ready to create your next masterpiece? Your creative journey continues here.
         </p>
       </div>
@@ -57,105 +57,117 @@ export const Dashboard: React.FC<DashboardProps> = ({
       )}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <Card className="bg-white/90 backdrop-blur-sm border-border shadow-subtle">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Minutes Spent</CardTitle>
-            <Clock className="h-4 w-4 text-muted-foreground" />
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Minutes Spent</CardTitle>
+            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+              <Clock className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-foreground">
+            <div className="text-3xl font-display text-foreground mb-1">
               {userStatsLoading ? (
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 minutesSpent
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Creating amazing content</p>
+            <p className="text-sm text-muted-foreground font-medium">Creating amazing content</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/90 backdrop-blur-sm border-primary/30 shadow-subtle">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Stories Generated</CardTitle>
-            <BookOpen className="h-4 w-4 text-primary" />
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300 border-primary/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Stories Generated</CardTitle>
+            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <BookOpen className="h-5 w-5 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary">
+            <div className="text-3xl font-display text-primary mb-1">
               {userStatsLoading ? (
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 totalStories
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Your creative works</p>
+            <p className="text-sm text-muted-foreground font-medium">Your creative works</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/90 backdrop-blur-sm border-accent/30 shadow-subtle">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Likes Received</CardTitle>
-            <Heart className="h-4 w-4 text-accent" />
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300 border-success/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Likes Received</CardTitle>
+            <div className="w-10 h-10 bg-success/10 rounded-xl flex items-center justify-center group-hover:bg-success/20 transition-colors">
+              <Heart className="h-5 w-5 text-success" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-accent">
+            <div className="text-3xl font-display text-success mb-1">
               {userStatsLoading ? (
-                <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-2 border-success border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 totalLikes
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Community appreciation</p>
+            <p className="text-sm text-muted-foreground font-medium">Community appreciation</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/90 backdrop-blur-sm border-primary-glow/30 shadow-subtle">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-muted-foreground">Total Views</CardTitle>
-            <Users className="h-4 w-4 text-primary-glow" />
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300 border-brand/20">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Views</CardTitle>
+            <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center group-hover:bg-brand/20 transition-colors">
+              <Users className="h-5 w-5 text-brand" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-primary-glow">
+            <div className="text-3xl font-display text-brand mb-1">
               {userStatsLoading ? (
-                <div className="w-6 h-6 border-2 border-primary-glow border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 totalViews
               )}
             </div>
-            <p className="text-xs text-muted-foreground">Story engagement</p>
+            <p className="text-sm text-muted-foreground font-medium">Story engagement</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions with Premium Design */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="gradient-primary text-white border-0 hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
-          <CardHeader className="flex-1">
-            <CardTitle className="flex items-center gap-3">
-              <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <Card className="gradient-primary text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onCreateNew}>
+          <CardHeader className="flex-1 p-8">
+            <CardTitle className="flex items-center gap-4 text-2xl font-display">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                <PlusCircle className="h-7 w-7 group-hover:scale-110 transition-transform" />
+              </div>
               Create New Story
             </CardTitle>
-            <CardDescription className="text-white/90 flex-1 py-[10px]">Start crafting your next amazing interactive story</CardDescription>
+            <CardDescription className="text-white/90 flex-1 py-4 text-lg font-medium leading-relaxed">Start crafting your next amazing interactive story</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
+          <CardContent className="pt-0 p-8">
+            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
               Get Started →
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="bg-primary text-white border-0 hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
-          <CardHeader className="flex-1">
-            <CardTitle className="flex items-center gap-3">
-              <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
+        <Card className="gradient-brand text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onViewProjects}>
+          <CardHeader className="flex-1 p-8">
+            <CardTitle className="flex items-center gap-4 text-2xl font-display">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                <BookOpen className="h-7 w-7 group-hover:scale-110 transition-transform" />
+              </div>
               My Projects
             </CardTitle>
-            <CardDescription className="text-white/90 flex-1 py-[10px]">
+            <CardDescription className="text-white/90 flex-1 py-4 text-lg font-medium leading-relaxed">
               View and manage your created stories
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
+          <CardContent className="pt-0 p-8">
+            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
               {userStoriesLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -168,18 +180,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-accent text-white border-0 hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
-          <CardHeader className="flex-1">
-            <CardTitle className="flex items-center gap-3">
-              <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
+        <Card className="gradient-success text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onViewCommunity}>
+          <CardHeader className="flex-1 p-8">
+            <CardTitle className="flex items-center gap-4 text-2xl font-display">
+              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
+                <Users className="h-7 w-7 group-hover:scale-110 transition-transform" />
+              </div>
               Community Hub
             </CardTitle>
-            <CardDescription className="text-white/90 flex-1 py-[10px]">
+            <CardDescription className="text-white/90 flex-1 py-4 text-lg font-medium leading-relaxed">
               Explore stories from other creators
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-0">
-            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/30">
+          <CardContent className="pt-0 p-8">
+            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
               {communityLoading ? (
                 <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -195,12 +209,12 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Recent Activity - only show if we have stories and they're loaded */}
       {userStories && userStories.length > 0 && !userStoriesLoading && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-foreground mb-6">Your Recent Stories</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="mt-16">
+          <h2 className="text-3xl lg:text-4xl font-display text-foreground mb-10">Your Recent Stories</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {userStories.slice(0, 3).map((story) => (
-              <Card key={story.id} className="bg-white/90 backdrop-blur-sm hover:shadow-elegant transition-all duration-300 border border-white/30 group">
-                <div className="aspect-video gradient-primary relative overflow-hidden">
+              <Card key={story.id} className="card-premium group cursor-pointer transform hover:scale-105">
+                <div className="aspect-video gradient-primary relative overflow-hidden rounded-t-2xl">
                   {story.main_image && (
                     <img 
                       src={story.main_image} 
@@ -208,18 +222,24 @@ export const Dashboard: React.FC<DashboardProps> = ({
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                 </div>
-                <CardHeader>
-                  <CardTitle className="text-lg text-foreground">{story.title}</CardTitle>
-                  <CardDescription className="text-sm text-muted-foreground">
+                <CardHeader className="p-6">
+                  <CardTitle className="text-xl font-display text-foreground">{story.title}</CardTitle>
+                  <CardDescription className="text-base text-muted-foreground font-medium">
                     {story.description}
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center text-sm text-muted-foreground">
-                    <span>{story.view_count || 0} views</span>
-                    <span>{story.like_count || 0} likes</span>
+                <CardContent className="px-6 pb-6">
+                  <div className="flex justify-between items-center text-sm text-muted-foreground font-medium">
+                    <span className="flex items-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      {story.view_count || 0} views
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Heart className="w-4 h-4" />
+                      {story.like_count || 0} likes
+                    </span>
                   </div>
                 </CardContent>
               </Card>
@@ -230,9 +250,9 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Show loading state for recent activity */}
       {userStoriesLoading && (
-        <div className="mt-12 text-center">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-muted-foreground">Loading your stories...</p>
+        <div className="mt-16 text-center">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-lg text-muted-foreground font-medium">Loading your stories...</p>
         </div>
       )}
     </Layout>

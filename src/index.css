@@ -2,122 +2,157 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Load Satoshi font */
-@import url('https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;700&display=swap');
-
-/* NarrArtive Premium Design System */
+/* NarrArtive Premium Design System - Canva Inspired */
 
 @layer base {
   :root {
+    /* Base colors - clean and modern */
     --background: 0 0% 100%;
-    --foreground: 218 11% 31%;
+    --foreground: 217 19% 24%;
 
     --card: 0 0% 100%;
-    --card-foreground: 218 11% 31%;
+    --card-foreground: 217 19% 24%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 218 11% 31%;
+    --popover-foreground: 217 19% 24%;
 
-    --primary: 219 82% 29%;
+    /* Brand colors - premium green palette */
+    --brand: 151 55% 41%;
+    --brand-foreground: 0 0% 100%;
+    --brand-light: 151 55% 91%;
+    --brand-dark: 151 55% 31%;
+
+    /* Primary - medium green for stories */
+    --primary: 142 71% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 264 83% 57%;
+    --primary-glow: 142 71% 85%;
+    --primary-light: 142 71% 95%;
 
-    --secondary: 220 14% 96%;
-    --secondary-foreground: 218 11% 31%;
+    /* Success - premium green for masterpieces */
+    --success: 151 55% 41%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 151 55% 95%;
 
-    --muted: 220 14% 96%;
-    --muted-foreground: 218 11% 41%;
+    /* Secondary - soft neutrals */
+    --secondary: 210 11% 96%;
+    --secondary-foreground: 217 19% 24%;
 
-    --accent: 264 83% 57%;
-    --accent-foreground: 0 0% 100%;
+    --muted: 210 11% 96%;
+    --muted-foreground: 217 10% 46%;
 
-    --destructive: 0 84.2% 60.2%;
+    /* Accent - teal highlight */
+    --accent: 186 100% 94%;
+    --accent-foreground: 186 100% 26%;
+
+    --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 13% 91%;
-    --input: 220 13% 91%;
-    --ring: 219 82% 29%;
+    --border: 217 10% 91%;
+    --input: 217 10% 91%;
+    --ring: 142 71% 45%;
 
-    --radius: 0.75rem;
+    --radius: 12px;
 
-    /* Premium gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(219, 82%, 29%), hsl(264, 83%, 57%));
-    --gradient-secondary: linear-gradient(135deg, hsl(220, 14%, 96%), hsl(0, 0%, 100%));
-    --gradient-background: linear-gradient(135deg, hsl(220, 14%, 96%) 0%, hsl(0, 0%, 100%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsla(264, 83%, 57%, 0.05));
+    /* Premium gradients - Canva inspired */
+    --gradient-primary: linear-gradient(135deg, hsl(142, 71%, 45%), hsl(151, 55%, 41%));
+    --gradient-brand: linear-gradient(135deg, hsl(151, 55%, 41%), hsl(142, 71%, 45%));
+    --gradient-success: linear-gradient(135deg, hsl(151, 55%, 41%), hsl(151, 55%, 51%));
+    --gradient-background: linear-gradient(135deg, hsl(210, 11%, 98%) 0%, hsl(0, 0%, 100%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsla(142, 71%, 45%, 0.05));
+    --gradient-hero: linear-gradient(135deg, hsl(151, 55%, 95%), hsl(142, 71%, 95%));
     
-    /* Premium shadows */
-    --shadow-elegant: 0 10px 30px -10px hsla(219, 82%, 29%, 0.3);
-    --shadow-glow: 0 0 40px hsla(264, 83%, 57%, 0.4);
-    --shadow-subtle: 0 2px 8px -2px hsla(219, 82%, 29%, 0.1);
+    /* Premium shadows - softer and more refined */
+    --shadow-elegant: 0 10px 30px -10px hsla(142, 71%, 45%, 0.15);
+    --shadow-glow: 0 0 40px hsla(142, 71%, 45%, 0.3);
+    --shadow-subtle: 0 2px 8px -2px hsla(142, 71%, 45%, 0.08);
+    --shadow-card: 0 4px 20px -4px hsla(217, 19%, 24%, 0.08);
     
     /* Animations */
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 222 15% 6%;
     --foreground: 210 40% 98%;
-    --card: 222.2 84% 4.9%;
+    --card: 222 15% 6%;
     --card-foreground: 210 40% 98%;
-    --popover: 222.2 84% 4.9%;
+    --popover: 222 15% 6%;
     --popover-foreground: 210 40% 98%;
-    --primary: 219 82% 29%;
+    
+    --brand: 151 55% 41%;
+    --brand-foreground: 0 0% 100%;
+    --brand-light: 151 55% 15%;
+    --brand-dark: 151 55% 31%;
+    
+    --primary: 142 71% 45%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 264 83% 57%;
-    --secondary: 217.2 32.6% 17.5%;
+    --primary-glow: 142 71% 15%;
+    --primary-light: 142 71% 15%;
+    
+    --success: 151 55% 41%;
+    --success-foreground: 0 0% 100%;
+    --success-light: 151 55% 15%;
+    
+    --secondary: 217 32% 17%;
     --secondary-foreground: 210 40% 98%;
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-    --accent: 264 83% 57%;
-    --accent-foreground: 0 0% 100%;
-    --destructive: 0 62.8% 30.6%;
+    --muted: 217 32% 17%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 186 100% 15%;
+    --accent-foreground: 186 100% 80%;
+    --destructive: 0 63% 31%;
     --destructive-foreground: 0 0% 100%;
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 219 82% 29%;
+    --border: 217 32% 17%;
+    --input: 217 32% 17%;
+    --ring: 142 71% 45%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   body {
     background: var(--gradient-background);
     color: hsl(var(--foreground));
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-variation-settings: 'wght' 400;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    letter-spacing: -0.011em;
   }
 
-  /* Apply Satoshi font to all text elements globally with !important */
+  /* Apply premium typography to all text elements */
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    line-height: 1.2;
   }
 
   p, span, div, label, input, textarea, button, a {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
-  /* Ensure all UI components use Satoshi */
+  /* Ensure all UI components use Work Sans */
   .ui-text, .component-text, .modal-text, .popup-text {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Apply to form elements specifically */
   input, textarea, select, option {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Apply to navigation and menu elements */
   nav, menu, .nav-item, .menu-item {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Apply to all interactive elements */
   button, .button, .btn {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 500;
   }
 }
 
@@ -126,8 +161,12 @@
     background: var(--gradient-primary);
   }
   
-  .gradient-secondary {
-    background: var(--gradient-secondary);
+  .gradient-brand {
+    background: var(--gradient-brand);
+  }
+  
+  .gradient-success {
+    background: var(--gradient-success);
   }
   
   .gradient-background {
@@ -136,6 +175,10 @@
   
   .gradient-card {
     background: var(--gradient-card);
+  }
+  
+  .gradient-hero {
+    background: var(--gradient-hero);
   }
   
   /* Premium shadows */
@@ -149,6 +192,10 @@
 
   .shadow-subtle {
     box-shadow: var(--shadow-subtle);
+  }
+  
+  .shadow-card {
+    box-shadow: var(--shadow-card);
   }
   
   .glass {
@@ -178,8 +225,24 @@
     transition: var(--transition-smooth);
   }
 
-  /* Font utility classes for Satoshi with !important */
-  .font-satoshi {
-    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  /* Font utility classes for premium typography */
+  .font-canva {
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+  }
+  
+  .font-display {
+    font-family: 'Work Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  
+  /* Premium interactions */
+  .btn-premium {
+    @apply bg-brand text-brand-foreground hover:bg-brand-dark transition-all duration-200 font-medium rounded-xl shadow-card hover:shadow-elegant;
+  }
+  
+  .card-premium {
+    @apply bg-card/95 backdrop-blur-sm border border-border/50 shadow-card hover:shadow-elegant transition-all duration-300 rounded-2xl;
   }
 }
