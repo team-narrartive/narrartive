@@ -50,10 +50,7 @@ export const Settings: React.FC<SettingsProps> = ({
   return <Layout showSidebar={true} currentView="settings">
       <div className="space-y-8">
         <div className="flex items-center justify-start gap-4">
-          <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted/50 rounded-xl">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
-          </Button>
+          
           <div>
             <h1 className="text-3xl font-bold text-foreground">Settings</h1>
             <p className="text-muted-foreground mt-2">Manage your account preferences</p>
@@ -78,23 +75,11 @@ export const Settings: React.FC<SettingsProps> = ({
             <div className="space-y-6">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Full Name</label>
-                <Input 
-                  value={userName} 
-                  onChange={e => setUserName(e.target.value)} 
-                  placeholder="Enter your full name" 
-                  className="rounded-xl border-border focus:ring-primary focus:border-primary"
-                />
+                <Input value={userName} onChange={e => setUserName(e.target.value)} placeholder="Enter your full name" className="rounded-xl border-border focus:ring-primary focus:border-primary" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
-                <Input 
-                  type="email" 
-                  value={userEmail} 
-                  onChange={e => setUserEmail(e.target.value)} 
-                  placeholder="Enter your email" 
-                  disabled 
-                  className="rounded-xl border-border bg-muted/50"
-                />
+                <Input type="email" value={userEmail} onChange={e => setUserEmail(e.target.value)} placeholder="Enter your email" disabled className="rounded-xl border-border bg-muted/50" />
               </div>
             </div>
           </Card>
