@@ -91,10 +91,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
   return <Layout showSidebar={true} currentView="feedback">
       <div className="space-y-8">
         <div className="flex items-center justify-start gap-4">
-          <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
-          </Button>
+          
           <div>
             <h1 className="text-3xl font-bold text-primary">Feedback</h1>
             <p className="text-muted-foreground mt-2">Help us improve NarrArtive with your thoughts and suggestions</p>
