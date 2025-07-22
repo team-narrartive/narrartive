@@ -191,7 +191,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-3 right-3 relative z-10">
+                  <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -199,7 +199,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                         handleEdit(story);
                         setIsEditDialogOpen(true);
                       }}
-                      className="bg-white/90 hover:bg-white text-gray-700 hover:text-gray-900 rounded-full w-8 h-8 p-0"
+                      className="bg-white hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full w-8 h-8 p-0 shadow-sm"
                     >
                       <Edit className="w-4 h-4" />
                     </Button>
