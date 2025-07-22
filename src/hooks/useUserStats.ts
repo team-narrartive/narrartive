@@ -12,7 +12,7 @@ export const useUserStats = () => {
       
       const { data: profile, error } = await supabase
         .from('profiles')
-        .select('stories_generated, minutes_spent, likes_received, total_views')
+        .select('stories_generated, minutes_spent')
         .eq('id', user.id)
         .maybeSingle();
       
@@ -20,12 +20,19 @@ export const useUserStats = () => {
         console.error('Error fetching user stats:', error);
         throw error;
       }
+
+      // Also fetch likes_received and total_views separately for now
+      const { data: likesData } = await supabase
+        .from('profiles')
+        .select('likes_received, total_views')
+        .eq('id', user.id)
+        .maybeSingle();
       
       return {
         stories_generated: profile?.stories_generated || 0,
         minutes_spent: profile?.minutes_spent || 0,
-        likes_received: profile?.likes_received || 0,
-        total_views: profile?.total_views || 0,
+        likes_received: (likesData as any)?.likes_received || 0,
+        total_views: (likesData as any)?.total_views || 0,
       };
     },
     enabled: !!user,

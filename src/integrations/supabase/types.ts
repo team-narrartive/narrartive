@@ -21,8 +21,10 @@ export type Database = {
           first_name: string | null
           id: string
           last_name: string | null
+          likes_received: number | null
           minutes_spent: number | null
           stories_generated: number | null
+          total_views: number | null
           updated_at: string
         }
         Insert: {
@@ -31,8 +33,10 @@ export type Database = {
           first_name?: string | null
           id: string
           last_name?: string | null
+          likes_received?: number | null
           minutes_spent?: number | null
           stories_generated?: number | null
+          total_views?: number | null
           updated_at?: string
         }
         Update: {
@@ -41,8 +45,10 @@ export type Database = {
           first_name?: string | null
           id?: string
           last_name?: string | null
+          likes_received?: number | null
           minutes_spent?: number | null
           stories_generated?: number | null
+          total_views?: number | null
           updated_at?: string
         }
         Relationships: []

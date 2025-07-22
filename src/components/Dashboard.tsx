@@ -1,6 +1,7 @@
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStories } from '@/hooks/useStories';
+import { useUserStats } from '@/hooks/useUserStats';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -21,14 +22,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const { user } = useAuth();
   const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
   const { data: communityStories, isLoading: communityLoading } = useStories('community');
+  const { data: userStats, isLoading: userStatsLoading } = useUserStats();
 
-  // Calculate statistics based on actual data
-  const totalStories = userStories?.length || 0;
-  const totalLikes = user?.user_metadata?.likes_received ?? 0;
-  const totalViews = userStories?.reduce((sum, story) => sum + (story.view_count || 0), 0) || 0;
-  
-  // For now, show minutes as stories * 45 (estimated time per story)
-  const minutesSpent = totalStories * 45;
+  // Use user stats from profiles table for instant loading
+  const totalStories = userStats?.stories_generated || 0;
+  const totalLikes = userStats?.likes_received || 0;
+  const totalViews = userStats?.total_views || 0;
+  const minutesSpent = userStats?.minutes_spent || 0;
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
 
@@ -65,7 +65,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-foreground">
-              {userStoriesLoading ? (
+              {userStatsLoading ? (
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 minutesSpent
@@ -82,7 +82,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary">
-              {userStoriesLoading ? (
+              {userStatsLoading ? (
                 <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 totalStories
@@ -99,7 +99,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-accent">
-              {userStoriesLoading ? (
+              {userStatsLoading ? (
                 <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 totalLikes
@@ -116,7 +116,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-primary-glow">
-              {userStoriesLoading ? (
+              {userStatsLoading ? (
                 <div className="w-6 h-6 border-2 border-primary-glow border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 totalViews

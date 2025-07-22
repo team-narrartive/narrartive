@@ -1,12 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
-import { useToast } from '@/hooks/use-toast';
 
 export const useUserLikes = () => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
-  const { toast } = useToast();
 
   const { data: likedStoryIds = [], isLoading } = useQuery({
     queryKey: ['user-likes', user?.id],
@@ -29,22 +27,57 @@ export const useUserLikes = () => {
       if (error) throw error;
       return { story: data?.[0], action: shouldLike ? 'liked' : 'unliked' };
     },
-    onSuccess: ({ story, action }, { storyId, shouldLike }) => {
-      // Update local likes cache
+    onMutate: async ({ storyId, shouldLike }) => {
+      // Cancel any outgoing refetches
+      await queryClient.cancelQueries({ queryKey: ['user-likes', user?.id] });
+      await queryClient.cancelQueries({ queryKey: ['stories'] });
+      
+      // Snapshot the previous values for rollback
+      const previousLikes = queryClient.getQueryData(['user-likes', user?.id]);
+      const previousStories = queryClient.getQueriesData({ queryKey: ['stories'] });
+      
+      // Optimistically update likes
       queryClient.setQueryData(['user-likes', user?.id], (old: string[] = []) => 
         shouldLike ? [...old, storyId] : old.filter(id => id !== storyId)
       );
-      // Update story cache
-      if (story) queryClient.setQueryData(['story', storyId], story);
-      // Update stories lists
-      queryClient.setQueriesData({ queryKey: ['stories'] }, (old: any[] = []) => 
-        old.map(s => s.id === storyId ? story : s)
-      );
-      toast({ title: action === 'liked' ? 'Liked!' : 'Unliked' });
+      
+      // Optimistically update story like counts in all story caches
+      queryClient.setQueriesData({ queryKey: ['stories'] }, (old: any[] = []) => {
+        if (!old) return old;
+        return old.map(s => {
+          if (s.id === storyId) {
+            return {
+              ...s,
+              like_count: Math.max((s.like_count || 0) + (shouldLike ? 1 : -1), 0)
+            };
+          }
+          return s;
+        });
+      });
+      
+      return { previousLikes, previousStories };
     },
-    onError: (error) => {
-      console.error('Like update failed:', error);
-      toast({ title: 'Failed to update like', description: error.message, variant: 'destructive' });
+    onError: (err, variables, context) => {
+      // Rollback on error
+      if (context?.previousLikes) {
+        queryClient.setQueryData(['user-likes', user?.id], context.previousLikes);
+      }
+      if (context?.previousStories) {
+        context.previousStories.forEach(([queryKey, data]) => {
+          queryClient.setQueryData(queryKey, data);
+        });
+      }
+      console.error('Like update failed:', err);
+    },
+    onSuccess: ({ story }, { storyId }) => {
+      // Update with server data if available
+      if (story) {
+        queryClient.setQueryData(['story', storyId], story);
+        queryClient.setQueriesData({ queryKey: ['stories'] }, (old: any[] = []) => {
+          if (!old) return old;
+          return old.map(s => s.id === storyId ? story : s);
+        });
+      }
     },
   });
 
