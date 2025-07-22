@@ -1,12 +1,14 @@
-import React from 'react';
-import { useStories, useLikeStory, useIncrementViews } from '@/hooks/useStories';
-import { useLikedStories } from '@/hooks/useLikedStories';
+import React, { useEffect } from 'react';
+import { useStories, useIncrementViews } from '@/hooks/useStories';
+import { useUserLikes } from '@/hooks/useUserLikes';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, Heart, Eye, Share2, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 interface CommunityShowcaseProps {
   onBack: () => void;
   onViewStory: (storyId: string) => void;
@@ -15,40 +17,75 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   onBack,
   onViewStory
 }) => {
+  const queryClient = useQueryClient();
   const {
     data: stories,
     isLoading
   } = useStories('community');
-  const likeStoryMutation = useLikeStory();
   const incrementViewsMutation = useIncrementViews();
   const {
     toast
   } = useToast();
   const {
-    toggleLike,
     isLiked,
-    isLoading: likesLoading
-  } = useLikedStories();
+    likeStory,
+    isLoading: likesLoading,
+    isLiking
+  } = useUserLikes();
+
+  // Set up real-time updates for story likes and views
+  useEffect(() => {
+    const channel = supabase
+      .channel('community-stories-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'stories',
+          filter: 'is_public=eq.true'
+        },
+        (payload) => {
+          console.log('Real-time story update:', payload);
+          
+          // Update the specific story in cache
+          if (payload.new) {
+            queryClient.setQueryData(['story', payload.new.id], payload.new);
+            
+            // Update stories list
+            queryClient.setQueriesData(
+              { queryKey: ['stories', 'community'] },
+              (oldData: any[] | undefined) => {
+                if (!oldData) return oldData;
+                return oldData.map(story => 
+                  story.id === payload.new.id ? payload.new : story
+                );
+              }
+            );
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient]);
   console.log('Community stories:', stories);
   const handleLike = async (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
-    if (likesLoading || likeStoryMutation.isPending) return;
+    if (likesLoading || isLiking) return;
+    
     const userCurrentlyLikes = isLiked(storyId);
     console.log('HandleLike called:', storyId, 'userCurrentlyLikes:', userCurrentlyLikes);
 
-    // Toggle local like state for immediate UI feedback
-    toggleLike(storyId);
     try {
-      // Call the mutation - if user currently likes it, we want to unlike (shouldLike = false)
-      // If user doesn't currently like it, we want to like (shouldLike = true)
-      await likeStoryMutation.mutateAsync({
+      await likeStory({
         storyId,
         shouldLike: !userCurrentlyLikes
       });
       console.log('Like/Unlike successful for story:', storyId);
     } catch (error) {
-      // Revert local state if database update fails
-      toggleLike(storyId);
       console.error('Error with like/unlike:', error);
     }
   };
@@ -200,7 +237,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                       {incrementViewsMutation.isPending ? 'Loading...' : 'Read'}
                     </Button>
                     
-                    <Button variant="outline" size="sm" onClick={e => handleLike(e, story.id)} disabled={likeStoryMutation.isPending || likesLoading} className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${userLiked ? 'bg-pink-50 text-pink-600 border-pink-200' : 'hover:text-pink-600'}`}>
+                    <Button variant="outline" size="sm" onClick={e => handleLike(e, story.id)} disabled={isLiking || likesLoading} className={`hover:bg-pink-50 hover:border-pink-200 transition-colors ${userLiked ? 'bg-pink-50 text-pink-600 border-pink-200' : 'hover:text-pink-600'}`}>
                       <Heart className={`w-4 h-4 ${userLiked ? 'fill-current' : ''}`} />
                     </Button>
                     
