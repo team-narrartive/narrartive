@@ -35,52 +35,38 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
 
   // Set up real-time updates for story likes and views
   useEffect(() => {
-    const channel = supabase
-      .channel('community-stories-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'stories',
-          filter: 'is_public=eq.true'
-        },
-        (payload) => {
-          console.log('Real-time story update:', payload);
-          
-          // Update the specific story in cache
-          if (payload.new) {
-            queryClient.setQueryData(['story', payload.new.id], payload.new);
-            
-            // Update stories list
-            queryClient.setQueriesData(
-              { queryKey: ['stories', 'community'] },
-              (oldData: any[] | undefined) => {
-                if (!oldData) return oldData;
-                return oldData.map(story => 
-                  story.id === payload.new.id ? payload.new : story
-                );
-              }
-            );
-          }
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'user_story_likes'
-        },
-        (payload) => {
-          console.log('Real-time likes update:', payload);
-          
-          // Refresh user likes cache when likes change
-          queryClient.invalidateQueries({ queryKey: ['user-likes'] });
-        }
-      )
-      .subscribe();
+    const channel = supabase.channel('community-stories-changes').on('postgres_changes', {
+      event: 'UPDATE',
+      schema: 'public',
+      table: 'stories',
+      filter: 'is_public=eq.true'
+    }, payload => {
+      console.log('Real-time story update:', payload);
 
+      // Update the specific story in cache
+      if (payload.new) {
+        queryClient.setQueryData(['story', payload.new.id], payload.new);
+
+        // Update stories list
+        queryClient.setQueriesData({
+          queryKey: ['stories', 'community']
+        }, (oldData: any[] | undefined) => {
+          if (!oldData) return oldData;
+          return oldData.map(story => story.id === payload.new.id ? payload.new : story);
+        });
+      }
+    }).on('postgres_changes', {
+      event: '*',
+      schema: 'public',
+      table: 'user_story_likes'
+    }, payload => {
+      console.log('Real-time likes update:', payload);
+
+      // Refresh user likes cache when likes change
+      queryClient.invalidateQueries({
+        queryKey: ['user-likes']
+      });
+    }).subscribe();
     return () => {
       supabase.removeChannel(channel);
     };
@@ -89,10 +75,8 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   const handleLike = async (e: React.MouseEvent, storyId: string) => {
     e.stopPropagation();
     if (likesLoading || isLiking) return;
-    
     const userCurrentlyLikes = isLiked(storyId);
     console.log('HandleLike called:', storyId, 'userCurrentlyLikes:', userCurrentlyLikes);
-
     try {
       await likeStory({
         storyId,
@@ -197,10 +181,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   return <Layout showSidebar={true} currentView="community">
       <div className="space-y-6">
         <div className="flex items-center justify-start gap-4">
-          <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Dashboard
-          </Button>
+          
           <div>
             <h1 className="text-3xl font-bold text-primary">Community Showcase</h1>
             <p className="text-muted-foreground mt-2">Discover amazing stories created by our talented community of storytellers</p>
