@@ -122,12 +122,12 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-cyan-50 via-emerald-50 to-blue-50 flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-hero flex items-center justify-center relative overflow-hidden">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-cyan-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-brand/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-masterpiece/8 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{animationDelay: '4s'}}></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md px-6">
@@ -135,23 +135,27 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
         <Button
           variant="ghost"
           onClick={onBack}
-          className="mb-6 text-gray-600 hover:text-primary"
+          className="mb-6 text-muted-foreground hover:text-brand"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Button>
 
-        <Card className="bg-white/90 backdrop-blur-xl border border-white/30 shadow-2xl">
+        <Card className="bg-white/95 backdrop-blur-xl border border-white/30 shadow-2xl card-premium">
           <div className="p-8">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-glow">
-                <Sparkles className="w-8 h-8 text-white" />
+              <div className="w-16 h-16 gradient-brand rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-card">
+                <img 
+                  src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                  alt="NarrArtive Logo" 
+                  className="w-8 h-8"
+                />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-cyan-600 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-brand font-display">
                 {getTitle()}
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="text-muted-foreground mt-2">
                 {getSubtitle()}
               </p>
             </div>
@@ -160,7 +164,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
             {message && (
               <div className={`mb-6 p-3 rounded-lg text-sm ${
                 message.includes('sent') || message.includes('created') 
-                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                  ? 'bg-success-light text-success-foreground border border-success/20' 
                   : 'bg-red-100 text-red-700 border border-red-200'
               }`}>
                 {message}
@@ -180,7 +184,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
-                      className="bg-white/80 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                      className="bg-white/80 border-border focus:border-brand focus:ring-brand"
                       required
                       disabled={loading}
                     />
@@ -194,7 +198,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
-                      className="bg-white/80 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                      className="bg-white/80 border-border focus:border-brand focus:ring-brand"
                       required
                       disabled={loading}
                     />
@@ -211,7 +215,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   name="email"
                   value={formData.email}
                   onChange={handleInputChange}
-                  className="bg-white/80 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500"
+                  className="bg-white/80 border-border focus:border-brand focus:ring-brand"
                   required
                   disabled={loading}
                 />
@@ -228,7 +232,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
-                      className="bg-white/80 border-gray-200 focus:border-emerald-500 focus:ring-emerald-500 pr-12"
+                      className="bg-white/80 border-border focus:border-brand focus:ring-brand pr-12"
                       required
                       disabled={loading}
                       minLength={6}
@@ -252,7 +256,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   <Button 
                     type="button"
                     variant="link" 
-                    className="text-emerald-600 hover:text-emerald-700 p-0"
+                    className="text-brand hover:text-brand-dark p-0"
                     onClick={switchToReset}
                     disabled={loading}
                   >
@@ -263,7 +267,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
 
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-emerald-500 to-cyan-500 hover:from-emerald-600 hover:to-cyan-600 text-white py-3 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="w-full gradient-brand text-brand-foreground hover:shadow-elegant py-3 transition-all duration-300"
                 disabled={loading}
               >
                 {getButtonText()}
@@ -278,7 +282,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   <Button
                     variant="link"
                     onClick={switchToLogin}
-                    className="text-emerald-600 hover:text-emerald-700 ml-1 p-0"
+                    className="text-brand hover:text-brand-dark ml-1 p-0"
                     disabled={loading}
                   >
                     Sign In
@@ -290,7 +294,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   <Button
                     variant="link"
                     onClick={isLogin ? switchToSignUp : switchToLogin}
-                    className="text-emerald-600 hover:text-emerald-700 ml-1 p-0"
+                    className="text-brand hover:text-brand-dark ml-1 p-0"
                     disabled={loading}
                   >
                     {isLogin ? 'Sign Up' : 'Sign In'}

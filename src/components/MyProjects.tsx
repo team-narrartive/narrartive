@@ -165,7 +165,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
           <div className="flex items-center gap-4">
             
             <div>
-              <h1 className="text-3xl font-bold text-primary">My Projects</h1>
+              <h1 className="text-3xl font-bold text-foreground">My Projects</h1>
               <p className="text-muted-foreground mt-2">Manage and view your created stories</p>
             </div>
           </div>

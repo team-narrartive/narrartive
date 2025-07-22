@@ -75,7 +75,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               Transform Your 
               <span className="text-primary"> Stories </span>
               Into Visual 
-              <span className="text-success"> Masterpieces</span>
+              <span className="text-masterpiece"> Masterpieces</span>
             </h2>
               
             <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-3xl mx-auto font-medium">
@@ -142,7 +142,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 >
                   <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-card group-hover:shadow-elegant transition-all duration-300 ${
                     index === 0 ? 'gradient-primary' : 
-                    index === 1 ? 'gradient-success' : 'gradient-brand'
+                    index === 1 ? 'gradient-masterpiece' : 'gradient-brand'
                   }`}>
                     <feature.icon className="w-10 h-10 text-white" />
                   </div>

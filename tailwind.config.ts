@@ -41,6 +41,12 @@ export default {
 					light: 'hsl(var(--brand-light))',
 					dark: 'hsl(var(--brand-dark))',
 				},
+				masterpiece: {
+					DEFAULT: 'hsl(var(--masterpiece))',
+					foreground: 'hsl(var(--masterpiece-foreground))',
+					light: 'hsl(var(--masterpiece-light))',
+					dark: 'hsl(var(--masterpiece-dark))',
+				},
 				success: {
 					DEFAULT: 'hsl(var(--success))',
 					foreground: 'hsl(var(--success-foreground))',

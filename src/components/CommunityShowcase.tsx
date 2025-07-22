@@ -183,7 +183,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
         <div className="flex items-center justify-start gap-4">
           
           <div>
-            <h1 className="text-3xl font-bold text-primary">Community Showcase</h1>
+            <h1 className="text-3xl font-bold text-foreground">Community Showcase</h1>
             <p className="text-muted-foreground mt-2">Discover amazing stories created by our talented community of storytellers</p>
           </div>
         </div>
@@ -195,11 +195,6 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                 <div className="aspect-video gradient-primary relative overflow-hidden">
                   {story.main_image && <img src={story.main_image} alt={story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-3 md:top-4 right-3 md:right-4">
-                    <Badge variant="secondary" className="bg-green-100 text-green-800 hover:bg-green-200 border-green-300 text-xs md:text-sm">
-                      Public
-                    </Badge>
-                  </div>
                 </div>
                 
                 <CardHeader className="pb-3">
@@ -209,6 +204,9 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                   <CardDescription className="text-sm text-gray-600 line-clamp-2">
                     {story.description}
                   </CardDescription>
+                  <div className="text-xs text-muted-foreground mt-1">
+                    by {story.profiles?.display_name || story.profiles?.first_name || 'Anonymous'} 
+                  </div>
                 </CardHeader>
                 
                 <CardContent>

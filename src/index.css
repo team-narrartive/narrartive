@@ -16,19 +16,25 @@
     --popover: 0 0% 100%;
     --popover-foreground: 217 19% 24%;
 
-    /* Brand colors - premium green palette */
-    --brand: 151 55% 41%;
+    /* Brand colors - premium yellow/gold palette */
+    --brand: 45 93% 47%;
     --brand-foreground: 0 0% 100%;
-    --brand-light: 151 55% 91%;
-    --brand-dark: 151 55% 31%;
+    --brand-light: 45 93% 95%;
+    --brand-dark: 45 93% 37%;
 
-    /* Primary - medium green for stories */
-    --primary: 142 71% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 142 71% 85%;
-    --primary-light: 142 71% 95%;
+    /* Primary - warm yellow for stories */
+    --primary: 48 89% 60%;
+    --primary-foreground: 0 0% 15%;
+    --primary-glow: 48 89% 90%;
+    --primary-light: 48 89% 97%;
 
-    /* Success - premium green for masterpieces */
+    /* Masterpiece - premium olive green for visual masterpieces */
+    --masterpiece: 82 39% 30%;
+    --masterpiece-foreground: 0 0% 100%;
+    --masterpiece-light: 82 39% 95%;
+    --masterpiece-dark: 82 39% 20%;
+
+    /* Success - keep green for success states */
     --success: 151 55% 41%;
     --success-foreground: 0 0% 100%;
     --success-light: 151 55% 95%;
@@ -54,17 +60,18 @@
     --radius: 12px;
 
     /* Premium gradients - Canva inspired */
-    --gradient-primary: linear-gradient(135deg, hsl(142, 71%, 45%), hsl(151, 55%, 41%));
-    --gradient-brand: linear-gradient(135deg, hsl(151, 55%, 41%), hsl(142, 71%, 45%));
+    --gradient-primary: linear-gradient(135deg, hsl(48, 89%, 60%), hsl(45, 93%, 47%));
+    --gradient-brand: linear-gradient(135deg, hsl(45, 93%, 47%), hsl(48, 89%, 60%));
+    --gradient-masterpiece: linear-gradient(135deg, hsl(82, 39%, 30%), hsl(82, 39%, 40%));
     --gradient-success: linear-gradient(135deg, hsl(151, 55%, 41%), hsl(151, 55%, 51%));
     --gradient-background: linear-gradient(135deg, hsl(210, 11%, 98%) 0%, hsl(0, 0%, 100%) 100%);
-    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsla(142, 71%, 45%, 0.05));
-    --gradient-hero: linear-gradient(135deg, hsl(151, 55%, 95%), hsl(142, 71%, 95%));
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsla(48, 89%, 60%, 0.05));
+    --gradient-hero: linear-gradient(135deg, hsl(48, 89%, 97%), hsl(45, 93%, 95%));
     
     /* Premium shadows - softer and more refined */
-    --shadow-elegant: 0 10px 30px -10px hsla(142, 71%, 45%, 0.15);
-    --shadow-glow: 0 0 40px hsla(142, 71%, 45%, 0.3);
-    --shadow-subtle: 0 2px 8px -2px hsla(142, 71%, 45%, 0.08);
+    --shadow-elegant: 0 10px 30px -10px hsla(48, 89%, 60%, 0.15);
+    --shadow-glow: 0 0 40px hsla(48, 89%, 60%, 0.3);
+    --shadow-subtle: 0 2px 8px -2px hsla(48, 89%, 60%, 0.08);
     --shadow-card: 0 4px 20px -4px hsla(217, 19%, 24%, 0.08);
     
     /* Animations */
@@ -79,15 +86,20 @@
     --popover: 222 15% 6%;
     --popover-foreground: 210 40% 98%;
     
-    --brand: 151 55% 41%;
+    --brand: 45 93% 47%;
     --brand-foreground: 0 0% 100%;
-    --brand-light: 151 55% 15%;
-    --brand-dark: 151 55% 31%;
+    --brand-light: 45 93% 15%;
+    --brand-dark: 45 93% 37%;
     
-    --primary: 142 71% 45%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 142 71% 15%;
-    --primary-light: 142 71% 15%;
+    --primary: 48 89% 60%;
+    --primary-foreground: 0 0% 15%;
+    --primary-glow: 48 89% 15%;
+    --primary-light: 48 89% 15%;
+    
+    --masterpiece: 82 39% 30%;
+    --masterpiece-foreground: 0 0% 100%;
+    --masterpiece-light: 82 39% 15%;
+    --masterpiece-dark: 82 39% 20%;
     
     --success: 151 55% 41%;
     --success-foreground: 0 0% 100%;
@@ -163,6 +175,10 @@
   
   .gradient-brand {
     background: var(--gradient-brand);
+  }
+  
+  .gradient-masterpiece {
+    background: var(--gradient-masterpiece);
   }
   
   .gradient-success {

@@ -93,7 +93,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
         <div className="flex items-center justify-start gap-4">
           
           <div>
-            <h1 className="text-3xl font-bold text-primary">Feedback</h1>
+            <h1 className="text-3xl font-bold text-foreground">Feedback</h1>
             <p className="text-muted-foreground mt-2">Help us improve NarrArtive with your thoughts and suggestions</p>
           </div>
         </div>

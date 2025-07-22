@@ -77,23 +77,20 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         {/* User Info */}
         <div className="p-4">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center text-white font-semibold">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-brand to-primary flex items-center justify-center text-white font-semibold">
               {avatarInitials}
             </div>
             <div>
               <h4 className="font-semibold text-gray-900">{fullName}</h4>
               <p className="text-sm text-gray-600">{email}</p>
-              {user && (
-                <p className="text-xs text-green-600">✓ Authenticated</p>
-              )}
             </div>
           </div>
 
           {/* User Stats */}
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="text-center">
-              <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-1">
-                <BookOpen className="w-4 h-4 text-blue-600" />
+              <div className="w-8 h-8 bg-primary/20 rounded-lg flex items-center justify-center mx-auto mb-1">
+                <BookOpen className="w-4 h-4 text-primary" />
               </div>
               <p className="text-sm font-semibold text-gray-900">{totalProjects}</p>
               <p className="text-xs text-gray-600">Projects</p>
