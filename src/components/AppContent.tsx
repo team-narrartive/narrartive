@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { NavigationManager } from './NavigationManager';
 import { ViewRenderer } from './ViewRenderer';
 
-type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset';
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset' | 'migration';
 
 export const AppContent = () => {
   const [currentView, setCurrentView] = useState<View>('landing');
@@ -24,6 +24,13 @@ export const AppContent = () => {
     if (path === '/reset-password' || hash.includes('type=recovery')) {
       console.log('Password reset link detected, showing password reset page');
       setCurrentView('password-reset');
+      return;
+    }
+    
+    // Check for migration route
+    if (path === '/migration') {
+      console.log('Migration route detected, showing migration page');
+      setCurrentView('migration');
       return;
     }
   }, []);

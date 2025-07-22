@@ -10,8 +10,9 @@ import { CommunityShowcase } from './CommunityShowcase';
 import { MyProjects } from './MyProjects';
 import { StoryReader } from './StoryReader';
 import { PasswordReset } from './PasswordReset';
+import { Migration } from '../pages/Migration';
 
-type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset';
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset' | 'migration';
 
 interface ViewRendererProps {
   currentView: View;
@@ -124,6 +125,9 @@ export const ViewRenderer: React.FC<ViewRendererProps> = ({
           onBack={onBackFromStoryReader}
         />
       );
+
+    case 'migration':
+      return <Migration />;
     
     case 'creation':
       return (
