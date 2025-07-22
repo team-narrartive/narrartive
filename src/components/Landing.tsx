@@ -27,12 +27,12 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   ];
 
   return (
-    <div className="min-h-screen gradient-background relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-muted via-background to-accent/5 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/20 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-float"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-accent/20 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-secondary/20 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-float" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/10 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-float"></div>
+        <div className="absolute top-40 right-20 w-96 h-96 bg-accent/10 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-float" style={{animationDelay: '2s'}}></div>
+        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-primary-glow/10 rounded-full mix-blend-multiply filter blur-xl opacity-40 animate-float" style={{animationDelay: '4s'}}></div>
       </div>
 
       <div className="relative z-10">
@@ -49,15 +49,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 <h1 className="text-2xl font-bold text-primary">
                   NarrArtive
                 </h1>
-                <p className="text-xs text-gray-600">Where stories come to life</p>
+                <p className="text-xs text-muted-foreground">Where stories come to life</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" onClick={onLogin} className="text-gray-600 hover:text-primary">
+              <Button variant="ghost" onClick={onLogin} className="text-muted-foreground hover:text-primary">
                 Log In
               </Button>
-              <Button onClick={onGetStarted} className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-xl transition-all duration-300">
+              <Button onClick={onGetStarted} className="bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-lg transition-all duration-300">
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -69,14 +69,14 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <section className="px-6 py-20">
           <div className="max-w-7xl mx-auto text-center">
             <div className="max-w-4xl mx-auto">
-              <h2 className="text-6xl md:text-7xl font-bold text-gray-900 mb-6 leading-tight">
+              <h2 className="text-6xl md:text-7xl font-bold text-foreground mb-6 leading-tight">
                 Transform Your 
                 <span className="text-primary"> Stories </span>
                 Into Visual 
                 <span className="text-accent"> Masterpieces</span>
               </h2>
               
-              <p className="text-xl text-gray-600 mb-12 leading-relaxed max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground mb-12 leading-relaxed max-w-2xl mx-auto">
                 NarrArtive uses advanced AI to identify characters in your stories and generate stunning visual representations. 
                 Bring your imagination to life with the power of artificial intelligence.
               </p>
@@ -84,7 +84,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16">
                 <Button 
                   onClick={onGetStarted}
-                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-4 text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+                  className="bg-primary text-primary-foreground hover:bg-primary/90 px-8 py-4 text-lg shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105"
                 >
                   Start Creating Now
                   <ArrowRight className="w-5 h-5 ml-2" />
@@ -102,16 +102,13 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
 
               {/* Demo Image Placeholder */}
               <div className="relative max-w-4xl mx-auto">
-                <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-2xl p-8 border border-white/20">
+                <div className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-elegant p-8 border border-white/30">
                   <div 
-                    className="aspect-video rounded-xl flex items-center justify-center relative overflow-hidden"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(59, 130, 246, 0.2) 50%, rgba(249, 115, 22, 0.2) 100%)'
-                    }}
+                    className="aspect-video rounded-xl flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-muted via-background to-accent/10"
                   >
                     <div className="text-center relative z-10">
                       <Sparkles className="w-16 h-16 text-primary mx-auto mb-4 drop-shadow-lg" />
-                      <p className="text-primary font-bold text-lg drop-shadow-md">Interactive Demo Coming Soon</p>
+                      <p className="text-primary font-bold text-lg drop-shadow-md">Premium Experience Coming Soon</p>
                     </div>
                   </div>
                 </div>
@@ -124,10 +121,10 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <section className="px-6 py-20 bg-white/50 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
-              <h3 className="text-4xl font-bold text-gray-900 mb-4">
+              <h3 className="text-4xl font-bold text-foreground mb-4">
                 Powerful Features for Creative Minds
               </h3>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
                 Everything you need to transform your written stories into visual narratives
               </p>
             </div>
@@ -136,13 +133,13 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               {features.map((feature, index) => (
                 <div 
                   key={index}
-                  className="bg-white/80 backdrop-blur-sm rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 border border-white/20"
+                  className="bg-white/90 backdrop-blur-sm rounded-2xl p-8 shadow-md hover:shadow-elegant transition-all duration-300 transform hover:scale-105 border border-white/30 group"
                 >
-                  <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 gradient-primary rounded-2xl flex items-center justify-center mb-6 group-hover:shadow-glow transition-shadow duration-300">
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
-                  <h4 className="text-2xl font-bold text-gray-900 mb-4">{feature.title}</h4>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                  <h4 className="text-2xl font-bold text-foreground mb-4">{feature.title}</h4>
+                  <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -152,15 +149,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         {/* CTA Section */}
         <section className="px-6 py-20">
           <div className="max-w-4xl mx-auto text-center">
-            <h3 className="text-5xl font-bold text-gray-900 mb-6">
+            <h3 className="text-5xl font-bold text-foreground mb-6">
               Ready to bring your stories to life?
             </h3>
-            <p className="text-xl text-gray-600 mb-12">
+            <p className="text-xl text-muted-foreground mb-12">
               Join thousands of creators who are already transforming their narratives with NarrArtive
             </p>
             <Button 
               onClick={onGetStarted}
-              className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-105"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 px-12 py-6 text-xl shadow-elegant hover:shadow-glow transition-all duration-300 transform hover:scale-105"
             >
               Start Your Journey
               <ArrowRight className="w-6 h-6 ml-3" />
@@ -169,7 +166,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </section>
 
         {/* Footer */}
-        <footer className="px-6 py-12 border-t border-gray-200">
+        <footer className="px-6 py-12 border-t border-border bg-white/30 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-3 mb-4">
               <img 
@@ -181,7 +178,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 NarrArtive
               </span>
             </div>
-            <p className="text-gray-500">© 2024 NarrArtive. All rights reserved.</p>
+            <p className="text-muted-foreground">© 2024 NarrArtive. All rights reserved.</p>
           </div>
         </footer>
       </div>

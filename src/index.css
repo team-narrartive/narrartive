@@ -1,47 +1,58 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* NarrArtive Design System */
+/* Load Satoshi font */
+@import url('https://fonts.googleapis.com/css2?family=Satoshi:wght@400;500;700&display=swap');
+
+/* NarrArtive Premium Design System */
 
 @layer base {
   :root {
     --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --foreground: 218 11% 31%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 218 11% 31%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 218 11% 31%;
 
-    --primary: 200 85% 65%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 219 82% 29%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 264 83% 57%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 218 11% 31%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 218 11% 41%;
 
-    --accent: 165 75% 70%;
-    --accent-foreground: 0 0% 9%;
+    --accent: 264 83% 57%;
+    --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 200 85% 65%;
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 219 82% 29%;
 
     --radius: 0.75rem;
 
-    /* Custom gradients - Lighter pastel blue/green theme */
-    --gradient-primary: linear-gradient(135deg, #7dd3fc 0%, #67e8f9 100%);
-    --gradient-secondary: linear-gradient(135deg, #86efac 0%, #6ee7b7 100%);
-    --gradient-accent: linear-gradient(135deg, #93c5fd 0%, #a5b4fc 100%);
-    --gradient-background: linear-gradient(135deg, #f0f9ff 0%, #ecfdf5 100%);
+    /* Premium gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(219, 82%, 29%), hsl(264, 83%, 57%));
+    --gradient-secondary: linear-gradient(135deg, hsl(220, 14%, 96%), hsl(0, 0%, 100%));
+    --gradient-background: linear-gradient(135deg, hsl(220, 14%, 96%) 0%, hsl(0, 0%, 100%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsla(264, 83%, 57%, 0.05));
+    
+    /* Premium shadows */
+    --shadow-elegant: 0 10px 30px -10px hsla(219, 82%, 29%, 0.3);
+    --shadow-glow: 0 0 40px hsla(264, 83%, 57%, 0.4);
+    --shadow-subtle: 0 2px 8px -2px hsla(219, 82%, 29%, 0.1);
+    
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .dark {
@@ -51,60 +62,62 @@
     --card-foreground: 210 40% 98%;
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
-    --primary: 200 85% 65%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 219 82% 29%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 264 83% 57%;
     --secondary: 217.2 32.6% 17.5%;
     --secondary-foreground: 210 40% 98%;
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
-    --accent: 165 75% 70%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 264 83% 57%;
+    --accent-foreground: 0 0% 100%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 200 85% 65%;
+    --ring: 219 82% 29%;
   }
 }
 
 @layer base {
   * {
     @apply border-border;
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: Graphik, sans-serif !important;
+    background: var(--gradient-background);
+    color: hsl(var(--foreground));
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
-  /* Apply Graphik font to all text elements globally with !important */
+  /* Apply Satoshi font to all text elements globally with !important */
   h1, h2, h3, h4, h5, h6 {
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   p, span, div, label, input, textarea, button, a {
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
-  /* Ensure all UI components use Graphik */
+  /* Ensure all UI components use Satoshi */
   .ui-text, .component-text, .modal-text, .popup-text {
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Apply to form elements specifically */
   input, textarea, select, option {
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Apply to navigation and menu elements */
   nav, menu, .nav-item, .menu-item {
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 
   /* Apply to all interactive elements */
   button, .button, .btn {
-    font-family: Graphik, sans-serif !important;
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 }
 
@@ -117,16 +130,29 @@
     background: var(--gradient-secondary);
   }
   
-  .gradient-accent {
-    background: var(--gradient-accent);
-  }
-  
   .gradient-background {
     background: var(--gradient-background);
   }
   
+  .gradient-card {
+    background: var(--gradient-card);
+  }
+  
+  /* Premium shadows */
+  .shadow-elegant {
+    box-shadow: var(--shadow-elegant);
+  }
+
+  .shadow-glow {
+    box-shadow: var(--shadow-glow);
+  }
+
+  .shadow-subtle {
+    box-shadow: var(--shadow-subtle);
+  }
+  
   .glass {
-    @apply backdrop-blur-xl bg-white/10 border border-white/20;
+    @apply backdrop-blur-xl bg-white/85 border border-white/20;
   }
   
   .animate-float {
@@ -135,7 +161,7 @@
   
   @keyframes float {
     0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    50% { transform: translateY(-20px); }
   }
   
   .animate-glow {
@@ -143,12 +169,17 @@
   }
   
   @keyframes glow {
-    from { box-shadow: 0 0 20px rgba(125, 211, 252, 0.3); }
-    to { box-shadow: 0 0 30px rgba(125, 211, 252, 0.6); }
+    from { box-shadow: 0 0 20px hsla(264, 83%, 57%, 0.3); }
+    to { box-shadow: 0 0 30px hsla(264, 83%, 57%, 0.6); }
   }
 
-  /* Font utility classes for Graphik with !important */
-  .font-graphik {
-    font-family: Graphik, sans-serif !important;
+  /* Premium transitions */
+  .transition-smooth {
+    transition: var(--transition-smooth);
+  }
+
+  /* Font utility classes for Satoshi with !important */
+  .font-satoshi {
+    font-family: 'Satoshi', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
   }
 }

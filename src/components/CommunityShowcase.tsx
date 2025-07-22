@@ -146,10 +146,13 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   return <Layout showSidebar={true} currentView="community">
       <div className="space-y-6">
         <div className="flex items-center justify-start gap-4">
-          
+          <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Dashboard
+          </Button>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Community Showcase ✨</h1>
-            <p className="text-gray-600 mt-2">Discover amazing stories created by our talented community of storytellers</p>
+            <h1 className="text-3xl font-bold text-primary">Community Showcase</h1>
+            <p className="text-muted-foreground mt-2">Discover amazing stories created by our talented community of storytellers</p>
           </div>
         </div>
 

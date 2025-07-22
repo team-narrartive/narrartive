@@ -20,8 +20,8 @@ export default {
 		},
 		extend: {
 			fontFamily: {
-				sans: ['Graphik', 'system-ui', '-apple-system', 'sans-serif'],
-				graphik: ['Graphik', 'system-ui', '-apple-system', 'sans-serif'],
+				sans: ['Satoshi', 'system-ui', '-apple-system', 'sans-serif'],
+				satoshi: ['Satoshi', 'system-ui', '-apple-system', 'sans-serif'],
 			},
 			colors: {
 				border: 'hsl(var(--border))',
@@ -31,7 +31,8 @@ export default {
 				foreground: 'hsl(var(--foreground))',
 				primary: {
 					DEFAULT: 'hsl(var(--primary))',
-					foreground: 'hsl(var(--primary-foreground))'
+					foreground: 'hsl(var(--primary-foreground))',
+					glow: 'hsl(var(--primary-glow))',
 				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',

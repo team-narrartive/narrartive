@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStories } from '@/hooks/useStories';
@@ -29,7 +28,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const totalViews = userStories?.reduce((sum, story) => sum + (story.view_count || 0), 0) || 0;
   
   // For now, show minutes as stories * 45 (estimated time per story)
-  // TODO: Implement proper activity tracking
   const minutesSpent = totalStories * 45;
 
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
@@ -40,10 +38,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   return (
     <Layout showSidebar={true} currentView="dashboard">
       <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-4">
-          Welcome back, {firstName}! 👋
+        <h1 className="text-4xl font-bold text-primary mb-4">
+          Welcome back, {firstName}!
         </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Ready to create your next masterpiece? Your creative journey continues here.
         </p>
       </div>
@@ -60,26 +58,26 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <Card className="bg-white/80 backdrop-blur-sm border-slate-100">
+        <Card className="bg-white/90 backdrop-blur-sm border-border shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Minutes Spent</CardTitle>
-            <Clock className="h-4 w-4 text-slate-600" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Minutes Spent</CardTitle>
+            <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-slate-600">
+            <div className="text-2xl font-bold text-foreground">
               {userStoriesLoading ? (
-                <div className="w-6 h-6 border-2 border-slate-600 border-t-transparent rounded-full animate-spin"></div>
+                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
               ) : (
                 minutesSpent
               )}
             </div>
-            <p className="text-xs text-gray-500">Creating amazing content</p>
+            <p className="text-xs text-muted-foreground">Creating amazing content</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border-primary/30">
+        <Card className="bg-white/90 backdrop-blur-sm border-primary/30 shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Stories Generated</CardTitle>
+            <CardTitle className="text-sm font-medium text-muted-foreground">Stories Generated</CardTitle>
             <BookOpen className="h-4 w-4 text-primary" />
           </CardHeader>
           <CardContent>
@@ -90,48 +88,48 @@ export const Dashboard: React.FC<DashboardProps> = ({
                 totalStories
               )}
             </div>
-            <p className="text-xs text-gray-500">Your creative works</p>
+            <p className="text-xs text-muted-foreground">Your creative works</p>
           </CardContent>
         </Card>
 
-        <Card className="bg-white/80 backdrop-blur-sm border-pink-100">
+        <Card className="bg-white/90 backdrop-blur-sm border-accent/30 shadow-subtle">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Likes Received</CardTitle>
-            <Heart className="h-4 w-4 text-pink-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-pink-500">
-              {userStoriesLoading ? (
-                <div className="w-6 h-6 border-2 border-pink-500 border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                totalLikes
-              )}
-            </div>
-            <p className="text-xs text-gray-500">Community appreciation</p>
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white/80 backdrop-blur-sm border-accent/30">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Views</CardTitle>
-            <Users className="h-4 w-4 text-accent" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Likes Received</CardTitle>
+            <Heart className="h-4 w-4 text-accent" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-accent">
               {userStoriesLoading ? (
                 <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin"></div>
               ) : (
+                totalLikes
+              )}
+            </div>
+            <p className="text-xs text-muted-foreground">Community appreciation</p>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-white/90 backdrop-blur-sm border-primary-glow/30 shadow-subtle">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Views</CardTitle>
+            <Users className="h-4 w-4 text-primary-glow" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-primary-glow">
+              {userStoriesLoading ? (
+                <div className="w-6 h-6 border-2 border-primary-glow border-t-transparent rounded-full animate-spin"></div>
+              ) : (
                 totalViews
               )}
             </div>
-            <p className="text-xs text-gray-500">Story engagement</p>
+            <p className="text-xs text-muted-foreground">Story engagement</p>
           </CardContent>
         </Card>
       </div>
 
-      {/* Quick Actions with improved darker colors */}
+      {/* Quick Actions with Premium Design */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="bg-gradient-to-br from-emerald-600 to-green-600 text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
+        <Card className="gradient-primary text-white border-0 hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col" onClick={onCreateNew}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <PlusCircle className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -146,7 +144,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
+        <Card className="bg-primary text-white border-0 hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewProjects}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <BookOpen className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -170,7 +168,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="bg-gradient-to-br from-orange-500 to-amber-600 text-white border-0 hover:shadow-lg transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
+        <Card className="bg-accent text-white border-0 hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col" onClick={onViewCommunity}>
           <CardHeader className="flex-1">
             <CardTitle className="flex items-center gap-3">
               <Users className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -198,28 +196,28 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {/* Recent Activity - only show if we have stories and they're loaded */}
       {userStories && userStories.length > 0 && !userStoriesLoading && (
         <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Recent Stories</h2>
+          <h2 className="text-2xl font-bold text-foreground mb-6">Your Recent Stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {userStories.slice(0, 3).map((story) => (
-              <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+              <Card key={story.id} className="bg-white/90 backdrop-blur-sm hover:shadow-elegant transition-all duration-300 border border-white/30 group">
                 <div className="aspect-video gradient-primary relative overflow-hidden">
                   {story.main_image && (
                     <img 
                       src={story.main_image} 
                       alt={story.title} 
-                      className="w-full h-full object-cover" 
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
                     />
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                 </div>
                 <CardHeader>
-                  <CardTitle className="text-lg">{story.title}</CardTitle>
-                  <CardDescription className="text-sm text-gray-600">
+                  <CardTitle className="text-lg text-foreground">{story.title}</CardTitle>
+                  <CardDescription className="text-sm text-muted-foreground">
                     {story.description}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex justify-between items-center text-sm text-gray-500">
+                  <div className="flex justify-between items-center text-sm text-muted-foreground">
                     <span>{story.view_count || 0} views</span>
                     <span>{story.like_count || 0} likes</span>
                   </div>
@@ -234,7 +232,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       {userStoriesLoading && (
         <div className="mt-12 text-center">
           <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading your stories...</p>
+          <p className="text-muted-foreground">Loading your stories...</p>
         </div>
       )}
     </Layout>

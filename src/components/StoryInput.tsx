@@ -287,16 +287,19 @@ export const StoryInput: React.FC<StoryInputProps> = ({
 
             {/* Story Input */}
             <div className="flex items-center justify-start gap-4 mb-6">
-              
+              <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
+                <ArrowLeft className="w-4 h-4 mr-2" />
+                Back to Dashboard
+              </Button>
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
+                  <h2 className="text-xl font-semibold text-primary">Your Story</h2>
                   <div className="flex items-center space-x-2">
                     <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
-                    <Label htmlFor="privacy-toggle" className="text-sm font-medium">
+                    <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
                       {isPublic ? 'Public' : 'Private'}
                     </Label>
                   </div>
