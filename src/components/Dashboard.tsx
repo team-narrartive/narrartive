@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle, Eye, Upload } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { runImageMigration } from '@/utils/runMigrationScript';
 import { useToast } from '@/hooks/use-toast';
 interface DashboardProps {
   onCreateNew: () => void;
@@ -19,7 +18,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewProjects,
   onViewCommunity
 }) => {
-  const [isMigrating, setIsMigrating] = useState(false);
   const {
     toast
   } = useToast();
@@ -49,25 +47,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   // Show error message if there's an issue loading stories
   const showError = userStoriesError && !userStoriesLoading;
-  const handleMigration = async () => {
-    setIsMigrating(true);
-    try {
-      const result = await runImageMigration();
-      toast({
-        title: "Migration completed",
-        description: `Successfully migrated ${result.migratedCount} stories. All Base64 images have been converted to storage URLs.`
-      });
-    } catch (error) {
-      console.error('Migration failed:', error);
-      toast({
-        title: "Migration failed",
-        description: "There was an error migrating the images. Check console for details.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsMigrating(false);
-    }
-  };
   return <Layout showSidebar={true} currentView="dashboard">
       <div className="text-center mb-16">
         <h1 className="text-5xl md:text-6xl font-display text-brand mb-6">
@@ -242,8 +221,6 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>}
 
-      {/* Migration Section */}
-      
 
       {/* Show loading state for recent activity */}
       {userStoriesLoading && <div className="mt-16 text-center">

@@ -210,7 +210,10 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
                     {story.description}
                   </CardDescription>
                   <div className="text-xs text-muted-foreground mt-1">
-                    by {(story as any).profiles?.display_name || (story as any).profiles?.first_name || 'Anonymous'}
+                    by {(story as any).profiles ? 
+                      `${((story as any).profiles.first_name || '').trim()} ${((story as any).profiles.last_name || '').trim()}`.trim() + 
+                      ` (${(story as any).profiles.email?.split('@')[0] || 'user'})` 
+                      : 'Anonymous'}
                   </div>
                 </CardHeader>
                 

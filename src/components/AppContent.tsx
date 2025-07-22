@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { NavigationManager } from './NavigationManager';
 import { ViewRenderer } from './ViewRenderer';
 
-type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset' | 'migration';
+type View = 'landing' | 'auth' | 'dashboard' | 'story-input' | 'creation' | 'settings' | 'feedback' | 'community' | 'projects' | 'story-reader' | 'password-reset';
 
 export const AppContent = () => {
   const [currentView, setCurrentView] = useState<View>('landing');
@@ -27,12 +27,6 @@ export const AppContent = () => {
       return;
     }
     
-    // Check for migration route
-    if (path === '/migration') {
-      console.log('Migration route detected, showing migration page');
-      setCurrentView('migration');
-      return;
-    }
   }, []);
 
   // Handle authentication state changes
