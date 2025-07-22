@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useStories } from '@/hooks/useStories';
 import { useDeleteStory } from '@/hooks/useDeleteStory';
@@ -12,46 +11,45 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { 
-  BookOpen, 
-  Eye, 
-  Heart, 
-  Trash2, 
-  Calendar,
-  AlertCircle,
-  Plus,
-  Edit
-} from 'lucide-react';
+import { BookOpen, Eye, Heart, Trash2, Calendar, AlertCircle, Plus, Edit } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
-
 interface MyProjectsProps {
   onBack: () => void;
   onCreateNew: () => void;
   onViewStory: (storyId: string) => void;
 }
-
 export const MyProjects: React.FC<MyProjectsProps> = ({
   onBack,
   onCreateNew,
   onViewStory
 }) => {
-  const { data: stories, isLoading, error } = useStories('personal');
+  const {
+    data: stories,
+    isLoading,
+    error
+  } = useStories('personal');
   const deleteStoryMutation = useDeleteStory();
   const incrementViewsMutation = useIncrementViews();
   const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
-  const [editingStory, setEditingStory] = useState<{id: string, title: string, description: string, isPublic: boolean} | null>(null);
+  const [editingStory, setEditingStory] = useState<{
+    id: string;
+    title: string;
+    description: string;
+    isPublic: boolean;
+  } | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
-  const { toast } = useToast();
+  const {
+    toast
+  } = useToast();
   const queryClient = useQueryClient();
-
   const handleDelete = async (storyId: string) => {
     if (deletingStoryId) return; // Prevent multiple deletions
-    
+
     setDeletingStoryId(storyId);
     try {
       await deleteStoryMutation.deleteStory(storyId);
@@ -61,7 +59,6 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       setDeletingStoryId(null);
     }
   };
-
   const handleReadStory = async (storyId: string) => {
     try {
       await incrementViewsMutation.mutateAsync(storyId);
@@ -72,7 +69,6 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       onViewStory(storyId);
     }
   };
-
   const handleEdit = (story: any) => {
     setEditingStory({
       id: story.id,
@@ -81,42 +77,37 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       isPublic: story.is_public
     });
   };
-
   const handleSaveEdit = async () => {
     if (!editingStory || isSaving) return;
-    
     setIsSaving(true);
-    
+
     // Optimistic update
-    queryClient.setQueryData(['stories', 'personal'], (oldData: any) => 
-      oldData?.map((story: any) => 
-        story.id === editingStory.id 
-          ? { ...story, title: editingStory.title, description: editingStory.description, is_public: editingStory.isPublic }
-          : story
-      )
-    );
-    
+    queryClient.setQueryData(['stories', 'personal'], (oldData: any) => oldData?.map((story: any) => story.id === editingStory.id ? {
+      ...story,
+      title: editingStory.title,
+      description: editingStory.description,
+      is_public: editingStory.isPublic
+    } : story));
+
     // Close modal immediately after optimistic update
     setIsSaving(false);
     setIsEditDialogOpen(false);
     setEditingStory(null);
-    
+
     // Fire background save without blocking
     (async () => {
       try {
-        const { error } = await supabase
-          .from('stories')
-          .update({ 
-            title: editingStory.title,
-            description: editingStory.description,
-            is_public: editingStory.isPublic
-          })
-          .eq('id', editingStory.id);
-
+        const {
+          error
+        } = await supabase.from('stories').update({
+          title: editingStory.title,
+          description: editingStory.description,
+          is_public: editingStory.isPublic
+        }).eq('id', editingStory.id);
         if (error) throw error;
-
-        await queryClient.invalidateQueries({ queryKey: ['stories'] });
-        
+        await queryClient.invalidateQueries({
+          queryKey: ['stories']
+        });
         toast({
           title: "Story updated",
           description: "Your changes have been saved successfully."
@@ -124,7 +115,9 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       } catch (error) {
         console.error('Edit error:', error);
         // Revert optimistic update
-        queryClient.invalidateQueries({ queryKey: ['stories'] });
+        queryClient.invalidateQueries({
+          queryKey: ['stories']
+        });
         toast({
           title: "Update failed",
           description: "Failed to update story. Please try again.",
@@ -133,25 +126,18 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       }
     })();
   };
-
-
-
   if (isLoading) {
-    return (
-      <Layout showSidebar={true} currentView="projects">
+    return <Layout showSidebar={true} currentView="projects">
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
             <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-gray-600">Loading your projects...</p>
           </div>
         </div>
-      </Layout>
-    );
+      </Layout>;
   }
-
   if (error) {
-    return (
-      <Layout showSidebar={true} currentView="projects">
+    return <Layout showSidebar={true} currentView="projects">
         <div className="space-y-6">
         <div className="flex items-center justify-start gap-4">
           <Button onClick={onBack} variant="outline">
@@ -170,18 +156,13 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
             </AlertDescription>
           </Alert>
         </div>
-      </Layout>
-    );
+      </Layout>;
   }
-
-  return (
-    <Layout showSidebar={true} currentView="projects">
+  return <Layout showSidebar={true} currentView="projects">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button onClick={onBack} variant="outline">
-              Back to Dashboard
-            </Button>
+            
             <div>
               <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
               <p className="text-gray-600 mt-2">Manage and view your created stories</p>
@@ -193,29 +174,16 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
           </Button>
         </div>
 
-        {stories && stories.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stories.map((story) => (
-              <Card key={story.id} className="group bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
+        {stories && stories.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {stories.map(story => <Card key={story.id} className="group bg-white/80 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                 <div className="aspect-video bg-gradient-to-br from-purple-100 to-blue-100 relative overflow-hidden">
-                  {story.main_image && (
-                    <img 
-                      src={story.main_image} 
-                      alt={story.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                    />
-                  )}
+                  {story.main_image && <img src={story.main_image} alt={story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        handleEdit(story);
-                        setIsEditDialogOpen(true);
-                      }}
-                      className="bg-white hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full w-8 h-8 p-0 shadow-sm"
-                    >
+                    <Button variant="ghost" size="sm" onClick={() => {
+                handleEdit(story);
+                setIsEditDialogOpen(true);
+              }} className="bg-white hover:bg-gray-100 text-gray-700 hover:text-gray-900 rounded-full w-8 h-8 p-0 shadow-sm">
                       <Edit className="w-4 h-4" />
                     </Button>
                   </div>
@@ -246,19 +214,13 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     </div>
                   </div>
                   
-                  <Button 
-                    onClick={() => handleReadStory(story.id)}
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground"
-                  >
+                  <Button onClick={() => handleReadStory(story.id)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground">
                     <BookOpen className="w-4 h-4 mr-2" />
                     Read
                   </Button>
                 </CardContent>
-              </Card>
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-12">
+              </Card>)}
+          </div> : <div className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No projects yet</h3>
             <p className="text-gray-600 mb-6">Create your first story to get started</p>
@@ -266,51 +228,40 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
               <Plus className="w-4 h-4 mr-2" />
               Create Your First Story
             </Button>
-          </div>
-        )}
+          </div>}
       </div>
 
       {/* Edit Story Dialog */}
-      <Dialog 
-        open={isEditDialogOpen} 
-        onOpenChange={(open) => { 
-          setIsEditDialogOpen(open); 
-          if (!open) setEditingStory(null); 
-        }}
-      >
+      <Dialog open={isEditDialogOpen} onOpenChange={open => {
+      setIsEditDialogOpen(open);
+      if (!open) setEditingStory(null);
+    }}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Edit Story</DialogTitle>
           </DialogHeader>
-          {editingStory && (
-            <div className="space-y-4">
+          {editingStory && <div className="space-y-4">
               <div>
                 <Label htmlFor="title">Title</Label>
-                <Input
-                  id="title"
-                  value={editingStory.title}
-                  onChange={(e) => setEditingStory(prev => prev ? {...prev, title: e.target.value} : null)}
-                  className="mt-1"
-                />
+                <Input id="title" value={editingStory.title} onChange={e => setEditingStory(prev => prev ? {
+              ...prev,
+              title: e.target.value
+            } : null)} className="mt-1" />
               </div>
               <div>
                 <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  value={editingStory.description}
-                  onChange={(e) => setEditingStory(prev => prev ? {...prev, description: e.target.value} : null)}
-                  className="mt-1 resize-none"
-                  rows={3}
-                />
+                <Textarea id="description" value={editingStory.description} onChange={e => setEditingStory(prev => prev ? {
+              ...prev,
+              description: e.target.value
+            } : null)} className="mt-1 resize-none" rows={3} />
               </div>
               <div className="flex items-center justify-between">
                 <Label htmlFor="privacy">Privacy Settings</Label>
                 <div className="flex items-center gap-2">
-                  <Switch
-                    id="privacy"
-                    checked={editingStory.isPublic}
-                    onCheckedChange={(checked) => setEditingStory(prev => prev ? {...prev, isPublic: checked} : null)}
-                  />
+                  <Switch id="privacy" checked={editingStory.isPublic} onCheckedChange={checked => setEditingStory(prev => prev ? {
+                ...prev,
+                isPublic: checked
+              } : null)} />
                   <span className="text-sm text-gray-600">
                     {editingStory.isPublic ? 'Public' : 'Private'}
                   </span>
@@ -333,10 +284,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                     </AlertDialogHeader>
                     <AlertDialogFooter>
                       <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction
-                        onClick={() => handleDelete(editingStory.id)}
-                        className="bg-red-600 hover:bg-red-700"
-                      >
+                      <AlertDialogAction onClick={() => handleDelete(editingStory.id)} className="bg-red-600 hover:bg-red-700">
                         Delete
                       </AlertDialogAction>
                     </AlertDialogFooter>
@@ -346,10 +294,8 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                   {isSaving ? 'Saving...' : 'Save Changes'}
                 </Button>
               </div>
-            </div>
-          )}
+            </div>}
         </DialogContent>
       </Dialog>
-    </Layout>
-  );
+    </Layout>;
 };
