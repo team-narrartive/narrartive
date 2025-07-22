@@ -120,6 +120,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
               <img 
                 src={images[imageIndex]} 
                 alt={`Story illustration ${imageIndex + 1}`}
+                loading="lazy"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
@@ -196,6 +197,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
               <img 
                 src={story.main_image} 
                 alt={story.title}
+                loading="lazy"
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
@@ -282,6 +284,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                       <img 
                         src={story.additional_images[currentImageIndex]} 
                         alt={`Story illustration ${currentImageIndex + 1}`}
+                        loading="lazy"
                         className="w-full h-full object-contain cursor-pointer"
                         onClick={() => openGallery(currentImageIndex)}
                       />
@@ -332,6 +335,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                             <img 
                               src={img} 
                               alt={`Thumbnail ${idx + 1}`}
+                              loading="lazy"
                               className="w-full h-full object-cover"
                             />
                           </button>
@@ -397,6 +401,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                 <img 
                   src={story.additional_images[currentImageIndex]} 
                   alt={`Story image ${currentImageIndex + 1}`}
+                  loading="lazy"
                   className="max-w-full max-h-full object-contain rounded-lg"
                 />
               </div>

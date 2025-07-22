@@ -4,12 +4,14 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from './useAuth';
 import { useToast } from '@/hooks/use-toast';
 import { useQueryClient } from '@tanstack/react-query';
+import { useImageUpload } from './useImageUpload';
 
 export const useDeleteStory = () => {
   const [isDeleting, setIsDeleting] = useState(false);
   const { user } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { deleteStoryImages } = useImageUpload();
 
   const deleteStory = async (storyId: string) => {
     if (!user) {
@@ -27,6 +29,7 @@ export const useDeleteStory = () => {
     setIsDeleting(true);
     
     try {
+      // Delete story from database first
       const { error } = await supabase
         .from('stories')
         .delete()
@@ -37,6 +40,11 @@ export const useDeleteStory = () => {
         console.error('Error deleting story:', error);
         throw error;
       }
+
+      // Delete associated images from storage (fire and forget)
+      deleteStoryImages(storyId).catch(err => 
+        console.warn('Could not delete story images from storage:', err)
+      );
 
       // Immediately update local cache to remove the story
       queryClient.setQueryData(['stories'], (oldData: any) => {

@@ -193,7 +193,12 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
           const userLiked = isLiked(story.id);
           return <Card key={story.id} className="bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group cursor-pointer">
                 <div className="aspect-video gradient-primary relative overflow-hidden">
-                  {story.main_image && <img src={story.main_image} alt={story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
+                  {story.main_image && <img 
+                    src={story.main_image} 
+                    alt={story.title} 
+                    loading="lazy"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
+                  />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>
                 

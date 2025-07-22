@@ -203,6 +203,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
                         <img
                           src={imageUrl}
                           alt={`Generated scene ${index + 1}`}
+                          loading="lazy"
                           className="w-full h-auto rounded-lg object-cover cursor-pointer hover:scale-105 transition-transform duration-300"
                           onClick={() => handleOpenCanvas(imageUrl)}
                           onError={(e) => {
@@ -259,6 +260,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
                           <img
                             src={imageUrl}
                             alt={`Previous scene ${index + 1}`}
+                            loading="lazy"
                             className="w-full h-16 object-cover rounded cursor-pointer hover:scale-105 transition-transform duration-200"
                             onClick={() => handleOpenCanvas(imageUrl)}
                           />
