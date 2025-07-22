@@ -65,6 +65,20 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
           }
         }
       )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'user_story_likes'
+        },
+        (payload) => {
+          console.log('Real-time likes update:', payload);
+          
+          // Refresh user likes cache when likes change
+          queryClient.invalidateQueries({ queryKey: ['user-likes'] });
+        }
+      )
       .subscribe();
 
     return () => {

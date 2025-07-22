@@ -58,6 +58,7 @@ export type Database = {
           id: string
           image_versions: Json | null
           is_public: boolean | null
+          like_count: number | null
           main_image: string | null
           story_content: string
           title: string
@@ -75,6 +76,7 @@ export type Database = {
           id?: string
           image_versions?: Json | null
           is_public?: boolean | null
+          like_count?: number | null
           main_image?: string | null
           story_content: string
           title: string
@@ -92,6 +94,7 @@ export type Database = {
           id?: string
           image_versions?: Json | null
           is_public?: boolean | null
+          like_count?: number | null
           main_image?: string | null
           story_content?: string
           title?: string
@@ -101,11 +104,76 @@ export type Database = {
         }
         Relationships: []
       }
+      user_story_likes: {
+        Row: {
+          created_at: string
+          id: string
+          story_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          story_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          story_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_story_likes_story_id_fkey"
+            columns: ["story_id"]
+            isOneToOne: false
+            referencedRelation: "stories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      decrement_story_likes: {
+        Args: { p_story_id: string }
+        Returns: {
+          id: string
+          user_id: string
+          title: string
+          description: string
+          story_content: string
+          main_image: string
+          additional_images: string[]
+          view_count: number
+          like_count: number
+          is_public: boolean
+          category: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
+      increment_story_likes: {
+        Args: { p_story_id: string }
+        Returns: {
+          id: string
+          user_id: string
+          title: string
+          description: string
+          story_content: string
+          main_image: string
+          additional_images: string[]
+          view_count: number
+          like_count: number
+          is_public: boolean
+          category: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
       increment_story_views: {
         Args: { story_id: string }
         Returns: {

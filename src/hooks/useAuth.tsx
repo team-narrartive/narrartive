@@ -79,7 +79,7 @@ const useAuthInternal = () => {
     try {
       const { data: profileData, error } = await supabase
         .from('profiles')
-        .select('minutes_spent, stories_generated, likes_received, first_name, last_name, email')
+        .select('minutes_spent, stories_generated, first_name, last_name, email')
         .eq('id', authUser.id)
         .single();
         
@@ -96,7 +96,6 @@ const useAuthInternal = () => {
             ...authUser.user_metadata,
             minutes_spent: profileData.minutes_spent || 0,
             stories_generated: profileData.stories_generated || 0,
-            likes_received: profileData.likes_received || 0,
             first_name: profileData.first_name || authUser.user_metadata?.first_name,
             last_name: profileData.last_name || authUser.user_metadata?.last_name
           }

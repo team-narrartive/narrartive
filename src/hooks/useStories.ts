@@ -92,7 +92,7 @@ export const useLikeStory = () => {
       if (shouldLike) {
         // Call increment function for liking
         const { data, error } = await supabase.rpc('increment_story_likes', {
-          story_id: storyId
+          p_story_id: storyId
         });
 
         if (error) {
@@ -105,7 +105,7 @@ export const useLikeStory = () => {
       } else {
         // Call decrement function for unliking
         const { data, error } = await supabase.rpc('decrement_story_likes', {
-          story_id: storyId
+          p_story_id: storyId
         });
 
         if (error) {

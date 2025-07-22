@@ -8,115 +8,44 @@ export const useUserLikes = () => {
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
-  // Fetch user's liked stories from the database
-  const {
-    data: likedStoryIds = [],
-    isLoading
-  } = useQuery({
+  const { data: likedStoryIds = [], isLoading } = useQuery({
     queryKey: ['user-likes', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      
-      const { data, error } = await supabase
-        .from('user_story_likes')
-        .select('story_id')
-        .eq('user_id', user.id);
-      
-      if (error) {
-        console.error('Error fetching user likes:', error);
-        throw error;
-      }
-      
+      const { data, error } = await supabase.from('user_story_likes').select('story_id').eq('user_id', user.id);
+      if (error) throw error;
       return data.map(like => like.story_id);
     },
     enabled: !!user,
-    staleTime: 30000,
   });
 
-  // Check if a story is liked by the current user
-  const isLiked = (storyId: string) => {
-    return likedStoryIds.includes(storyId);
-  };
+  const isLiked = (storyId: string) => likedStoryIds.includes(storyId);
 
-  // Like/unlike mutation
   const likeStoryMutation = useMutation({
     mutationFn: async ({ storyId, shouldLike }: { storyId: string; shouldLike: boolean }) => {
-      if (!user) throw new Error('User not authenticated');
-      
-      if (shouldLike) {
-        // Call increment function for liking
-        const { data, error } = await supabase.rpc('increment_story_likes', {
-          story_id: storyId
-        });
-
-        if (error) {
-          console.error('Error incrementing likes:', error);
-          throw error;
-        }
-
-        return { story: data?.[0] || null, action: 'liked' as const };
-      } else {
-        // Call decrement function for unliking
-        const { data, error } = await supabase.rpc('decrement_story_likes', {
-          story_id: storyId
-        });
-
-        if (error) {
-          console.error('Error decrementing likes:', error);
-          throw error;
-        }
-
-        return { story: data?.[0] || null, action: 'unliked' as const };
-      }
+      if (!user) throw new Error('Not authenticated');
+      const rpc = shouldLike ? 'increment_story_likes' : 'decrement_story_likes';
+      const { data, error } = await supabase.rpc(rpc, { p_story_id: storyId });
+      if (error) throw error;
+      return { story: data?.[0], action: shouldLike ? 'liked' : 'unliked' };
     },
     onSuccess: ({ story, action }, { storyId, shouldLike }) => {
-      // Update user likes cache
-      queryClient.setQueryData(
-        ['user-likes', user?.id],
-        (oldLikes: string[] | undefined) => {
-          if (!oldLikes) return shouldLike ? [storyId] : [];
-          
-          if (shouldLike) {
-            return oldLikes.includes(storyId) ? oldLikes : [...oldLikes, storyId];
-          } else {
-            return oldLikes.filter(id => id !== storyId);
-          }
-        }
+      // Update local likes cache
+      queryClient.setQueryData(['user-likes', user?.id], (old: string[] = []) => 
+        shouldLike ? [...old, storyId] : old.filter(id => id !== storyId)
       );
-
-      // Update story data in cache if available
-      if (story) {
-        queryClient.setQueryData(['story', story.id], story);
-        
-        // Update stories in all lists
-        queryClient.setQueriesData(
-          { queryKey: ['stories'] },
-          (oldData: any[] | undefined) => {
-            if (!oldData) return oldData;
-            return oldData.map(s => s.id === story.id ? story : s);
-          }
-        );
-      }
-
-      toast({
-        title: action === 'liked' ? "Story liked!" : "Story unliked",
-        description: action === 'liked' ? "Thank you for your support!" : "Like removed"
-      });
+      // Update story cache
+      if (story) queryClient.setQueryData(['story', storyId], story);
+      // Update stories lists
+      queryClient.setQueriesData({ queryKey: ['stories'] }, (old: any[] = []) => 
+        old.map(s => s.id === storyId ? story : s)
+      );
+      toast({ title: action === 'liked' ? 'Liked!' : 'Unliked' });
     },
-    onError: (error: any) => {
-      console.error('Like/unlike error:', error);
-      toast({
-        title: "Failed to update like",
-        description: error.message || "Please try again",
-        variant: "destructive"
-      });
-    }
+    onError: (error) => {
+      toast({ title: 'Failed to update like', description: error.message, variant: 'destructive' });
+    },
   });
 
-  return {
-    isLiked,
-    isLoading,
-    likeStory: likeStoryMutation.mutateAsync,
-    isLiking: likeStoryMutation.isPending
-  };
+  return { isLiked, isLoading, likeStory: likeStoryMutation.mutateAsync, isLiking: likeStoryMutation.isPending };
 };

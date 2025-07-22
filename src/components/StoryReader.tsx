@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useStory, useLikeStory } from '@/hooks/useStories';
-import { useLikedStories } from '@/hooks/useLikedStories';
+import { useUserLikes } from '@/hooks/useUserLikes';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -21,28 +21,25 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   const { data: story, isLoading } = useStory(storyId);
   const likeStoryMutation = useLikeStory();
   const { toast } = useToast();
-  const { toggleLike, isLiked, isLoading: likesLoading } = useLikedStories();
+  const { isLiked, isLoading: likesLoading, likeStory } = useUserLikes();
   const [showGallery, setShowGallery] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const userLiked = story && !likesLoading ? isLiked(story.id) : false;
 
   const handleLike = async () => {
-    if (!story || likesLoading || likeStoryMutation.isPending) return;
+    if (!story || likesLoading) return;
     
     const userCurrentlyLikes = userLiked;
     console.log('StoryReader HandleLike called:', story.id, 'userCurrentlyLikes:', userCurrentlyLikes);
     
-    toggleLike(story.id);
-    
     try {
-      await likeStoryMutation.mutateAsync({ 
+      await likeStory({ 
         storyId: story.id, 
         shouldLike: !userCurrentlyLikes
       });
       console.log('StoryReader: Like/Unlike successful for story:', story.id);
     } catch (error) {
-      toggleLike(story.id);
       console.error('StoryReader: Error with like/unlike:', error);
     }
   };
@@ -243,7 +240,7 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
                     <Button
                       variant="outline"
                       onClick={handleLike}
-                      disabled={likeStoryMutation.isPending || likesLoading}
+                      disabled={likesLoading}
                       className={`bg-white/20 border-white/30 text-white hover:bg-white/30 transition-colors text-xs md:text-sm h-8 md:h-10 ${
                         userLiked ? 'bg-pink-500/30 border-pink-300' : ''
                       }`}
