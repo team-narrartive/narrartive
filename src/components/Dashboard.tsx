@@ -9,39 +9,48 @@ import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle, Eye, Upload } f
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { runImageMigration } from '@/utils/runMigrationScript';
 import { useToast } from '@/hooks/use-toast';
-
 interface DashboardProps {
   onCreateNew: () => void;
   onViewProjects: () => void;
   onViewCommunity: () => void;
 }
-
 export const Dashboard: React.FC<DashboardProps> = ({
   onCreateNew,
   onViewProjects,
   onViewCommunity
 }) => {
   const [isMigrating, setIsMigrating] = useState(false);
-  const { toast } = useToast();
-  const { user } = useAuth();
-  const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
-  const { data: communityStories, isLoading: communityLoading } = useStories('community');
-  const { data: userStats, isLoading: userStatsLoading } = useUserStats();
+  const {
+    toast
+  } = useToast();
+  const {
+    user
+  } = useAuth();
+  const {
+    data: userStories,
+    isLoading: userStoriesLoading,
+    error: userStoriesError
+  } = useStories('personal');
+  const {
+    data: communityStories,
+    isLoading: communityLoading
+  } = useStories('community');
+  const {
+    data: userStats,
+    isLoading: userStatsLoading
+  } = useUserStats();
 
   // Use user stats from profiles table for instant loading
   const totalStories = userStats?.stories_generated || 0;
   const totalLikes = userStats?.likes_received || 0;
   const totalViews = userStats?.total_views || 0;
   const minutesSpent = userStats?.minutes_spent || 0;
-
   const firstName = user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'Creator';
 
   // Show error message if there's an issue loading stories
   const showError = userStoriesError && !userStoriesLoading;
-
   const handleMigration = async () => {
     setIsMigrating(true);
-    
     try {
       const result = await runImageMigration();
       toast({
@@ -59,9 +68,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
       setIsMigrating(false);
     }
   };
-
-  return (
-    <Layout showSidebar={true} currentView="dashboard">
+  return <Layout showSidebar={true} currentView="dashboard">
       <div className="text-center mb-16">
         <h1 className="text-5xl md:text-6xl font-display text-brand mb-6">
           Welcome back, {firstName}!
@@ -71,15 +78,13 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </p>
       </div>
 
-      {showError && (
-        <Alert className="mb-6 max-w-2xl mx-auto">
+      {showError && <Alert className="mb-6 max-w-2xl mx-auto">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription>
             Having trouble loading your data. This might be due to a slow connection or server issue. 
             Your stories are safe - try refreshing the page or check back in a moment.
           </AlertDescription>
-        </Alert>
-      )}
+        </Alert>}
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
@@ -92,11 +97,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-display text-foreground mb-1">
-              {userStatsLoading ? (
-                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                minutesSpent
-              )}
+              {userStatsLoading ? <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> : minutesSpent}
             </div>
             <p className="text-sm text-muted-foreground font-medium">Creating amazing content</p>
           </CardContent>
@@ -111,11 +112,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-display text-primary mb-1">
-              {userStatsLoading ? (
-                <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                totalStories
-              )}
+              {userStatsLoading ? <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> : totalStories}
             </div>
             <p className="text-sm text-muted-foreground font-medium">Your creative works</p>
           </CardContent>
@@ -130,11 +127,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-display text-success mb-1">
-              {userStatsLoading ? (
-                <div className="w-6 h-6 border-2 border-success border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                totalLikes
-              )}
+              {userStatsLoading ? <div className="w-6 h-6 border-2 border-success border-t-transparent rounded-full animate-spin"></div> : totalLikes}
             </div>
             <p className="text-sm text-muted-foreground font-medium">Community appreciation</p>
           </CardContent>
@@ -149,11 +142,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-display text-brand mb-1">
-              {userStatsLoading ? (
-                <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin"></div>
-              ) : (
-                totalViews
-              )}
+              {userStatsLoading ? <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin"></div> : totalViews}
             </div>
             <p className="text-sm text-muted-foreground font-medium">Story engagement</p>
           </CardContent>
@@ -193,14 +182,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent className="pt-0 p-8">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
-              {userStoriesLoading ? (
-                <div className="flex items-center gap-2">
+              {userStoriesLoading ? <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   Loading...
-                </div>
-              ) : (
-                `View All (${totalStories}) →`
-              )}
+                </div> : `View All (${totalStories}) →`}
             </Button>
           </CardContent>
         </Card>
@@ -219,34 +204,22 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardHeader>
           <CardContent className="pt-0 p-8">
             <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
-              {communityLoading ? (
-                <div className="flex items-center gap-2">
+              {communityLoading ? <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   Loading...
-                </div>
-              ) : (
-                `Explore (${communityStories?.length || 0}) →`
-              )}
+                </div> : `Explore (${communityStories?.length || 0}) →`}
             </Button>
           </CardContent>
         </Card>
       </div>
 
       {/* Recent Activity - only show if we have stories and they're loaded */}
-      {userStories && userStories.length > 0 && !userStoriesLoading && (
-        <div className="mt-16">
+      {userStories && userStories.length > 0 && !userStoriesLoading && <div className="mt-16">
           <h2 className="text-3xl lg:text-4xl font-display text-foreground mb-10">Your Recent Stories</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {userStories.slice(0, 3).map((story) => (
-              <Card key={story.id} className="card-premium group cursor-pointer transform hover:scale-105">
+            {userStories.slice(0, 3).map(story => <Card key={story.id} className="card-premium group cursor-pointer transform hover:scale-105">
                 <div className="aspect-video gradient-primary relative overflow-hidden rounded-t-2xl">
-                  {story.main_image && (
-                    <img 
-                      src={story.main_image} 
-                      alt={story.title} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" 
-                    />
-                  )}
+                  {story.main_image && <img src={story.main_image} alt={story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
                 </div>
                 <CardHeader className="p-6">
@@ -267,47 +240,17 @@ export const Dashboard: React.FC<DashboardProps> = ({
                     </span>
                   </div>
                 </CardContent>
-              </Card>
-            ))}
+              </Card>)}
           </div>
-        </div>
-      )}
+        </div>}
 
       {/* Migration Section */}
-      <div className="mt-16">
-        <Card className="border-orange-200 bg-orange-50 max-w-2xl mx-auto">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-800">
-              <Upload className="h-5 w-5" />
-              Image Migration
-            </CardTitle>
-            <CardDescription className="text-orange-600">
-              Convert existing Base64 images to Supabase Storage for better performance
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              onClick={handleMigration} 
-              disabled={isMigrating}
-              variant="outline"
-              className="border-orange-300 text-orange-700 hover:bg-orange-100"
-            >
-              {isMigrating ? 'Migrating Images...' : 'Run Image Migration'}
-            </Button>
-            <p className="text-sm text-orange-600 mt-2">
-              This will upload all Base64 images to storage and update database records with URLs.
-            </p>
-          </CardContent>
-        </Card>
-      </div>
+      
 
       {/* Show loading state for recent activity */}
-      {userStoriesLoading && (
-        <div className="mt-16 text-center">
+      {userStoriesLoading && <div className="mt-16 text-center">
           <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
           <p className="text-lg text-muted-foreground font-medium">Loading your stories...</p>
-        </div>
-      )}
-    </Layout>
-  );
+        </div>}
+    </Layout>;
 };
