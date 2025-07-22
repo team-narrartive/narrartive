@@ -141,37 +141,43 @@ export type Database = {
       decrement_story_likes: {
         Args: { p_story_id: string }
         Returns: {
-          id: string
-          user_id: string
-          title: string
-          description: string
-          story_content: string
-          main_image: string
-          additional_images: string[]
-          view_count: number
-          like_count: number
-          is_public: boolean
-          category: string
+          additional_images: string[] | null
+          canvas_data: Json | null
+          category: string | null
           created_at: string
+          description: string
+          generation_settings: Json | null
+          id: string
+          image_versions: Json | null
+          is_public: boolean | null
+          like_count: number | null
+          main_image: string | null
+          story_content: string
+          title: string
           updated_at: string
+          user_id: string
+          view_count: number | null
         }[]
       }
       increment_story_likes: {
         Args: { p_story_id: string }
         Returns: {
-          id: string
-          user_id: string
-          title: string
-          description: string
-          story_content: string
-          main_image: string
-          additional_images: string[]
-          view_count: number
-          like_count: number
-          is_public: boolean
-          category: string
+          additional_images: string[] | null
+          canvas_data: Json | null
+          category: string | null
           created_at: string
+          description: string
+          generation_settings: Json | null
+          id: string
+          image_versions: Json | null
+          is_public: boolean | null
+          like_count: number | null
+          main_image: string | null
+          story_content: string
+          title: string
           updated_at: string
+          user_id: string
+          view_count: number | null
         }[]
       }
       increment_story_views: {
