@@ -73,9 +73,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <h1 className="text-5xl md:text-6xl font-display text-brand mb-6">
           Welcome back, {firstName}!
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
-          Ready to create your next masterpiece? Your creative journey continues here.
-        </p>
+        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">Ready to create your next masterpiece?</p>
       </div>
 
       {showError && <Alert className="mb-6 max-w-2xl mx-auto">
