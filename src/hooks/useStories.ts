@@ -32,7 +32,8 @@ export const useStories = (status?: 'personal' | 'community') => {
           id,
           first_name,
           last_name,
-          display_name
+          display_name,
+          email
         )
       `);
       
