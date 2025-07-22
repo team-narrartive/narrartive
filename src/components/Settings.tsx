@@ -49,7 +49,7 @@ export const Settings: React.FC<SettingsProps> = ({
   };
   return <Layout showSidebar={true} currentView="settings">
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-4">
           <Button onClick={onBack} variant="outline">
             Back to Dashboard
           </Button>

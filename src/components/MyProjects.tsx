@@ -153,7 +153,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     return (
       <Layout showSidebar={true} currentView="projects">
         <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-4">
           <Button onClick={onBack} variant="outline">
             Back to Dashboard
           </Button>
@@ -178,9 +178,14 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     <Layout showSidebar={true} currentView="projects">
       <div className="space-y-6">
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
-            <p className="text-gray-600 mt-2">Manage and view your created stories</p>
+          <div className="flex items-center gap-4">
+            <Button onClick={onBack} variant="outline">
+              Back to Dashboard
+            </Button>
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
+              <p className="text-gray-600 mt-2">Manage and view your created stories</p>
+            </div>
           </div>
           <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
             <Plus className="w-4 h-4 mr-2" />

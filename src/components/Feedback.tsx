@@ -93,14 +93,14 @@ export const Feedback: React.FC<FeedbackProps> = ({ onBack }) => {
   return (
     <Layout showSidebar={true} currentView="feedback">
       <div className="space-y-8">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-4">
+          <Button onClick={onBack} variant="outline">
+            Back to Dashboard
+          </Button>
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Feedback</h1>
             <p className="text-gray-600 mt-2">Help us improve NarrArtive with your thoughts and suggestions</p>
           </div>
-          <Button onClick={onBack} variant="outline">
-            Back to Dashboard
-          </Button>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">

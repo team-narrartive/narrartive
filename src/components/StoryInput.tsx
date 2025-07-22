@@ -286,38 +286,35 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </Card>}
 
             {/* Story Input */}
+            <div className="flex items-center justify-start gap-4 mb-6">
+              <Button onClick={onBack} variant="outline">
+                Back to Dashboard
+              </Button>
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex items-center gap-4">
+                  <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
+                  <div className="flex items-center space-x-2">
+                    <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
+                    <Label htmlFor="privacy-toggle" className="text-sm font-medium">
+                      {isPublic ? 'Public' : 'Private'}
+                    </Label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
             <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 mb-6">
               <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-r from-sky-400 to-emerald-400 rounded-lg flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-4">
-                      <h2 className="text-xl font-semibold text-gray-900">Your Story</h2>
-                      <div className="flex items-center space-x-2">
-                        <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
-                        <Label htmlFor="privacy-toggle" className="text-sm font-medium">
-                          {isPublic ? 'Public' : 'Private'}
-                        </Label>
-                      </div>
-                    </div>
-                  </div>
+                <div className="text-sm text-gray-500">
+                  {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                 </div>
-                
-                {/* Back button - Top left */}
-                
-                
-                {/* Character and word count and save button - Top right */}
-                <div className="flex items-center gap-4">
-                  <div className="text-sm text-gray-500">
-                    {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
-                  </div>
-                  {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-green-600 hover:bg-green-700 text-white">
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Project
-                    </Button>}
-                </div>
+                {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-green-600 hover:bg-green-700 text-white">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Project
+                  </Button>}
               </div>
               
               <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-48 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500" />

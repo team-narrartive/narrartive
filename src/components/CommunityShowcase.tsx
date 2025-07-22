@@ -157,7 +157,7 @@ export const CommunityShowcase: React.FC<CommunityShowcaseProps> = ({
   return (
     <Layout showSidebar={true} currentView="community">
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-start gap-4">
           <Button onClick={onBack} variant="outline">
             Back to Dashboard
           </Button>
