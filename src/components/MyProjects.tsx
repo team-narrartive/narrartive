@@ -86,6 +86,16 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     if (!editingStory || isSaving) return;
     
     setIsSaving(true);
+    
+    // Optimistic update
+    queryClient.setQueryData(['stories', 'personal'], (oldData: any) => 
+      oldData?.map((story: any) => 
+        story.id === editingStory.id 
+          ? { ...story, title: editingStory.title, description: editingStory.description, is_public: editingStory.isPublic }
+          : story
+      )
+    );
+    
     try {
       const { error } = await supabase
         .from('stories')
@@ -109,6 +119,8 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       setIsEditDialogOpen(false);
     } catch (error) {
       console.error('Edit error:', error);
+      // Revert optimistic update
+      queryClient.invalidateQueries({ queryKey: ['stories'] });
       toast({
         title: "Update failed",
         description: "Failed to update story. Please try again.",
@@ -284,7 +296,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
                   id="description"
                   value={editingStory.description}
                   onChange={(e) => setEditingStory(prev => prev ? {...prev, description: e.target.value} : null)}
-                  className="mt-1"
+                  className="mt-1 resize-none"
                   rows={3}
                 />
               </div>

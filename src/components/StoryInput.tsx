@@ -331,20 +331,25 @@ export const StoryInput: React.FC<StoryInputProps> = ({ onBack, onGenerateWidget
                   </div>
                 </div>
                 
-                {/* Character and word count - Top right */}
+                {/* Character and word count and buttons - Top right */}
                 <div className="flex items-center gap-4">
                   <div className="text-sm text-gray-500">
                     {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
-                  {hasImages && (
-                    <Button
-                      onClick={() => setShowSaveDialog(true)}
-                      className="bg-green-600 hover:bg-green-700 text-white"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Project
+                  <div className="flex gap-3">
+                    {hasImages && (
+                      <Button
+                        onClick={() => setShowSaveDialog(true)}
+                        className="bg-green-600 hover:bg-green-700 text-white"
+                      >
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Project
+                      </Button>
+                    )}
+                    <Button onClick={onBack} variant="outline">
+                      Back to Dashboard
                     </Button>
-                  )}
+                  </div>
                 </div>
               </div>
               
