@@ -59,8 +59,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </Button>
         </div>
 
-        {/* Authentication Status */}
-        {user}
+        {/* Authentication Status - removed invalid user object rendering */}
 
         <div className="grid gap-6">
           {/* Profile Settings */}
