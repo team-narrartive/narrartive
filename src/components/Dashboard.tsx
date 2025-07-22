@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStories } from '@/hooks/useStories';
 import { useUserStats } from '@/hooks/useUserStats';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle, Eye } from 'lucide-react';
+import { PlusCircle, BookOpen, Users, Heart, Clock, AlertCircle, Eye, Upload } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { runImageMigration } from '@/utils/runMigrationScript';
+import { useToast } from '@/hooks/use-toast';
 
 interface DashboardProps {
   onCreateNew: () => void;
@@ -19,6 +21,8 @@ export const Dashboard: React.FC<DashboardProps> = ({
   onViewProjects,
   onViewCommunity
 }) => {
+  const [isMigrating, setIsMigrating] = useState(false);
+  const { toast } = useToast();
   const { user } = useAuth();
   const { data: userStories, isLoading: userStoriesLoading, error: userStoriesError } = useStories('personal');
   const { data: communityStories, isLoading: communityLoading } = useStories('community');
@@ -34,6 +38,27 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
   // Show error message if there's an issue loading stories
   const showError = userStoriesError && !userStoriesLoading;
+
+  const handleMigration = async () => {
+    setIsMigrating(true);
+    
+    try {
+      const result = await runImageMigration();
+      toast({
+        title: "Migration completed",
+        description: `Successfully migrated ${result.migratedCount} stories. All Base64 images have been converted to storage URLs.`
+      });
+    } catch (error) {
+      console.error('Migration failed:', error);
+      toast({
+        title: "Migration failed",
+        description: "There was an error migrating the images. Check console for details.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsMigrating(false);
+    }
+  };
 
   return (
     <Layout showSidebar={true} currentView="dashboard">
@@ -247,6 +272,34 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </div>
         </div>
       )}
+
+      {/* Migration Section */}
+      <div className="mt-16">
+        <Card className="border-orange-200 bg-orange-50 max-w-2xl mx-auto">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2 text-orange-800">
+              <Upload className="h-5 w-5" />
+              Image Migration
+            </CardTitle>
+            <CardDescription className="text-orange-600">
+              Convert existing Base64 images to Supabase Storage for better performance
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Button 
+              onClick={handleMigration} 
+              disabled={isMigrating}
+              variant="outline"
+              className="border-orange-300 text-orange-700 hover:bg-orange-100"
+            >
+              {isMigrating ? 'Migrating Images...' : 'Run Image Migration'}
+            </Button>
+            <p className="text-sm text-orange-600 mt-2">
+              This will upload all Base64 images to storage and update database records with URLs.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Show loading state for recent activity */}
       {userStoriesLoading && (
