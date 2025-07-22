@@ -96,39 +96,42 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
       )
     );
     
-    try {
-      const { error } = await supabase
-        .from('stories')
-        .update({ 
-          title: editingStory.title,
-          description: editingStory.description,
-          is_public: editingStory.isPublic
-        })
-        .eq('id', editingStory.id);
+    // Close modal immediately after optimistic update
+    setIsSaving(false);
+    setIsEditDialogOpen(false);
+    setEditingStory(null);
+    
+    // Fire background save without blocking
+    (async () => {
+      try {
+        const { error } = await supabase
+          .from('stories')
+          .update({ 
+            title: editingStory.title,
+            description: editingStory.description,
+            is_public: editingStory.isPublic
+          })
+          .eq('id', editingStory.id);
 
-      if (error) throw error;
+        if (error) throw error;
 
-      await queryClient.invalidateQueries({ queryKey: ['stories'] });
-      
-      toast({
-        title: "Story updated",
-        description: "Your changes have been saved successfully."
-      });
-      
-      setEditingStory(null);
-      setIsEditDialogOpen(false);
-    } catch (error) {
-      console.error('Edit error:', error);
-      // Revert optimistic update
-      queryClient.invalidateQueries({ queryKey: ['stories'] });
-      toast({
-        title: "Update failed",
-        description: "Failed to update story. Please try again.",
-        variant: "destructive"
-      });
-    } finally {
-      setIsSaving(false);
-    }
+        await queryClient.invalidateQueries({ queryKey: ['stories'] });
+        
+        toast({
+          title: "Story updated",
+          description: "Your changes have been saved successfully."
+        });
+      } catch (error) {
+        console.error('Edit error:', error);
+        // Revert optimistic update
+        queryClient.invalidateQueries({ queryKey: ['stories'] });
+        toast({
+          title: "Update failed",
+          description: "Failed to update story. Please try again.",
+          variant: "destructive"
+        });
+      }
+    })();
   };
 
 
@@ -150,15 +153,15 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
     return (
       <Layout showSidebar={true} currentView="projects">
         <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
-              <p className="text-gray-600 mt-2">Manage and view your created stories</p>
-            </div>
-            <Button onClick={onBack} variant="outline">
-              Back to Dashboard
-            </Button>
+        <div className="flex items-center justify-between">
+          <Button onClick={onBack} variant="outline">
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
+            <p className="text-gray-600 mt-2">Manage and view your created stories</p>
           </div>
+        </div>
           
           <Alert>
             <AlertCircle className="h-4 w-4" />
@@ -179,15 +182,10 @@ export const MyProjects: React.FC<MyProjectsProps> = ({
             <h1 className="text-3xl font-bold text-gray-900">My Projects</h1>
             <p className="text-gray-600 mt-2">Manage and view your created stories</p>
           </div>
-          <div className="flex gap-3">
-            <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-              <Plus className="w-4 h-4 mr-2" />
-              Create New
-            </Button>
-            <Button onClick={onBack} variant="outline">
-              Back to Dashboard
-            </Button>
-          </div>
+          <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Plus className="w-4 h-4 mr-2" />
+            Create New
+          </Button>
         </div>
 
         {stories && stories.length > 0 ? (
