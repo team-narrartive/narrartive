@@ -1,6 +1,1 @@
 project_id = "yzmladsjrirvzzmaendi"
-
-[functions.generate-images]
-verify_jwt = true
-# Set timeout to 4 minutes as requested
-timeout_ms = 240000
