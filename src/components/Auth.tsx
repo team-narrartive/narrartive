@@ -122,7 +122,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: '#ffee8c' }}>
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-gray-50">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-72 h-72 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
@@ -145,7 +145,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
           <div className="p-8">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-card">
+              <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-gray-100">
                 <img 
                   src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
                   alt="NarrArtive Logo" 

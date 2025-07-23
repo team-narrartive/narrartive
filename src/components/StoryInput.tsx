@@ -14,28 +14,33 @@ import { FileText, Users, Image, AlertCircle, Save, CheckCircle, ArrowLeft } fro
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useStorySaving } from '@/hooks/useStorySaving';
+
 interface Character {
   name: string;
   type: 'human' | 'animal' | 'creature' | 'object';
   description?: string;
   attributes: Record<string, any>;
 }
+
 interface ImageGenerationSettings {
   numImages: number;
   quality: 'low' | 'medium' | 'high';
   style: 'realistic' | 'artistic' | 'cartoon';
   instructions?: string;
 }
+
 interface ImageVersion {
   id: string;
   images: string[];
   created_at: string;
   settings: ImageGenerationSettings;
 }
+
 interface StoryInputProps {
   onBack: () => void;
   onGenerateWidgets: (story: string) => void;
 }
+
 export const StoryInput: React.FC<StoryInputProps> = ({
   onBack,
   onGenerateWidgets
@@ -57,6 +62,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
     style: 'realistic',
     instructions: ''
   });
+
   const {
     toast
   } = useToast();
@@ -64,6 +70,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
     saveStory,
     isSaving
   } = useStorySaving();
+
   const handleExtractCharacters = async () => {
     if (!story.trim()) {
       toast({
@@ -115,6 +122,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       setIsExtractingCharacters(false);
     }
   };
+
   const handleGenerateImages = async () => {
     if (!story.trim()) {
       toast({
@@ -210,11 +218,13 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       setIsGeneratingImages(false);
     }
   };
+
   const handleCharacterUpdate = (index: number, updatedCharacter: Character) => {
     const newCharacters = [...characters];
     newCharacters[index] = updatedCharacter;
     setCharacters(newCharacters);
   };
+
   const handleSaveStory = async () => {
     if (!storyTitle.trim() || !storyDescription.trim()) {
       toast({
@@ -261,6 +271,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       });
     }
   };
+
   const hasImages = imageVersions.length > 0;
   return <>
       {/* Spinning Cat Loader - Full screen overlay */}
@@ -285,63 +296,70 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                 </div>
               </Card>}
 
-            {/* Story Input */}
-            <div className="flex items-center justify-start gap-4 mb-6">
-              
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                  <FileText className="w-5 h-5 text-white" />
+            {/* Story Input Panel with unified header */}
+            <div className="border border-gray-300 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm mb-6">
+              {/* Unified Header */}
+              <div className="p-6 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                      <FileText className="w-5 h-5 text-white" />
+                    </div>
+                    <h2 className="text-xl font-semibold text-black">Your Story</h2>
+                  </div>
+                  
+                  <div className="flex items-center space-x-6">
+                    <div className="flex items-center space-x-2">
+                      <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
+                      <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
+                        {isPublic ? 'Public' : 'Private'}
+                      </Label>
+                    </div>
+                    
+                    <div className="text-sm text-gray-500">
+                      {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
+                    </div>
+                    
+                    {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        <Save className="w-4 h-4 mr-2" />
+                        Save Project
+                      </Button>}
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-semibold text-black">Your Story</h2>
-                  <div className="flex items-center space-x-2">
-                    <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
-                    <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
-                      {isPublic ? 'Public' : 'Private'}
-                    </Label>
+              </div>
+              
+              {/* Story Input Area */}
+              <div className="p-6">
+                <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-48 p-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground" />
+                
+                <div className="mt-4">
+                  <div className="flex flex-wrap items-center justify-center gap-4">
+                    {hasGeneratedWidgets ? <Button onClick={handleGenerateImages} disabled={!story.trim() || isGeneratingImages} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
+                        {isGeneratingImages ? <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Generating Images...
+                          </> : <>
+                            <Image className="w-4 h-4 mr-2" />
+                            Generate Images
+                          </>}
+                      </Button> : <Button onClick={handleExtractCharacters} disabled={!story.trim() || isExtractingCharacters} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
+                        {isExtractingCharacters ? <>
+                            <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                            Extracting...
+                          </> : <>
+                            <Users className="w-4 h-4 mr-2" />
+                            Generate Widgets
+                          </>}
+                      </Button>}
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 mb-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <div className="text-sm text-gray-500">
-                  {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
-                </div>
-                {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                    <Save className="w-4 h-4 mr-2" />
-                    Save Project
-                  </Button>}
-              </div>
-              
-              <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-48 p-4 border border-border rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground" />
-              
-              <div className="mt-4">
-                <div className="flex flex-wrap items-center justify-center gap-4">
-                  {hasGeneratedWidgets ? <Button onClick={handleGenerateImages} disabled={!story.trim() || isGeneratingImages} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
-                      {isGeneratingImages ? <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Generating Images...
-                        </> : <>
-                          <Image className="w-4 h-4 mr-2" />
-                          Generate Images
-                        </>}
-                    </Button> : <Button onClick={handleExtractCharacters} disabled={!story.trim() || isExtractingCharacters} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
-                      {isExtractingCharacters ? <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Extracting...
-                        </> : <>
-                          <Users className="w-4 h-4 mr-2" />
-                          Generate Widgets
-                        </>}
-                    </Button>}
-                </div>
-              </div>
-            </div>
-
-            {/* Image Generation Settings */}
-            {hasGeneratedWidgets && <ImageGenerationSettingsComponent settings={imageSettings} onSettingsChange={setImageSettings} />}
+            {/* Image Generation Settings Panel */}
+            {hasGeneratedWidgets && <div className="border border-gray-300 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm">
+                <ImageGenerationSettingsComponent settings={imageSettings} onSettingsChange={setImageSettings} />
+              </div>}
           </div>
 
           {/* Enhanced Generated Images Sidebar */}

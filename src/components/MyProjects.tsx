@@ -1,302 +1,205 @@
-import React, { useState } from 'react';
+
+import React from 'react';
+import { useAuth } from '@/hooks/useAuth';
 import { useStories } from '@/hooks/useStories';
 import { useDeleteStory } from '@/hooks/useDeleteStory';
-import { useIncrementViews } from '@/hooks/useStories';
 import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Switch } from '@/components/ui/switch';
-import { BookOpen, Eye, Heart, Trash2, Calendar, AlertCircle, Plus, Edit, ArrowLeft } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { supabase } from '@/integrations/supabase/client';
+import { Badge } from '@/components/ui/badge';
+import { BookOpen, Users, Heart, Eye, Calendar, Trash2, Edit, Globe, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useQueryClient } from '@tanstack/react-query';
+
 interface MyProjectsProps {
   onBack: () => void;
-  onCreateNew: () => void;
-  onViewStory: (storyId: string) => void;
 }
-export const MyProjects: React.FC<MyProjectsProps> = ({
-  onBack,
-  onCreateNew,
-  onViewStory
-}) => {
-  const {
-    data: stories,
-    isLoading,
-    error
-  } = useStories('personal');
-  const deleteStoryMutation = useDeleteStory();
-  const incrementViewsMutation = useIncrementViews();
-  const [deletingStoryId, setDeletingStoryId] = useState<string | null>(null);
-  const [editingStory, setEditingStory] = useState<{
-    id: string;
-    title: string;
-    description: string;
-    isPublic: boolean;
-  } | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const {
-    toast
-  } = useToast();
-  const queryClient = useQueryClient();
+
+export const MyProjects: React.FC<MyProjectsProps> = ({ onBack }) => {
+  const { user } = useAuth();
+  const { data: stories, isLoading, error } = useStories('personal');
+  const { deleteStory, isDeleting } = useDeleteStory();
+  const { toast } = useToast();
+
   const handleDelete = async (storyId: string) => {
-    if (deletingStoryId) return; // Prevent multiple deletions
-
-    setDeletingStoryId(storyId);
     try {
-      await deleteStoryMutation.deleteStory(storyId);
+      await deleteStory(storyId);
+      toast({
+        title: "Story deleted",
+        description: "Your story has been successfully deleted.",
+      });
     } catch (error) {
-      console.error('Error deleting story:', error);
-    } finally {
-      setDeletingStoryId(null);
+      toast({
+        title: "Error deleting story",
+        description: "There was an issue deleting your story. Please try again.",
+        variant: "destructive",
+      });
     }
   };
-  const handleReadStory = async (storyId: string) => {
-    try {
-      await incrementViewsMutation.mutateAsync(storyId);
-      onViewStory(storyId);
-    } catch (error) {
-      console.error('Error incrementing views:', error);
-      // Still navigate to story even if view increment fails
-      onViewStory(storyId);
-    }
-  };
-  const handleEdit = (story: any) => {
-    setEditingStory({
-      id: story.id,
-      title: story.title,
-      description: story.description,
-      isPublic: story.is_public
-    });
-  };
-  const handleSaveEdit = async () => {
-    if (!editingStory || isSaving) return;
-    setIsSaving(true);
 
-    // Optimistic update
-    queryClient.setQueryData(['stories', 'personal'], (oldData: any) => oldData?.map((story: any) => story.id === editingStory.id ? {
-      ...story,
-      title: editingStory.title,
-      description: editingStory.description,
-      is_public: editingStory.isPublic
-    } : story));
-
-    // Close modal immediately after optimistic update
-    setIsSaving(false);
-    setIsEditDialogOpen(false);
-    setEditingStory(null);
-
-    // Fire background save without blocking
-    (async () => {
-      try {
-        const {
-          error
-        } = await supabase.from('stories').update({
-          title: editingStory.title,
-          description: editingStory.description,
-          is_public: editingStory.isPublic
-        }).eq('id', editingStory.id);
-        if (error) throw error;
-        await queryClient.invalidateQueries({
-          queryKey: ['stories']
-        });
-        toast({
-          title: "Story updated",
-          description: "Your changes have been saved successfully."
-        });
-      } catch (error) {
-        console.error('Edit error:', error);
-        // Revert optimistic update
-        queryClient.invalidateQueries({
-          queryKey: ['stories']
-        });
-        toast({
-          title: "Update failed",
-          description: "Failed to update story. Please try again.",
-          variant: "destructive"
-        });
-      }
-    })();
-  };
   if (isLoading) {
-    return <Layout showSidebar={true} currentView="projects">
-        <div className="flex items-center justify-center min-h-96">
-          <div className="text-center">
-            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-            <p className="text-muted-foreground">Loading your projects...</p>
-          </div>
+    return (
+      <Layout showSidebar={true} currentView="projects" onBack={onBack}>
+        <div className="text-center py-16">
+          <div className="w-12 h-12 border-4 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-6"></div>
+          <p className="text-lg text-muted-foreground font-medium">Loading your projects...</p>
         </div>
-      </Layout>;
+      </Layout>
+    );
   }
+
   if (error) {
-    return <Layout showSidebar={true} currentView="projects">
-        <div className="space-y-6">
-          <div className="flex items-center justify-start gap-4">
-            <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Dashboard
-            </Button>
-            <div>
-              <h1 className="text-3xl font-bold text-primary">My Projects</h1>
-              <p className="text-muted-foreground mt-2">Manage and view your created stories</p>
-            </div>
+    return (
+      <Layout showSidebar={true} currentView="projects" onBack={onBack}>
+        <div className="text-center py-16">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+            <BookOpen className="w-8 h-8 text-red-600" />
           </div>
-          
-          <Alert>
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
-              Having trouble loading your projects. Please try refreshing the page.
-            </AlertDescription>
-          </Alert>
+          <h2 className="text-2xl font-bold text-foreground mb-4">Error Loading Projects</h2>
+          <p className="text-muted-foreground max-w-md mx-auto">
+            We couldn't load your projects right now. Please try refreshing the page or check back later.
+          </p>
         </div>
-      </Layout>;
+      </Layout>
+    );
   }
-  return <Layout showSidebar={true} currentView="projects">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            
-            <div>
-              <h1 className="text-3xl font-bold text-foreground">My Projects</h1>
-              <p className="text-muted-foreground mt-2">Manage and view your created stories</p>
-            </div>
-          </div>
-          <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
-            <Plus className="w-4 h-4 mr-2" />
-            Create New
-          </Button>
+
+  return (
+    <Layout showSidebar={true} currentView="projects" onBack={onBack}>
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h1 className="text-5xl md:text-6xl font-display text-foreground mb-6">
+            My Projects
+          </h1>
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
+            Your creative library of <span className="text-primary font-semibold">interactive stories</span>
+          </p>
         </div>
 
-        {stories && stories.length > 0 ? <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {stories.map(story => <Card key={story.id} className="group bg-white/90 backdrop-blur-sm hover:shadow-elegant transition-all duration-300 border border-white/30">
-                <div className="aspect-video gradient-primary relative overflow-hidden rounded-t-lg">
-                  {story.main_image && <img src={story.main_image} alt={story.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute top-3 right-3 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <Button variant="ghost" size="sm" onClick={() => {
-                handleEdit(story);
-                setIsEditDialogOpen(true);
-              }} className="bg-white/90 hover:bg-white text-primary hover:text-primary/80 rounded-full w-8 h-8 p-0 shadow-md">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </div>
-                
-                <CardHeader className="pb-3">
-                  <CardTitle className="text-lg line-clamp-1 text-foreground">{story.title}</CardTitle>
-                  <CardDescription className="text-sm text-muted-foreground line-clamp-2">
-                    {story.description}
-                  </CardDescription>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="flex items-center justify-between text-sm text-muted-foreground mb-4">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-4 h-4" />
-                        {story.view_count || 0}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="w-4 h-4" />
-                        {story.like_count || 0}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(story.created_at).toLocaleDateString()}
-                    </div>
-                  </div>
-                  
-                  <Button onClick={() => handleReadStory(story.id)} className="w-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
-                    <BookOpen className="w-4 h-4 mr-2" />
-                    Read
-                  </Button>
-                </CardContent>
-              </Card>)}
-          </div> : <div className="text-center py-12">
-            <BookOpen className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">No projects yet</h3>
-            <p className="text-muted-foreground mb-6">Create your first story to get started</p>
-            <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md">
-              <Plus className="w-4 h-4 mr-2" />
+        {!stories || stories.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8">
+              <BookOpen className="w-12 h-12 text-primary" />
+            </div>
+            <h2 className="text-3xl font-bold text-foreground mb-4">No Projects Yet</h2>
+            <p className="text-muted-foreground max-w-md mx-auto mb-8">
+              Start creating your first interactive story and watch your library grow!
+            </p>
+            <Button onClick={onBack} className="bg-primary hover:bg-primary/90 text-primary-foreground">
               Create Your First Story
             </Button>
-          </div>}
-      </div>
-
-      {/* Edit Story Dialog */}
-      <Dialog open={isEditDialogOpen} onOpenChange={open => {
-      setIsEditDialogOpen(open);
-      if (!open) setEditingStory(null);
-    }}>
-        <DialogContent className="sm:max-w-md bg-white/95 backdrop-blur-sm border border-white/30">
-          <DialogHeader>
-            <DialogTitle className="text-primary">Edit Story</DialogTitle>
-          </DialogHeader>
-          {editingStory && <div className="space-y-4">
-              <div>
-                <Label htmlFor="title" className="text-foreground">Title</Label>
-                <Input id="title" value={editingStory.title} onChange={e => setEditingStory(prev => prev ? {
-              ...prev,
-              title: e.target.value
-            } : null)} className="mt-1 border-border focus:ring-primary" />
-              </div>
-              <div>
-                <Label htmlFor="description" className="text-foreground">Description</Label>
-                <Textarea id="description" value={editingStory.description} onChange={e => setEditingStory(prev => prev ? {
-              ...prev,
-              description: e.target.value
-            } : null)} className="mt-1 resize-none border-border focus:ring-primary" rows={3} />
-              </div>
-              <div className="flex items-center justify-between">
-                <Label htmlFor="privacy" className="text-foreground">Privacy Settings</Label>
-                <div className="flex items-center gap-2">
-                  <Switch id="privacy" checked={editingStory.isPublic} onCheckedChange={checked => setEditingStory(prev => prev ? {
-                ...prev,
-                isPublic: checked
-              } : null)} />
-                  <span className="text-sm text-muted-foreground">
-                    {editingStory.isPublic ? 'Public' : 'Private'}
-                  </span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {stories.map((story) => (
+              <Card key={story.id} className="border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer transform hover:scale-105 rounded-xl overflow-hidden bg-white">
+                <div className="aspect-video gradient-primary relative overflow-hidden">
+                  {story.main_image ? (
+                    <img
+                      src={story.main_image}
+                      alt={story.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+                      <BookOpen className="w-16 h-16 text-primary/40" />
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                  
+                  {/* Privacy Badge */}
+                  <div className="absolute top-3 right-3">
+                    <Badge variant={story.is_public ? "default" : "secondary"} className="text-xs">
+                      {story.is_public ? (
+                        <>
+                          <Globe className="w-3 h-3 mr-1" />
+                          Public
+                        </>
+                      ) : (
+                        <>
+                          <Lock className="w-3 h-3 mr-1" />
+                          Private
+                        </>
+                      )}
+                    </Badge>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between pt-4">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button variant="destructive" disabled={isSaving}>
-                      <Trash2 className="w-4 h-4 mr-2" />
-                      Delete Story
+
+                <CardHeader className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <CardTitle className="text-xl font-display text-foreground line-clamp-2 mb-2">
+                        {story.title}
+                      </CardTitle>
+                      <CardDescription className="text-base text-muted-foreground font-medium line-clamp-3">
+                        {story.description}
+                      </CardDescription>
+                    </div>
+                  </div>
+                </CardHeader>
+
+                <CardContent className="px-6 pb-6">
+                  <div className="flex justify-between items-center text-sm text-muted-foreground font-medium mb-4">
+                    <span className="flex items-center gap-2">
+                      <Eye className="w-4 h-4" />
+                      {story.view_count || 0} views
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Heart className="w-4 h-4" />
+                      {story.like_count || 0} likes
+                    </span>
+                    <span className="flex items-center gap-2">
+                      <Calendar className="w-4 h-4" />
+                      {new Date(story.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 hover:bg-primary/10 hover:text-primary hover:border-primary transition-colors"
+                    >
+                      <Edit className="w-4 h-4 mr-2" />
+                      Edit
                     </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent className="bg-white/95 backdrop-blur-sm">
-                    <AlertDialogHeader>
-                      <AlertDialogTitle className="text-foreground">Delete Story</AlertDialogTitle>
-                      <AlertDialogDescription className="text-muted-foreground">
-                        Are you sure you want to delete "{editingStory.title}"? This action cannot be undone.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={() => handleDelete(editingStory.id)} className="bg-destructive hover:bg-destructive/90">
-                        Delete
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <Button onClick={handleSaveEdit} disabled={isSaving} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  {isSaving ? 'Saving...' : 'Save Changes'}
-                </Button>
-              </div>
-            </div>}
-        </DialogContent>
-      </Dialog>
-    </Layout>;
+                    
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-red-600 hover:bg-red-50 hover:text-red-700 hover:border-red-200 transition-colors"
+                          disabled={isDeleting}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete Story</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            Are you sure you want to delete "{story.title}"? This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => handleDelete(story.id)}
+                            className="bg-red-600 hover:bg-red-700 text-white"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        )}
+      </div>
+    </Layout>
+  );
 };
