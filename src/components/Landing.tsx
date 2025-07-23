@@ -122,9 +122,9 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
       bgColor: colorRevealed ? 'hsl(270, 60%, 92%)' : 'hsl(0, 0%, 95%)', // Lavender
-      iconColor: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 80%)', // Dark Purple
-      titleColor: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 20%)', // Dark Purple
-      borderColor: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 80%)' // Dark Purple
+      iconColor: colorRevealed ? 'hsl(280, 100%, 62%)' : 'hsl(0, 0%, 80%)', // Secondary Purple
+      titleColor: colorRevealed ? 'hsl(280, 100%, 62%)' : 'hsl(0, 0%, 20%)', // Secondary Purple
+      borderColor: colorRevealed ? 'hsl(280, 100%, 62%)' : 'hsl(0, 0%, 80%)' // Secondary Purple
     },
     {
       icon: Palette,
@@ -139,7 +139,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(208, 100%, 86%)' : 'hsl(0, 0%, 95%)', // Sky Blue
+      bgColor: colorRevealed ? 'hsl(220, 100%, 87%)' : 'hsl(0, 0%, 95%)', // Sky Blue (#BAE1FF)
       iconColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)', // Info color
       titleColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 20%)', // Info color
       borderColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)' // Info color
