@@ -16,16 +16,17 @@
     --popover: 0 0% 100%;
     --popover-foreground: 0 0% 0%;
 
-    /* Primary Orange - dominant/accent */
+    /* Primary Orange - from branding guidelines */
     --primary: 30 100% 50%;
     --primary-foreground: 0 0% 100%;
-    --primary-glow: 30 100% 90%;
+    --primary-hover: 30 100% 40%;
     --primary-light: 30 100% 95%;
 
-    /* Secondary Purple */
+    /* Secondary Purple - from branding guidelines */
     --secondary-purple: 270 50% 40%;
     --secondary-purple-foreground: 0 0% 100%;
-    --secondary-purple-light: 270 50% 50%;
+    --secondary-purple-hover: 270 50% 50%;
+    --secondary-purple-light: 270 50% 95%;
 
     /* Brand Yellow - keeping existing */
     --brand: 48 100% 85%;
@@ -33,15 +34,20 @@
     --brand-light: 48 100% 95%;
     --brand-dark: 48 100% 75%;
 
-    /* Supporting Palette - Soft Pastels */
+    /* Supporting Palette - Exact pastels from branding */
     --lavender: 240 60% 95%;
     --lavender-dark: 240 60% 85%;
-    --pink: 330 80% 95%;
-    --pink-dark: 330 80% 85%;
+    --coral-pink: 330 80% 95%;
+    --coral-pink-dark: 330 80% 85%;
     --sunny-yellow: 60 80% 95%;
     --sunny-yellow-dark: 60 80% 85%;
     --sky-blue: 200 80% 95%;
     --sky-blue-dark: 200 80% 85%;
+    --sage-green: 120 60% 95%;
+    --sage-green-dark: 120 60% 85%;
+
+    /* Background reveal color */
+    --background-reveal: 30 100% 95%;
 
     /* Semantic Colors */
     --success: 120 60% 45%;
@@ -74,13 +80,14 @@
 
     --radius: 12px;
 
-    /* Premium gradients - Updated for new palette */
-    --gradient-primary: linear-gradient(135deg, hsl(30, 100%, 50%), hsl(30, 100%, 60%));
+    /* Premium gradients - Updated for exact branding */
+    --gradient-primary: linear-gradient(135deg, hsl(30, 100%, 50%), hsl(30, 100%, 40%));
     --gradient-brand: linear-gradient(135deg, #ffee8c, #fff4a6);
     --gradient-secondary: linear-gradient(135deg, hsl(270, 50%, 40%), hsl(270, 50%, 50%));
     --gradient-background: linear-gradient(135deg, hsl(0, 0%, 100%) 0%, hsl(30, 100%, 95%) 100%);
     --gradient-card: linear-gradient(145deg, hsl(0, 0%, 100%), hsla(30, 100%, 50%, 0.05));
     --gradient-hero: linear-gradient(135deg, hsl(30, 100%, 95%), hsl(30, 100%, 97%));
+    --gradient-reveal-bg: linear-gradient(135deg, hsl(30, 100%, 95%), hsl(30, 100%, 97%));
     
     /* Premium shadows - updated for orange theme */
     --shadow-elegant: 0 10px 30px -10px hsla(30, 100%, 50%, 0.15);
@@ -253,33 +260,55 @@
   @keyframes float-in-left {
     0% { 
       opacity: 0; 
-      transform: translateX(-200px) translateY(-50px) rotate(-10deg); 
+      transform: translateX(-300px) scale(0.8); 
     }
     100% { 
       opacity: 1; 
-      transform: translateX(0) translateY(0) rotate(0deg); 
+      transform: translateX(0) scale(1); 
     }
   }
 
   @keyframes float-in-right {
     0% { 
       opacity: 0; 
-      transform: translateX(200px) translateY(-50px) rotate(10deg); 
+      transform: translateX(300px) scale(0.8); 
     }
     100% { 
       opacity: 1; 
-      transform: translateX(0) translateY(0) rotate(0deg); 
+      transform: translateX(0) scale(1); 
     }
   }
 
   @keyframes float-in-top {
     0% { 
       opacity: 0; 
-      transform: translateY(-200px) scale(0.5) rotate(-5deg); 
+      transform: translateY(-150px) scale(0.8); 
     }
     100% { 
       opacity: 1; 
-      transform: translateY(0) scale(1) rotate(0deg); 
+      transform: translateY(0) scale(1); 
+    }
+  }
+
+  @keyframes float-in-bottom-left {
+    0% { 
+      opacity: 0; 
+      transform: translateX(-200px) translateY(100px) scale(0.8); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateX(0) translateY(0) scale(1); 
+    }
+  }
+
+  @keyframes float-in-bottom-right {
+    0% { 
+      opacity: 0; 
+      transform: translateX(200px) translateY(100px) scale(0.8); 
+    }
+    100% { 
+      opacity: 1; 
+      transform: translateX(0) translateY(0) scale(1); 
     }
   }
 
@@ -293,6 +322,14 @@
 
   .animate-float-in-top {
     animation: float-in-top 0.8s ease-out forwards;
+  }
+
+  .animate-float-in-bottom-left {
+    animation: float-in-bottom-left 0.8s ease-out forwards;
+  }
+
+  .animate-float-in-bottom-right {
+    animation: float-in-bottom-right 0.8s ease-out forwards;
   }
 
   .animate-delay-100 {
@@ -313,6 +350,18 @@
 
   .animate-delay-500 {
     animation-delay: 500ms;
+  }
+
+  .animate-delay-600 {
+    animation-delay: 600ms;
+  }
+
+  .animate-delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .animate-delay-800 {
+    animation-delay: 800ms;
   }
 
   .floating-asset {
