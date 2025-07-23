@@ -318,7 +318,6 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
           img.style.objectFit = 'cover';
           img.style.borderRadius = '8px';
           img.style.border = '1px solid #e5e7eb';
-          img.crossOrigin = 'anonymous'; // Enable CORS for external images
           elementDiv.appendChild(img);
         } else {
           elementDiv.style.fontSize = `${element.fontSize || 16}px`;

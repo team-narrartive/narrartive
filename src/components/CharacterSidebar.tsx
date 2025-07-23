@@ -25,7 +25,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="w-80 border border-border rounded-lg bg-white p-4 h-screen flex flex-col">
+      <div className="w-80 border-r border-gray-300 bg-white/80 backdrop-blur-sm p-4 h-screen flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-sky-500" />
@@ -38,7 +38,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 
   if (characters.length === 0) {
     return (
-      <div className="w-80 border border-border rounded-lg bg-white p-4 h-screen flex flex-col">
+      <div className="w-80 border-r border-gray-300 bg-white/80 backdrop-blur-sm p-4 h-screen flex flex-col">
         <div className="flex-1 flex items-center justify-center" style={{ marginTop: '-20%' }}>
           <div className="p-6 text-center bg-white/90 max-w-sm rounded-lg shadow-sm border border-gray-200">
             <Users className="w-8 h-8 text-gray-400 mx-auto mb-3" />
@@ -53,9 +53,9 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
   }
 
   return (
-    <div className="w-80 h-screen flex flex-col">
-      {/* Header - Without border to distinguish from widgets */}
-      <div className="p-4 mb-4">
+    <div className="w-80 border-r border-gray-300 bg-white/80 backdrop-blur-sm h-screen flex flex-col">
+      {/* Header - Fixed */}
+      <div className="p-4 border-b border-gray-200">
         <div className="flex items-center space-x-2">
           <Users className="w-5 h-5 text-sky-600" />
           <h2 className="font-semibold text-gray-900">Story Characters</h2>
@@ -65,8 +65,8 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
         </div>
       </div>
       
-      {/* Scrollable Content - Individual widgets with borders */}
-      <ScrollArea className="flex-1">
+      {/* Scrollable Content - Uses full remaining height */}
+      <ScrollArea className="flex-1 p-4">
         <div className="space-y-3">
           {characters.map((character, index) => (
             <CharacterWidget
