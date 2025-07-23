@@ -44,17 +44,6 @@ const floatingAssets = [
     size: 'clamp(230px, 17vw, 310px)'
   },
   {
-    name: 'flowers',
-    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
-    position: { 
-      top: '40%', 
-      left: 'clamp(45%, 50%, 55%)'   // Moved up and positioned above/slightly right of feature cards
-    },
-    animation: 'animate-float-in-bottom-left',
-    delay: 'animate-delay-400',
-    size: 'clamp(175px, 13vw, 255px)'
-  },
-  {
     name: 'jupiter',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
     position: { 
@@ -64,17 +53,6 @@ const floatingAssets = [
     animation: 'animate-float-in-right',
     delay: 'animate-delay-600',
     size: 'clamp(170px, 13vw, 250px)'
-  },
-  {
-    name: 'leaf_green',
-    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
-    position: { 
-      top: '72%',  // Align with bottom of feature cards
-      right: '0'   // Position at right edge to prevent horizontal scroll
-    },
-    animation: 'animate-float-in-bottom-right',
-    delay: 'animate-delay-700',
-    size: 'clamp(155px, 12vw, 235px)'
   }
 ];
 
@@ -237,8 +215,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             style={{
               top: asset.position.top,
               left: asset.position.left,
-              right: asset.position.right,
-              transform: asset.position.right ? 'translateY(-50%)' : 'translate(-50%, -50%)',
+              transform: 'translate(-50%, -50%)',
               width: asset.size,
               height: asset.size
             }}
