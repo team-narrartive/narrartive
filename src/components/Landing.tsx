@@ -17,19 +17,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       const scrollPosition = window.scrollY;
       setScrolled(scrollPosition > 100);
       
-      // Trigger color reveal at hero midpoint
-      if (heroRef.current) {
-        const heroHeight = heroRef.current.offsetHeight;
-        const heroMidpoint = heroHeight / 2;
-        setColorRevealed(scrollPosition > heroMidpoint);
-      }
+      // Trigger color reveal on minimal scroll
+      setColorRevealed(scrollPosition > 0);
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Apply grayscale filter to body
+  // Apply grayscale filter to body with high contrast
   useEffect(() => {
     if (!colorRevealed) {
       document.body.style.filter = 'grayscale(100%)';
@@ -71,7 +67,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       {/* Navigation */}
       <nav 
         className={`fixed top-0 w-full z-50 px-6 py-4 transition-all duration-300 ease-in-out ${
-          scrolled 
+          colorRevealed 
             ? 'bg-white shadow-[0_2px_8px_-2px_hsla(217,19%,24%,0.08)]' 
             : 'bg-transparent'
         }`}
@@ -86,10 +82,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               />
             </div>
             <div>
-              <h1 className="text-2xl font-sans font-semibold" style={{ color: 'hsl(151, 55%, 41%)' }}>
+              <h1 
+                className="text-2xl font-sans font-bold transition-all duration-300" 
+                style={{ color: colorRevealed ? 'hsl(151, 55%, 41%)' : '#000' }}
+              >
                 NarrArtive
               </h1>
-              <p className="text-xs font-medium" style={{ color: 'hsl(217, 10%, 46%)' }}>
+              <p 
+                className="text-xs font-medium transition-all duration-300" 
+                style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
+              >
                 Where stories come to life
               </p>
             </div>
@@ -97,15 +99,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           
           <Button 
             onClick={onLogin}
-            className="font-medium px-6 py-2.5 rounded-xl transition-all duration-200 text-white hover:shadow-lg"
+            className="font-medium px-6 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg"
             style={{ 
-              backgroundColor: 'hsl(151, 55%, 41%)',
+              backgroundColor: colorRevealed ? 'hsl(151, 55%, 41%)' : '#000',
+              color: '#fff'
             }}
             onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 55%, 31%)';
+              (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 31%)' : '#333';
             }}
             onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 55%, 41%)';
+              (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 41%)' : '#000';
             }}
           >
             Login
@@ -116,14 +119,17 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       {/* Hero Section - Full Viewport Height */}
       <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans font-bold mb-8 leading-tight tracking-tight text-slate-900">
-            Transform Your{' '}
-            <span style={{ color: 'hsl(151, 55%, 41%)' }}>Stories</span>
-            {' '}Into Visual{' '}
-            <span style={{ color: 'hsl(35, 90%, 55%)' }}>Masterpieces</span>
+          <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans font-bold mb-8 leading-tight tracking-tight transition-all duration-300">
+            <span style={{ color: colorRevealed ? '#000' : '#000' }}>Transform Your </span>
+            <span style={{ color: colorRevealed ? 'hsl(151, 55%, 41%)' : '#333' }}>Stories</span>
+            <span style={{ color: colorRevealed ? '#000' : '#000' }}> Into Visual </span>
+            <span style={{ color: colorRevealed ? 'hsl(35, 90%, 55%)' : '#333' }}>Masterpieces</span>
           </h2>
             
-          <p className="text-lg md:text-xl mb-12 leading-relaxed max-w-3xl mx-auto font-medium" style={{ color: 'hsl(217, 10%, 46%)' }}>
+          <p 
+            className="text-lg md:text-xl mb-12 leading-relaxed max-w-3xl mx-auto font-medium transition-all duration-300" 
+            style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
+          >
             NarrArtive uses advanced AI to identify characters in your stories and generate stunning visual representations. 
             Bring your imagination to life with the power of artificial intelligence.
           </p>
@@ -131,15 +137,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Button 
               onClick={onGetStarted}
-              className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 text-white shadow-lg hover:shadow-xl"
+              className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
               style={{ 
-                backgroundColor: 'hsl(151, 55%, 41%)',
+                backgroundColor: colorRevealed ? 'hsl(151, 55%, 41%)' : '#000',
+                color: '#fff'
               }}
               onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 55%, 31%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 31%)' : '#333';
               }}
               onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 55%, 41%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 41%)' : '#000';
               }}
             >
               Start Creating Now
@@ -147,16 +154,17 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             
             <Button 
               variant="outline"
-              className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 bg-white hover:shadow-lg"
+              className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 hover:shadow-lg"
               style={{ 
-                borderColor: 'hsl(151, 55%, 41%)',
-                color: 'hsl(151, 55%, 41%)',
+                borderColor: colorRevealed ? 'hsl(151, 55%, 41%)' : '#000',
+                color: colorRevealed ? 'hsl(151, 55%, 41%)' : '#000',
+                backgroundColor: colorRevealed ? 'white' : '#fff'
               }}
               onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 55%, 95%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 95%)' : '#f5f5f5';
               }}
               onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'white';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'white' : '#fff';
               }}
               onClick={() => window.open('https://www.youtube.com/watch?v=ukF8FUwA4w8', '_blank')}
             >
@@ -187,18 +195,24 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               >
                 <div 
                   className="w-full bg-white rounded-2xl p-4 shadow-[0_4px_20px_-4px_hsla(217,19%,24%,0.08)] hover:shadow-[0_10px_30px_-10px_hsla(217,19%,24%,0.15)] transition-all duration-300 min-h-[180px] flex flex-col"
-                  style={{ border: '1px solid hsl(82, 39%, 30%)' }}
+                  style={{ border: colorRevealed ? '1px solid hsl(151, 55%, 41%)' : '1px solid #666' }}
                 >
                   <div 
-                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                    style={{ backgroundColor: 'hsl(82, 39%, 30%)' }}
+                    className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300"
+                    style={{ backgroundColor: colorRevealed ? 'hsl(151, 55%, 41%)' : '#333' }}
                   >
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h4 className="text-lg font-sans font-semibold mb-2" style={{ color: 'hsl(82, 39%, 30%)' }}>
+                  <h4 
+                    className="text-lg font-sans font-semibold mb-2 transition-all duration-300" 
+                    style={{ color: colorRevealed ? 'hsl(151, 55%, 41%)' : '#333' }}
+                  >
                     {feature.title}
                   </h4>
-                  <p className="text-sm leading-relaxed font-medium flex-1" style={{ color: 'hsl(217, 10%, 46%)' }}>
+                  <p 
+                    className="text-sm leading-relaxed font-medium flex-1 transition-all duration-300" 
+                    style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
+                  >
                     {feature.description}
                   </p>
                 </div>
