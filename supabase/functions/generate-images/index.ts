@@ -121,22 +121,37 @@ serve(async (req) => {
       return `scene ${imageIndex + 1} (${Math.round(progress * 100)}% through story)`;
     };
 
-    // Optimized character description function
+    // Enhanced character description function prioritizing visual attributes
     const formatCharacterDescription = (char: Character): string => {
       if (!char?.name) return '';
       
       let description = char.name;
       
-      // Only include the most important attributes to keep prompt concise
+      // Prioritize visual attributes for image generation
       if (char.attributes && Object.keys(char.attributes).length > 0) {
-        const importantAttrs = Object.entries(char.attributes)
-          .filter(([_, value]) => value && value !== "Not described" && value.toString().trim())
-          .slice(0, 6) // Limit to 6 most important attributes
-          .map(([key, value]) => `${key}: ${value}`)
-          .join(", ");
+        const visualAttrs = [];
+        const otherAttrs = [];
         
-        if (importantAttrs) {
-          description += ` (${importantAttrs})`;
+        // Separate visual attributes from other attributes
+        Object.entries(char.attributes).forEach(([key, value]) => {
+          if (!value || value === "Not described" || !value.toString().trim()) return;
+          
+          const lowerKey = key.toLowerCase();
+          if (lowerKey.includes('color') || lowerKey.includes('hair') || lowerKey.includes('eye') || 
+              lowerKey.includes('shirt') || lowerKey.includes('pants') || lowerKey.includes('clothing') ||
+              lowerKey.includes('accessories') || lowerKey.includes('height') || lowerKey.includes('ethnicity') ||
+              lowerKey.includes('appearance')) {
+            visualAttrs.push(`${value}`);
+          } else {
+            otherAttrs.push(`${key}: ${value}`);
+          }
+        });
+        
+        // Combine visual attributes first, then other important attributes
+        const allAttrs = [...visualAttrs, ...otherAttrs.slice(0, 3)].slice(0, 8);
+        
+        if (allAttrs.length > 0) {
+          description += ` (${allAttrs.join(", ")})`;
         }
       }
       
