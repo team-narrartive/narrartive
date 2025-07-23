@@ -304,7 +304,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </div>
             </div>
 
-            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-black/20 mb-6">
+            <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm text-gray-500">
                   {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
@@ -338,7 +338,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                     </Button>}
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* Image Generation Settings */}
             {hasGeneratedWidgets && <ImageGenerationSettingsComponent settings={imageSettings} onSettingsChange={setImageSettings} />}
