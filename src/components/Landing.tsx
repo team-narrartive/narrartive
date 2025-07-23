@@ -56,10 +56,10 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(151, 55%, 95%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(270, 60%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(270, 50%, 55%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(270, 50%, 55%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(270, 50%, 55%)' : '#666'
     }
   ];
 
@@ -148,7 +148,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           ref={heroRef} 
           className="min-h-screen flex items-center justify-center px-6 pt-20"
           style={{ 
-            backgroundColor: colorRevealed ? 'hsl(45, 70%, 95%)' : '#fff',
+            backgroundColor: colorRevealed ? 'hsl(45, 85%, 90%)' : '#fff',
             transition: 'background-color 300ms ease-in-out'
           }}
         >
@@ -264,7 +264,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <section 
           className="px-6 py-24" 
           style={{ 
-            backgroundColor: colorRevealed ? 'hsl(45, 70%, 95%)' : '#fff',
+            backgroundColor: colorRevealed ? 'hsl(45, 85%, 90%)' : '#fff',
             transition: 'background-color 300ms ease-in-out'
           }}
         >
