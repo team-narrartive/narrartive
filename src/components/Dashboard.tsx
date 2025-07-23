@@ -131,7 +131,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <Card className="shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-xl overflow-hidden" style={{ backgroundColor: 'hsl(45, 80%, 95%)' }} onClick={onCreateNew}>
           <CardHeader className="flex-1 p-5">
             <CardTitle className="flex items-center gap-3 text-lg font-semibold text-black">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: 'hsl(45, 70%, 55%)' }}>
                 <PlusCircle className="h-4 w-4 text-white" />
               </div>
               Create New Story
@@ -139,7 +139,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <CardDescription className="text-muted-foreground py-2 text-sm leading-relaxed">Start crafting your next amazing interactive story</CardDescription>
           </CardHeader>
           <CardContent className="pt-0 p-5">
-            <Button variant="outline" className="w-full border border-primary text-primary hover:bg-primary hover:text-white py-2 text-sm font-medium rounded-lg transition-colors">
+            <Button variant="outline" className="w-full border py-2 text-sm font-medium rounded-lg transition-colors" style={{ borderColor: 'hsl(45, 70%, 55%)', color: 'hsl(45, 70%, 55%)' }}>
               Get Started →
             </Button>
           </CardContent>
@@ -148,7 +148,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <Card className="shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-xl overflow-hidden" style={{ backgroundColor: 'hsl(200, 80%, 95%)' }} onClick={onViewProjects}>
           <CardHeader className="flex-1 p-5">
             <CardTitle className="flex items-center gap-3 text-lg font-semibold text-black">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
                 <BookOpen className="h-4 w-4 text-white" />
               </div>
               My Projects
@@ -158,7 +158,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0 p-5">
-            <Button variant="outline" className="w-full border border-primary text-primary hover:bg-primary hover:text-white py-2 text-sm font-medium rounded-lg transition-colors">
+            <Button variant="outline" className="w-full border py-2 text-sm font-medium rounded-lg transition-colors" style={{ borderColor: 'hsl(200, 70%, 55%)', color: 'hsl(200, 70%, 55%)' }}>
               {userStoriesLoading ? <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   Loading...
@@ -170,7 +170,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
         <Card className="shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-xl overflow-hidden" style={{ backgroundColor: 'hsl(270, 60%, 95%)' }} onClick={onViewCommunity}>
           <CardHeader className="flex-1 p-5">
             <CardTitle className="flex items-center gap-3 text-lg font-semibold text-black">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center group-hover:scale-110 transition-transform">
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: 'hsl(270, 50%, 55%)' }}>
                 <Users className="h-4 w-4 text-white" />
               </div>
               Community Hub
@@ -180,7 +180,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0 p-5">
-            <Button variant="outline" className="w-full border border-primary text-primary hover:bg-primary hover:text-white py-2 text-sm font-medium rounded-lg transition-colors">
+            <Button variant="outline" className="w-full border py-2 text-sm font-medium rounded-lg transition-colors" style={{ borderColor: 'hsl(270, 50%, 55%)', color: 'hsl(270, 50%, 55%)' }}>
               {communityLoading ? <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   Loading...
