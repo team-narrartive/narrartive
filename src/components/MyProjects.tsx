@@ -13,9 +13,11 @@ import { useToast } from '@/hooks/use-toast';
 
 interface MyProjectsProps {
   onBack: () => void;
+  onCreateNew: () => void;
+  onViewStory: (storyId: string) => void;
 }
 
-export const MyProjects: React.FC<MyProjectsProps> = ({ onBack }) => {
+export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onViewStory }) => {
   const { user } = useAuth();
   const { data: stories, isLoading, error } = useStories('personal');
   const { deleteStory, isDeleting } = useDeleteStory();
