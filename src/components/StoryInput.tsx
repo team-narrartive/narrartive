@@ -281,9 +281,28 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       <SpinningCatLoader isVisible={isGeneratingImages} message="Creating magical images from your story... 🎨✨" />
       
       <Layout showSidebar={false} currentView="create" onBack={onBack}>
-        {/* Main Content - Grid layout for left panel and right widgets */}
+        {/* Main Content - Grid layout for left widgets and right input */}
         <div className="grid grid-cols-2 gap-4">
-          {/* Left Column - Story Input */}
+          {/* Left Column - Character Sidebar and Generated Images */}
+          <div>
+            {/* Character Sidebar */}
+            <CharacterSidebar 
+              characters={characters} 
+              loading={isExtractingCharacters} 
+              onCharacterUpdate={handleCharacterUpdate} 
+            />
+            
+            {/* Enhanced Generated Images */}
+            {(imageVersions.length > 0 || isGeneratingImages) && (
+              <EnhancedGeneratedImages 
+                imageVersions={imageVersions} 
+                loading={isGeneratingImages} 
+                story={story} 
+              />
+            )}
+          </div>
+
+          {/* Right Column - Story Input */}
           <div>
             {/* Persistent Error Message */}
             {imageGenerationError && (
@@ -299,14 +318,14 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </Card>
             )}
 
-            {/* Story Input Panel - Restructured */}
-            <div className="bg-white/80 backdrop-blur-sm p-4 mb-6">
+            {/* Story Input Panel - Single outline wrapper */}
+            <div className="border border-border rounded-md bg-white p-3 mb-6">
               {/* Textarea at top */}
               <Textarea 
                 value={story} 
                 onChange={e => setStory(e.target.value)} 
                 placeholder="Input Story Here..." 
-                className="w-full min-h-[300px] p-3 border border-border rounded-md bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground"
+                className="w-full min-h-[300px] border-0 bg-transparent focus:outline-none focus:ring-0 resize-none text-foreground placeholder-muted-foreground"
                 rows={12}
               />
               
@@ -384,25 +403,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               <div className="border border-gray-300 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm mt-8">
                 <ImageGenerationSettingsComponent settings={imageSettings} onSettingsChange={setImageSettings} />
               </div>
-            )}
-          </div>
-
-          {/* Right Column - Character Sidebar and Generated Images */}
-          <div>
-            {/* Character Sidebar */}
-            <CharacterSidebar 
-              characters={characters} 
-              loading={isExtractingCharacters} 
-              onCharacterUpdate={handleCharacterUpdate} 
-            />
-            
-            {/* Enhanced Generated Images */}
-            {(imageVersions.length > 0 || isGeneratingImages) && (
-              <EnhancedGeneratedImages 
-                imageVersions={imageVersions} 
-                loading={isGeneratingImages} 
-                story={story} 
-              />
             )}
           </div>
         </div>
