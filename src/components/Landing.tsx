@@ -8,11 +8,11 @@ interface LandingProps {
   onLogin: () => void;
 }
 
-// Floating assets with exact positioning and animations from Supabase storage
+// Floating assets using your exact Supabase bucket structure
 const floatingAssets = [
   {
-    name: 'spaceship',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/spaceship.png`,
+    name: 'space_ship',
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
     position: { top: '10%', left: '75%' },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-100',
@@ -20,15 +20,15 @@ const floatingAssets = [
   },
   {
     name: 'moon',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/moon.png`,
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/moon.png',
     position: { top: '5%', left: '5%' },
     animation: 'animate-float-in-top',
     delay: 'animate-delay-200',
     size: 'w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56'
   },
   {
-    name: 'dinosaur',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/dinosaur.png`,
+    name: 'dinasour',
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/dinasour.png',
     position: { top: '30%', left: '10%' },
     animation: 'animate-float-in-left',
     delay: 'animate-delay-300',
@@ -36,31 +36,31 @@ const floatingAssets = [
   },
   {
     name: 'flowers',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/flowers.png`,
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
     position: { top: '60%', left: '15%' },
     animation: 'animate-float-in-bottom-left',
     delay: 'animate-delay-400',
     size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
   },
   {
-    name: 'glow-swirl',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/glow-swirl.png`,
+    name: 'glowy',
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/glowy.png',
     position: { top: '15%', left: '45%' },
     animation: 'animate-float-in-top',
     delay: 'animate-delay-500',
     size: 'w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56'
   },
   {
-    name: 'jupiter-planet',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/jupiter-planet.png`,
+    name: 'jupiter',
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
     position: { top: '40%', left: '80%' },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-600',
     size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
   },
   {
-    name: 'leaf',
-    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/leaf.png`,
+    name: 'leaf_green',
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
     position: { top: '70%', left: '85%' },
     animation: 'animate-float-in-bottom-right',
     delay: 'animate-delay-700',
@@ -74,13 +74,12 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // Immediately set grayscale on page load
+    // Force grayscale immediately on mount
     document.body.style.background = '#f0f0f0';
-    const contentWrapper = document.getElementById('content-wrapper');
-    if (contentWrapper) {
-      contentWrapper.style.filter = 'grayscale(100%)';
-      contentWrapper.style.transition = 'filter 500ms ease-in-out, background-color 500ms ease-in-out';
-    }
+    
+    // Apply grayscale to the entire page immediately, not just content wrapper
+    document.documentElement.style.filter = 'grayscale(100%)';
+    document.documentElement.style.transition = 'filter 500ms ease-in-out';
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -89,10 +88,8 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           setColorRevealed(true);
           setTimeout(() => setAssetsRevealed(true), 100);
           
-          // Remove grayscale and apply reveal background
-          if (contentWrapper) {
-            contentWrapper.style.filter = 'grayscale(0%)';
-          }
+          // Remove grayscale from entire page
+          document.documentElement.style.filter = 'grayscale(0%)';
           document.body.style.background = 'hsl(30, 100%, 95%)';
         }
       },
@@ -107,9 +104,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       observer.disconnect();
       // Cleanup on unmount
       document.body.style.background = '';
-      if (contentWrapper) {
-        contentWrapper.style.filter = '';
-      }
+      document.documentElement.style.filter = '';
     };
   }, []);
 
@@ -241,13 +236,12 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </div>
       ))}
 
-      {/* Content wrapper - applies filter/transitions */}
+      {/* Content wrapper */}
       <div 
         id="content-wrapper"
         style={{ 
-          filter: 'grayscale(100%)', // Start in grayscale immediately
-          backgroundColor: '#f0f0f0', // Start with neutral gray background
-          transition: 'filter 500ms ease-in-out, background-color 500ms ease-in-out',
+          backgroundColor: colorRevealed ? 'hsl(30, 100%, 95%)' : '#f0f0f0',
+          transition: 'background-color 500ms ease-in-out',
           minHeight: '100vh'
         }}
       >
