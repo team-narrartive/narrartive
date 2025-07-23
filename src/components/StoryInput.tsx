@@ -287,10 +287,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
 
             {/* Story Input */}
             <div className="flex items-center justify-start gap-4 mb-6">
-              <Button onClick={onBack} variant="outline" className="border-border hover:bg-muted">
-                <ArrowLeft className="w-4 h-4 mr-2" />
-                Back to Dashboard
-              </Button>
+              
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                   <FileText className="w-5 h-5 text-white" />
