@@ -400,7 +400,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
 
             {/* Image Generation Settings Panel */}
             {hasGeneratedWidgets && (
-              <div className="border border-gray-300 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm mt-8">
+              <div className="mt-8">
                 <ImageGenerationSettingsComponent settings={imageSettings} onSettingsChange={setImageSettings} />
               </div>
             )}
