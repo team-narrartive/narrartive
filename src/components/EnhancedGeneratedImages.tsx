@@ -165,9 +165,9 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center space-x-2 mb-3">
-          <ImageIcon className="w-5 h-5 text-sky-600" />
+          <ImageIcon className="w-5 h-5 text-primary" />
           <h2 className="font-semibold text-gray-900">Generated Images</h2>
-          <Badge variant="secondary" className="bg-sky-100 text-sky-600">
+          <Badge variant="secondary" className="bg-primary/10 text-primary">
             {latestVersion?.images.length || 0}
           </Badge>
         </div>
@@ -176,7 +176,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
         {latestVersion && latestVersion.images.length > 0 && (
           <Button
             onClick={() => handleOpenCanvas(latestVersion.images[0])}
-            className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white"
+            className="w-full bg-brand hover:bg-brand/90 text-brand-foreground"
           >
             <Palette className="w-4 h-4 mr-2" />
             Open Canvas

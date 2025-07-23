@@ -28,7 +28,7 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       <div className="w-80 border border-border rounded-lg bg-white p-4 h-screen flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
-            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-sky-500" />
+            <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-success" />
             <p className="text-sm text-gray-600">Analyzing characters...</p>
           </div>
         </div>
@@ -57,9 +57,9 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
       {/* Header - Without border to distinguish from widgets */}
       <div className="p-4 mb-4">
         <div className="flex items-center space-x-2">
-          <Users className="w-5 h-5 text-sky-600" />
+          <Users className="w-5 h-5 text-success" />
           <h2 className="font-semibold text-gray-900">Story Characters</h2>
-          <span className="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-full">
+          <span className="text-xs bg-success/10 text-success px-2 py-1 rounded-full">
             {characters.length}
           </span>
         </div>

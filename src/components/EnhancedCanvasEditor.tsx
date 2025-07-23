@@ -428,7 +428,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowImageLibrary(!showImageLibrary)}
-                className={showImageLibrary ? 'bg-blue-50 border-blue-200' : ''}
+                className={showImageLibrary ? 'bg-primary/10 border-primary/30 text-primary' : ''}
               >
                 <Image className="w-4 h-4 mr-2" />
                 Images
@@ -437,7 +437,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowStoryElements(!showStoryElements)}
-                className={showStoryElements ? 'bg-green-50 border-green-200' : ''}
+                className={showStoryElements ? 'bg-success/10 border-success/30 text-success' : ''}
               >
                 <FileText className="w-4 h-4 mr-2" />
                 Story
