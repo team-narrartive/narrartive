@@ -281,8 +281,8 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       <SpinningCatLoader isVisible={isGeneratingImages} message="Creating magical images from your story... 🎨✨" />
       
       <Layout showSidebar={false} currentView="create" onBack={onBack}>
-        {/* Main Content - Grid layout for left widgets and right input */}
-        <div className="grid grid-cols-2 gap-4">
+        {/* Main Content - Three column layout: widgets, input, space for generated images */}
+        <div className="grid grid-cols-[320px_1fr_300px] gap-4">
           {/* Left Column - Character Sidebar and Generated Images */}
           <div>
             {/* Character Sidebar */}
@@ -330,10 +330,10 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               />
               
               {/* Separator */}
-              <Separator className="my-4 bg-border" />
+              <Separator className="my-3 bg-border" />
               
               {/* Bottom row - Privacy switch left, counts right */}
-              <div className="flex items-center justify-between px-3 py-2">
+              <div className="flex items-center justify-between px-3 py-1">
                 <div className="flex items-center space-x-2">
                   <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
                   <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
@@ -405,6 +405,9 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </div>
             )}
           </div>
+
+          {/* Third Column - Reserved space for future generated images panel */}
+          <div></div>
         </div>
       </Layout>
 
