@@ -30,7 +30,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       document.body.style.transition = 'filter 300ms ease-in-out, background-color 300ms ease-in-out';
     } else {
       document.body.style.filter = 'grayscale(0%) saturate(110%)';
-      document.body.style.backgroundColor = 'hsl(50, 25%, 96%)';
+      document.body.style.backgroundColor = 'hsl(48, 15%, 94%)';
     }
     
     return () => {
@@ -45,46 +45,47 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(48, 35%, 92%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(48, 45%, 55%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(48, 45%, 55%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(48, 45%, 55%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(48, 30%, 88%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(48, 35%, 60%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(48, 35%, 60%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(48, 35%, 60%)' : '#666'
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(210, 35%, 92%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(210, 45%, 55%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(210, 45%, 55%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(210, 45%, 55%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(210, 25%, 88%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(210, 35%, 60%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(210, 35%, 60%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(210, 35%, 60%)' : '#666'
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(15, 35%, 92%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(15, 45%, 55%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(15, 45%, 55%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(15, 45%, 55%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(0, 25%, 88%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(0, 35%, 60%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(0, 35%, 60%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(0, 35%, 60%)' : '#666'
     }
   ];
 
   return (
     <div 
       className="min-h-screen transition-all duration-300 ease-in-out"
-      style={{ backgroundColor: colorRevealed ? 'hsl(50, 25%, 96%)' : '#fff' }}
+      style={{ backgroundColor: colorRevealed ? 'hsl(48, 15%, 94%)' : '#fff' }}
     >
       {/* Navigation */}
       <nav 
-        className="fixed top-0 left-0 right-0 z-[9999] px-6 py-4 transition-all duration-300 ease-in-out"
+        className="fixed top-0 left-0 right-0 px-6 py-4 transition-all duration-300 ease-in-out"
         style={{ 
           position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
           zIndex: 9999,
-          backgroundColor: colorRevealed ? 'white' : 'transparent',
+          backgroundColor: colorRevealed ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
+          backdropFilter: 'blur(10px)',
           boxShadow: colorRevealed ? '0 2px 8px -2px hsla(217,19%,24%,0.08)' : 'none'
         }}
       >
@@ -246,7 +247,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="px-6 py-24" style={{ backgroundColor: 'hsl(50, 25%, 96%)' }}>
+      <section className="px-6 py-24" style={{ backgroundColor: 'hsl(48, 15%, 94%)' }}>
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <h3 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-slate-900 mb-6">
             Ready to bring your stories to life?
