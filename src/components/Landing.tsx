@@ -71,26 +71,23 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   ];
 
   return (
-    <div 
-      className="min-h-screen"
-      style={{ 
-        backgroundColor: colorRevealed ? 'hsl(48, 15%, 94%)' : '#fff',
-        transition: 'background-color 300ms ease-in-out'
-      }}
-    >
-      {/* Navigation */}
+    <>
+      {/* Navigation - completely independent */}
       <nav 
-        className="fixed top-0 left-0 right-0 w-full px-6 py-4 transition-all duration-300 ease-in-out"
         style={{ 
           position: 'fixed',
           top: 0,
           left: 0,
           right: 0,
-          width: '100%',
-          zIndex: 9999,
+          width: '100vw',
+          height: 'auto',
+          zIndex: 999999,
           backgroundColor: colorRevealed ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(10px)',
-          boxShadow: colorRevealed ? '0 2px 8px -2px hsla(217,19%,24%,0.08)' : 'none'
+          WebkitBackdropFilter: 'blur(10px)',
+          boxShadow: colorRevealed ? '0 2px 8px -2px hsla(217,19%,24%,0.08)' : 'none',
+          padding: '1rem 1.5rem',
+          transition: 'background-color 300ms ease-in-out, box-shadow 300ms ease-in-out'
         }}
       >
         <div className="max-w-7xl mx-auto flex items-center justify-between">
@@ -140,83 +137,91 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </div>
       </nav>
 
-      {/* Hero Section - Full Viewport Height */}
-      <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 pt-20">
-        <div className="max-w-6xl mx-auto text-center">
-          <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans font-bold mb-8 leading-tight tracking-tight transition-all duration-300">
-            <span style={{ color: colorRevealed ? '#000' : '#000' }}>Transform Your </span>
-            <span style={{ color: colorRevealed ? '#666' : '#666' }}>Stories</span>
-            <span style={{ color: colorRevealed ? '#000' : '#000' }}> Into Visual </span>
-            <span style={{ color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#666' }}>Masterpieces</span>
-          </h2>
-            
-          <p 
-            className="text-lg md:text-xl mb-12 leading-relaxed max-w-3xl mx-auto font-medium transition-all duration-300" 
-            style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
-          >
-            NarrArtive uses advanced AI to identify characters in your stories and generate stunning visual representations. 
-            Bring your imagination to life with the power of artificial intelligence.
-          </p>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button 
-              onClick={onGetStarted}
-              className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
-              style={{ 
-                backgroundColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
-                color: '#fff'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 35%)' : '#333';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 45%)' : '#000';
-              }}
+      {/* Main content container */}
+      <div 
+        className="min-h-screen"
+        style={{ 
+          backgroundColor: colorRevealed ? 'hsl(48, 15%, 94%)' : '#fff',
+          transition: 'background-color 300ms ease-in-out'
+        }}
+      >
+        {/* Hero Section - Full Viewport Height */}
+        <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 pt-20">
+          <div className="max-w-6xl mx-auto text-center">
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans font-bold mb-8 leading-tight tracking-tight transition-all duration-300">
+              <span style={{ color: colorRevealed ? '#000' : '#000' }}>Transform Your </span>
+              <span style={{ color: colorRevealed ? '#666' : '#666' }}>Stories</span>
+              <span style={{ color: colorRevealed ? '#000' : '#000' }}> Into Visual </span>
+              <span style={{ color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#666' }}>Masterpieces</span>
+            </h2>
+              
+            <p 
+              className="text-lg md:text-xl mb-12 leading-relaxed max-w-3xl mx-auto font-medium transition-all duration-300" 
+              style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
             >
-              Start Creating Now
-            </Button>
-            
-            <Button 
-              variant="outline"
-              className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 hover:shadow-lg"
-              style={{ 
-                borderColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
-                color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
-                backgroundColor: colorRevealed ? 'white' : '#fff'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 95%)' : '#f5f5f5';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'white' : '#fff';
-              }}
-              onClick={() => window.open('https://www.youtube.com/watch?v=ukF8FUwA4w8', '_blank')}
-            >
-              <Play className="w-5 h-5 mr-2" />
-              Watch Advertisement
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="px-6 py-24 bg-white">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-16">
-            <h3 className="text-3xl md:text-4xl font-sans font-bold text-slate-900 mb-4">
-              Powerful Features for Creative Minds
-            </h3>
-            <p className="text-lg md:text-xl max-w-2xl mx-auto font-medium" style={{ color: 'hsl(217, 10%, 46%)' }}>
-              Everything you need to transform your written stories into visual narratives
+              NarrArtive uses advanced AI to identify characters in your stories and generate stunning visual representations. 
+              Bring your imagination to life with the power of artificial intelligence.
             </p>
-          </div>
 
-          <div className="grid gap-4 md:gap-6 lg:gap-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
-            {features.map((feature, index) => (
-              <div 
-                key={index}
-                className="group cursor-pointer transition-all duration-300 hover:-translate-y-2"
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button 
+                onClick={onGetStarted}
+                className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl"
+                style={{ 
+                  backgroundColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
+                  color: '#fff'
+                }}
+                onMouseEnter={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 35%)' : '#333';
+                }}
+                onMouseLeave={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 45%)' : '#000';
+                }}
               >
+                Start Creating Now
+              </Button>
+              
+              <Button 
+                variant="outline"
+                className="px-8 py-3 text-sm font-bold rounded-xl transition-all duration-200 hover:shadow-lg"
+                style={{ 
+                  borderColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
+                  color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
+                  backgroundColor: colorRevealed ? 'white' : '#fff'
+                }}
+                onMouseEnter={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 55%, 95%)' : '#f5f5f5';
+                }}
+                onMouseLeave={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'white' : '#fff';
+                }}
+                onClick={() => window.open('https://www.youtube.com/watch?v=ukF8FUwA4w8', '_blank')}
+              >
+                <Play className="w-5 h-5 mr-2" />
+                Watch Advertisement
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Features Section */}
+        <section className="px-6 py-24 bg-white">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h3 className="text-3xl md:text-4xl font-sans font-bold text-slate-900 mb-4">
+                Powerful Features for Creative Minds
+              </h3>
+              <p className="text-lg md:text-xl max-w-2xl mx-auto font-medium" style={{ color: 'hsl(217, 10%, 46%)' }}>
+                Everything you need to transform your written stories into visual narratives
+              </p>
+            </div>
+
+            <div className="grid gap-4 md:gap-6 lg:gap-8" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))' }}>
+              {features.map((feature, index) => (
+                <div 
+                  key={index}
+                  className="group cursor-pointer transition-all duration-300 hover:-translate-y-2"
+                >
                  <div 
                   className="w-full rounded-2xl shadow-[0_4px_20px_-4px_hsla(217,19%,24%,0.08)] hover:shadow-[0_10px_30px_-10px_hsla(217,19%,24%,0.15)] transition-all duration-300 min-h-[180px] flex flex-col"
                    style={{ 
@@ -245,63 +250,64 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                   </p>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA Section */}
-      <section className="px-6 py-24" style={{ backgroundColor: 'hsl(48, 15%, 94%)' }}>
-        <div className="max-w-4xl mx-auto text-center animate-fade-in">
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-slate-900 mb-6">
-            Ready to bring your stories to life?
-          </h3>
-          <p className="text-lg md:text-xl mb-12 font-medium max-w-2xl mx-auto" style={{ color: 'hsl(217, 10%, 46%)' }}>
-            Join thousands of creators who are already transforming their narratives with NarrArtive
-          </p>
-          <div className="flex justify-center" style={{ marginTop: '8px' }}>
-            <Button 
-              onClick={onGetStarted}
-              className="px-10 py-4 text-base font-semibold rounded-2xl transition-all duration-200 text-white shadow-lg hover:shadow-xl"
-              style={{ 
-                backgroundColor: 'hsl(151, 60%, 45%)',
-                border: '1px solid hsl(151, 60%, 45%)'
-              }}
-              onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 60%, 35%)';
-                (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(151,60%,45%,0.3)';
-              }}
-              onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 60%, 45%)';
-                (e.target as HTMLElement).style.boxShadow = '0 4px 20px -4px hsla(217,19%,24%,0.15)';
-              }}
-            >
-              Start Your Journey
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="px-6 py-12 border-t bg-white" style={{ borderColor: 'hsl(217, 10%, 91%)' }}>
-        <div className="max-w-6xl mx-auto text-center">
-          <div className="flex items-center justify-center space-x-3 mb-4">
-            <div className="w-8 h-8 flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
-                alt="NarrArtive Logo" 
-                className="w-8 h-8 object-contain"
-              />
+              ))}
             </div>
-            <span className="text-xl font-sans font-semibold" style={{ color: 'hsl(151, 60%, 45%)' }}>
-              NarrArtive
-            </span>
           </div>
-          <p className="font-medium" style={{ color: 'hsl(217, 10%, 46%)' }}>
-            © 2024 NarrArtive. All rights reserved.
-          </p>
-        </div>
-      </footer>
-    </div>
+        </section>
+
+        {/* CTA Section */}
+        <section className="px-6 py-24" style={{ backgroundColor: 'hsl(48, 15%, 94%)' }}>
+          <div className="max-w-4xl mx-auto text-center animate-fade-in">
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-slate-900 mb-6">
+              Ready to bring your stories to life?
+            </h3>
+            <p className="text-lg md:text-xl mb-12 font-medium max-w-2xl mx-auto" style={{ color: 'hsl(217, 10%, 46%)' }}>
+              Join thousands of creators who are already transforming their narratives with NarrArtive
+            </p>
+            <div className="flex justify-center" style={{ marginTop: '8px' }}>
+              <Button 
+                onClick={onGetStarted}
+                className="px-10 py-4 text-base font-semibold rounded-2xl transition-all duration-200 text-white shadow-lg hover:shadow-xl"
+                style={{ 
+                  backgroundColor: 'hsl(151, 60%, 45%)',
+                  border: '1px solid hsl(151, 60%, 45%)'
+                }}
+                onMouseEnter={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 60%, 35%)';
+                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(151,60%,45%,0.3)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.target as HTMLElement).style.backgroundColor = 'hsl(151, 60%, 45%)';
+                  (e.target as HTMLElement).style.boxShadow = '0 4px 20px -4px hsla(217,19%,24%,0.15)';
+                }}
+              >
+                Start Your Journey
+              </Button>
+            </div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="px-6 py-12 border-t bg-white" style={{ borderColor: 'hsl(217, 10%, 91%)' }}>
+          <div className="max-w-6xl mx-auto text-center">
+            <div className="flex items-center justify-center space-x-3 mb-4">
+              <div className="w-8 h-8 flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                  alt="NarrArtive Logo" 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+              <span className="text-xl font-sans font-semibold" style={{ color: 'hsl(151, 60%, 45%)' }}>
+                NarrArtive
+              </span>
+            </div>
+            <p className="font-medium" style={{ color: 'hsl(217, 10%, 46%)' }}>
+              © 2024 NarrArtive. All rights reserved.
+            </p>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 };
