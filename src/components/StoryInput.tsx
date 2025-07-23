@@ -304,7 +304,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </div>
             </div>
 
-            <div className="bg-white/50 backdrop-blur-sm border border-gray-200 rounded-lg p-6 mb-6 shadow-sm">
+            <div className="bg-white/60 backdrop-blur-sm rounded-lg p-6 mb-6 shadow-sm">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm text-gray-500">
                   {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words

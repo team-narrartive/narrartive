@@ -37,7 +37,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
 
   if (loading) {
     return (
-      <div className="w-80 bg-white/50 backdrop-blur-sm border-l border-gray-200 p-4 h-screen flex flex-col">
+      <div className="w-80 bg-white/50 backdrop-blur-sm p-4 h-screen flex flex-col">
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-sky-500" />
@@ -51,9 +51,9 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
 
   if (imageVersions.length === 0) {
     return (
-      <div className="w-80 bg-white/50 backdrop-blur-sm border-l border-gray-200 p-4 h-screen flex flex-col">
+      <div className="w-80 bg-white/50 backdrop-blur-sm p-4 h-screen flex flex-col">
         <div className="flex-1 flex items-center justify-center">
-          <div className="p-6 text-center bg-white/60 max-w-sm border border-gray-200 rounded-lg shadow-sm">
+          <div className="p-6 text-center bg-white/70 max-w-sm rounded-lg shadow-sm">
             <ImageIcon className="w-8 h-8 text-gray-400 mx-auto mb-3" />
             <h3 className="font-semibold text-gray-700 mb-2">No Images Generated</h3>
             <p className="text-sm text-gray-500">
@@ -133,9 +133,9 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
   }
 
   return (
-    <div className="w-80 bg-white/50 backdrop-blur-sm border-l border-gray-200 h-screen flex flex-col">
+    <div className="w-80 bg-white/50 backdrop-blur-sm h-screen flex flex-col">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200 bg-white/60">
+      <div className="p-4 bg-white/70">
         <div className="flex items-center space-x-2 mb-3">
           <ImageIcon className="w-5 h-5 text-sky-600" />
           <h2 className="font-semibold text-gray-900">Generated Images</h2>
@@ -169,7 +169,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
             {latestVersion && (
               <div className="space-y-3">
                 {/* Generation Info */}
-                <div className="p-3 bg-white/60 border border-gray-200 rounded-lg shadow-sm">
+                <div className="p-3 bg-white/70 rounded-lg shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs text-gray-500">
                       {formatDate(latestVersion.created_at)}
@@ -198,7 +198,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
                 {/* Latest Images */}
                 <div className="space-y-3">
                   {latestVersion.images.map((imageUrl, index) => (
-                    <div key={index} className="p-2 bg-white/60 backdrop-blur-sm border border-gray-200 rounded-lg shadow-sm group hover:shadow-lg transition-all duration-300">
+                    <div key={index} className="p-2 bg-white/70 backdrop-blur-sm rounded-lg shadow-sm group hover:shadow-lg transition-all duration-300">
                       <div className="relative">
                         <img
                           src={imageUrl}
@@ -244,7 +244,7 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
               <h3 className="font-medium text-gray-800 mb-3">Previous Generations</h3>
               <div className="space-y-4">
                 {imageVersions.slice(0, -1).reverse().map((version, versionIndex) => (
-                  <div key={version.id} className="p-3 bg-white/40 border border-gray-200 rounded-lg shadow-sm">
+                  <div key={version.id} className="p-3 bg-white/60 rounded-lg shadow-sm">
                     <div className="flex items-center justify-between mb-2">
                       <span className="text-xs text-gray-500">
                         {formatDate(version.created_at)}
