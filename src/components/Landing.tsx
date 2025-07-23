@@ -121,28 +121,28 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(240, 60%, 95%)' : 'hsl(0, 0%, 95%)', // Lavender
-      iconColor: colorRevealed ? 'hsl(240, 60%, 85%)' : 'hsl(0, 0%, 80%)',
-      titleColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 20%)', // Purple
-      borderColor: colorRevealed ? 'hsl(240, 60%, 85%)' : 'hsl(0, 0%, 80%)'
+      bgColor: colorRevealed ? 'hsl(270, 60%, 92%)' : 'hsl(0, 0%, 95%)', // Lavender
+      iconColor: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 80%)', // Dark Purple
+      titleColor: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 20%)', // Dark Purple
+      borderColor: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 80%)' // Dark Purple
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(30, 100%, 95%)' : 'hsl(0, 0%, 95%)', // Peach
-      iconColor: colorRevealed ? 'hsl(30, 100%, 85%)' : 'hsl(0, 0%, 80%)',
-      titleColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 20%)', // Purple
-      borderColor: colorRevealed ? 'hsl(30, 100%, 85%)' : 'hsl(0, 0%, 80%)'
+      bgColor: colorRevealed ? 'hsl(39, 100%, 86%)' : 'hsl(0, 0%, 95%)', // Sunny Yellow
+      iconColor: colorRevealed ? 'hsl(36, 100%, 50%)' : 'hsl(0, 0%, 80%)', // Primary Orange
+      titleColor: colorRevealed ? 'hsl(36, 100%, 50%)' : 'hsl(0, 0%, 20%)', // Primary Orange
+      borderColor: colorRevealed ? 'hsl(36, 100%, 50%)' : 'hsl(0, 0%, 80%)' // Primary Orange
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : 'hsl(0, 0%, 95%)', // Sky Blue
-      iconColor: colorRevealed ? 'hsl(200, 80%, 85%)' : 'hsl(0, 0%, 80%)',
-      titleColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 20%)', // Purple
-      borderColor: colorRevealed ? 'hsl(200, 80%, 85%)' : 'hsl(0, 0%, 80%)'
+      bgColor: colorRevealed ? 'hsl(208, 100%, 86%)' : 'hsl(0, 0%, 95%)', // Sky Blue
+      iconColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)', // Info color
+      titleColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 20%)', // Info color
+      borderColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)' // Info color
     }
   ];
 
@@ -284,7 +284,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 fontWeight: 800 
               }}> Into Visual </span>
               <span style={{ 
-                color: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 40%)', // Orange
+                color: colorRevealed ? 'hsl(270, 50%, 48%)' : 'hsl(0, 0%, 40%)', // Dark Purple
                 fontWeight: 800 
               }}>Masterpieces</span>
             </h2>
