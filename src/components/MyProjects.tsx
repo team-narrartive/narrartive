@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStories } from '@/hooks/useStories';
 import { useDeleteStory } from '@/hooks/useDeleteStory';
@@ -7,9 +7,16 @@ import { Layout } from './Layout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Users, Heart, Eye, Calendar, Trash2, Edit, Globe, Lock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { useQueryClient } from '@tanstack/react-query';
 
 interface MyProjectsProps {
   onBack: () => void;
@@ -22,15 +29,80 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
   const { data: stories, isLoading, error } = useStories('personal');
   const { deleteStory, isDeleting } = useDeleteStory();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
+  
+  const [editingStory, setEditingStory] = useState<any>(null);
+  const [editForm, setEditForm] = useState({ title: '', description: '', is_public: false });
+  const [isSaving, setIsSaving] = useState(false);
+
+  const handleEditClick = (story: any) => {
+    setEditingStory(story);
+    setEditForm({
+      title: story.title,
+      description: story.description,
+      is_public: story.is_public
+    });
+  };
+
+  const handleSaveEdit = async () => {
+    if (!editingStory) return;
+    
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('stories')
+        .update({
+          title: editForm.title,
+          description: editForm.description,
+          is_public: editForm.is_public
+        })
+        .eq('id', editingStory.id);
+
+      if (error) throw error;
+
+      // Update the cache immediately
+      queryClient.setQueryData(['stories', 'personal'], (oldData: any[]) => {
+        if (!oldData) return oldData;
+        return oldData.map(story => 
+          story.id === editingStory.id 
+            ? { ...story, ...editForm }
+            : story
+        );
+      });
+
+      toast({
+        title: "Story updated",
+        description: "Your story has been successfully updated.",
+      });
+      
+      setEditingStory(null);
+    } catch (error) {
+      toast({
+        title: "Error updating story",
+        description: "There was an issue updating your story. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleDelete = async (storyId: string) => {
     try {
+      // Optimistically update the UI immediately
+      queryClient.setQueryData(['stories', 'personal'], (oldData: any[]) => {
+        if (!oldData) return oldData;
+        return oldData.filter(story => story.id !== storyId);
+      });
+
       await deleteStory(storyId);
       toast({
         title: "Story deleted",
         description: "Your story has been successfully deleted.",
       });
     } catch (error) {
+      // If deletion fails, revert the optimistic update
+      queryClient.invalidateQueries({ queryKey: ['stories', 'personal'] });
       toast({
         title: "Error deleting story",
         description: "There was an issue deleting your story. Please try again.",
@@ -151,13 +223,65 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                   </div>
 
                   <div className="flex gap-2">
-                    <Button
-                      onClick={() => onViewStory(story.id)}
-                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
-                    >
-                      <Edit className="w-4 h-4 mr-2" />
-                      Edit
-                    </Button>
+                    <Dialog open={editingStory?.id === story.id} onOpenChange={(open) => !open && setEditingStory(null)}>
+                      <DialogTrigger asChild>
+                        <Button
+                          onClick={() => handleEditClick(story)}
+                          variant="outline"
+                          className="flex-1 bg-white text-black border-black hover:bg-gray-50 transition-colors"
+                        >
+                          <Edit className="w-4 h-4 mr-2" />
+                          Edit
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-[425px]">
+                        <DialogHeader>
+                          <DialogTitle>Edit Story</DialogTitle>
+                          <DialogDescription>
+                            Update your story details and privacy settings.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="grid gap-4 py-4">
+                          <div className="grid gap-2">
+                            <Label htmlFor="title">Title</Label>
+                            <Input
+                              id="title"
+                              value={editForm.title}
+                              onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                              placeholder="Story title..."
+                            />
+                          </div>
+                          <div className="grid gap-2">
+                            <Label htmlFor="description">Description</Label>
+                            <Textarea
+                              id="description"
+                              value={editForm.description}
+                              onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                              placeholder="Story description..."
+                              rows={3}
+                            />
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <Switch
+                              id="public"
+                              checked={editForm.is_public}
+                              onCheckedChange={(checked) => setEditForm({ ...editForm, is_public: checked })}
+                            />
+                            <Label htmlFor="public">Make story public</Label>
+                          </div>
+                        </div>
+                        <DialogFooter>
+                          <Button
+                            type="submit"
+                            onClick={handleSaveEdit}
+                            disabled={isSaving}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            {isSaving ? 'Saving...' : 'Save Changes'}
+                          </Button>
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
                     
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
