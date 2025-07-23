@@ -68,7 +68,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
   return (
     <>
       <Card 
-        className="bg-white/80 backdrop-blur-sm border border-white/20 hover:shadow-lg transition-all duration-200 cursor-pointer"
+        className="bg-white border border-border rounded-lg shadow-sm hover:shadow-lg transition-all duration-200 cursor-pointer mb-4"
         onClick={() => setShowAttributesPopup(true)}
       >
         <div className="p-4">

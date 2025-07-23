@@ -77,16 +77,27 @@ export const EnhancedGeneratedImages: React.FC<EnhancedGeneratedImagesProps> = (
 
   const downloadImage = async (imageUrl: string, index: number) => {
     try {
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `story-scene-${index + 1}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.URL.revokeObjectURL(url);
+      // Check if it's a base64 data URL
+      if (imageUrl.startsWith('data:image/')) {
+        const link = document.createElement('a');
+        link.href = imageUrl;
+        link.download = `story-scene-${index + 1}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+      } else {
+        // Handle regular URLs
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `story-scene-${index + 1}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+      }
     } catch (error) {
       console.error('Error downloading image:', error);
     }
