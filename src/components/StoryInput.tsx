@@ -5,8 +5,6 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Separator } from '@/components/ui/separator';
 import { CharacterSidebar } from './CharacterSidebar';
 import { EnhancedGeneratedImages } from './EnhancedGeneratedImages';
 import { ImageGenerationSettingsComponent } from './ImageGenerationSettings';
@@ -285,9 +283,9 @@ export const StoryInput: React.FC<StoryInputProps> = ({
           <CharacterSidebar characters={characters} loading={isExtractingCharacters} onCharacterUpdate={handleCharacterUpdate} />
 
           {/* Main Content */}
-          <div className="flex-1 p-6 max-w-2xl mx-auto">
+          <div className="flex-1 p-6 transition-all duration-300 max-w-4xl mx-auto">
             {/* Persistent Error Message */}
-            {imageGenerationError && <Card className="p-4 bg-red-50 border-red-200 mb-6">
+            {imageGenerationError && <Card className="p-4 bg-red-50 border-red-200 mb-6 max-w-2xl mx-auto">
                 <div className="flex items-start space-x-3">
                   <AlertCircle className="w-5 h-5 text-red-500 mt-0.5 flex-shrink-0" />
                   <div>
@@ -298,102 +296,45 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                 </div>
               </Card>}
 
-            {/* Story Input Panel */}
-            <Card className="border border-hsl(217,10%,91%) rounded-lg shadow-sm mb-6">
+            {/* Story Input Panel with restructured header */}
+            <div className="border border-border rounded-lg bg-white/80 backdrop-blur-sm shadow-sm mb-6 max-w-2xl mx-auto">
+              {/* Compact Top Section */}
+              <div className="px-4 py-3 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
+                  <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                    {isPublic ? 'Public' : 'Private'}
+                  </Label>
+                </div>
+                
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <span>{story.length} characters</span>
+                  <span>•</span>
+                  <span>{story.split(' ').filter(word => word.length > 0).length} words</span>
+                </div>
+                
+                {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Project
+                  </Button>}
+              </div>
+              
+              {/* Story Input Area */}
               <div className="p-4">
-                {/* Textarea - Primary Element */}
-                <Textarea 
+                <textarea 
                   value={story} 
                   onChange={e => setStory(e.target.value)} 
                   placeholder="Input Story Here..." 
-                  className="w-full min-h-[300px] p-3 border border-hsl(217,10%,91%) rounded-md bg-background text-foreground placeholder:text-muted-foreground resize-none focus:ring-2 focus:ring-primary"
+                  className="w-full p-3 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground border-0 min-h-48"
                   rows={12}
                 />
                 
-                {/* Horizontal Separator */}
-                <Separator className="my-4" />
-                
-                {/* Bottom Row: Switch and Counts */}
-                <div className="flex items-center justify-between px-2">
-                  {/* Left: Privacy Switch */}
-                  <div className="flex items-center space-x-2">
-                    <Switch 
-                      id="privacy-toggle" 
-                      checked={isPublic} 
-                      onCheckedChange={setIsPublic}
-                      className="data-[state=checked]:bg-hsl(151,60%,45%)"
-                    />
-                    <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
-                      {isPublic ? 'Public' : 'Private'}
-                    </Label>
-                  </div>
-                  
-                  {/* Right: Character and Word Counts */}
-                  <div className="flex items-center space-x-2 text-sm text-hsl(217,10%,46%)">
-                    <span>{story.length} characters</span>
-                    <span>•</span>
-                    <span>{story.split(' ').filter(word => word.length > 0).length} words</span>
+                <div className="mt-4">
+                  <div className="flex flex-wrap items-center justify-center gap-4">
+...
                   </div>
                 </div>
-                
-                {/* Tip Box */}
-                {characters.length === 0 && !isExtractingCharacters && (
-                  <div className="mt-2 flex items-center text-sm text-muted-foreground">
-                    <AlertCircle className="w-4 h-4 mr-2" />
-                    No characters found. Generate widgets to extract characters from your story.
-                  </div>
-                )}
-                
-                {hasImages && (
-                  <div className="mt-4 flex justify-end">
-                    <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Project
-                    </Button>
-                  </div>
-                )}
               </div>
-            </Card>
-
-            {/* Generate Button - Outside Panel */}
-            <div className="flex justify-center mt-4">
-              {hasGeneratedWidgets ? (
-                <Button 
-                  onClick={handleGenerateImages} 
-                  disabled={!story.trim() || isGeneratingImages} 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  {isGeneratingImages ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Generating Images...
-                    </>
-                  ) : (
-                    <>
-                      <Image className="w-4 h-4 mr-2" />
-                      Generate Images
-                    </>
-                  )}
-                </Button>
-              ) : (
-                <Button 
-                  onClick={handleExtractCharacters} 
-                  disabled={!story.trim() || isExtractingCharacters} 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300"
-                >
-                  {isExtractingCharacters ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Extracting...
-                    </>
-                  ) : (
-                    <>
-                      <Users className="w-4 h-4 mr-2" />
-                      Generate Widgets
-                    </>
-                  )}
-                </Button>
-              )}
             </div>
 
             {/* Image Generation Settings Panel */}
