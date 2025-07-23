@@ -228,7 +228,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                         <Button
                           onClick={() => handleEditClick(story)}
                           variant="outline"
-                          className="flex-1 bg-white text-black border-black hover:bg-gray-50 transition-colors"
+                          className="flex-1 bg-white text-black border-gray-300 hover:bg-gray-50 transition-colors"
                         >
                           <Edit className="w-4 h-4 mr-2" />
                           Edit
@@ -267,10 +267,10 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                               checked={editForm.is_public}
                               onCheckedChange={(checked) => setEditForm({ ...editForm, is_public: checked })}
                             />
-                            <Label htmlFor="public">Make story public</Label>
+                            <Label htmlFor="public">{editForm.is_public ? 'Public' : 'Private'}</Label>
                           </div>
                         </div>
-                        <DialogFooter>
+                        <DialogFooter className="flex justify-center">
                           <Button
                             type="submit"
                             onClick={handleSaveEdit}
