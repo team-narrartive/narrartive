@@ -277,7 +277,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                               type="submit"
                               onClick={handleSaveEdit}
                               disabled={isSaving}
-                              className="bg-green-600 hover:bg-green-700 text-white"
+                              className="bg-orange-500 hover:bg-orange-600 text-white"
                             >
                               {isSaving ? 'Saving...' : 'Save Changes'}
                             </Button>
