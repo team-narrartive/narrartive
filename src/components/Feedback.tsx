@@ -101,7 +101,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
         <div className="grid lg:grid-cols-3 gap-6">
           {/* Feedback Form */}
           <div className="lg:col-span-2">
-            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-primary/10">
               <div className="space-y-6">
                 {/* Feedback Type Selection */}
                 <div>
@@ -146,7 +146,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
 
           {/* Quick Stats / Info */}
           <div className="space-y-6">
-            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-primary/10">
               <h4 className="font-semibold text-gray-900 mb-4">Why Your Feedback Matters</h4>
               <div className="space-y-3 text-sm text-gray-600">
                 <p>🎨 Help us improve story generation</p>
@@ -156,7 +156,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
               </div>
             </Card>
 
-            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-primary/10">
               <h4 className="font-semibold text-gray-900 mb-4">Recent Updates</h4>
               <div className="space-y-3 text-sm">
                 <div className="flex items-start space-x-2">
