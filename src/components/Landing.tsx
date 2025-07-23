@@ -14,67 +14,67 @@ const floatingAssets = [
     name: 'moon',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/moon.png',
     position: { 
-      top: '10%', 
-      left: 'clamp(2%, 5%, 8%)'     // 2% mobile, 5% medium, 8% large - frames "Transform"
+      top: '8%', 
+      left: 'clamp(0%, 2%, 4%)'     // 0% mobile, 2% medium, 4% large - pulled back for safe distance from "Transform"
     },
     animation: 'animate-float-in-top',
     delay: 'animate-delay-200',
-    size: 'clamp(160px, 12vw, 240px)'
+    size: 'clamp(170px, 13vw, 250px)'
   },
   {
     name: 'space_ship',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
     position: { 
-      top: '12%', 
-      left: 'clamp(65%, 70%, 75%)'  // 65% mobile, 70% medium, 75% large - under "Visual"
+      top: '18%', 
+      left: 'clamp(72%, 78%, 84%)'  // 72% mobile, 78% medium, 84% large - moved down and right to avoid "Visual" overlap
     },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-100',
-    size: 'clamp(180px, 14vw, 260px)'
+    size: 'clamp(190px, 15vw, 270px)'
   },
   {
     name: 'dinasour',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/dinasour.png',
     position: { 
-      top: '30%', 
-      left: 'clamp(5%, 8%, 11%)'    // 5% mobile, 8% medium, 11% large - upwards flow
+      top: '28%', 
+      left: 'clamp(3%, 6%, 9%)'    // 3% mobile, 6% medium, 9% large - nudged up for better flow
     },
     animation: 'animate-float-in-left',
     delay: 'animate-delay-300',
-    size: 'clamp(220px, 16vw, 300px)'
+    size: 'clamp(230px, 17vw, 310px)'
   },
   {
     name: 'flowers',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
     position: { 
-      top: '50%', 
-      left: 'clamp(8%, 10%, 12%)'   // 8% mobile, 10% medium, 12% large - balanced bottom
+      top: '48%', 
+      left: 'clamp(5%, 8%, 11%)'   // 5% mobile, 8% medium, 11% large - positioned near AI card with safe distance
     },
     animation: 'animate-float-in-bottom-left',
     delay: 'animate-delay-400',
-    size: 'clamp(170px, 13vw, 250px)'
+    size: 'clamp(175px, 13vw, 255px)'
   },
   {
     name: 'jupiter',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
     position: { 
-      top: '40%', 
-      left: 'clamp(72%, 75%, 78%)'  // 72% mobile, 75% medium, 78% large - near "Creative Minds"
+      top: '38%', 
+      left: 'clamp(74%, 80%, 86%)'  // 74% mobile, 80% medium, 86% large - nudged up near "Creative Minds" with overflow prevention
     },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-600',
-    size: 'clamp(160px, 12vw, 240px)'
+    size: 'clamp(170px, 13vw, 250px)'
   },
   {
     name: 'leaf_green',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
     position: { 
-      top: '60%', 
-      left: 'clamp(75%, 80%, 85%)'  // 75% mobile, 80% medium, 85% large - fine-tuned symmetry
+      top: '58%', 
+      left: 'clamp(82%, 88%, 94%)'  // 82% mobile, 88% medium, 94% large - "emerging from right edge" effect near Community card
     },
     animation: 'animate-float-in-bottom-right',
     delay: 'animate-delay-700',
-    size: 'clamp(150px, 11vw, 220px)'
+    size: 'clamp(155px, 12vw, 235px)'
   }
 ];
 
