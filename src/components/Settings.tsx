@@ -85,7 +85,7 @@ export const Settings: React.FC<SettingsProps> = ({
           </Card>
 
           {/* Save Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <Button onClick={handleSaveSettings} className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 rounded-xl">
               <Save className="w-4 h-4 mr-2" />
               Save Changes

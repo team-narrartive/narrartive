@@ -76,7 +76,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
     id: 'general',
     label: 'General Feedback',
     icon: ThumbsUp,
-    color: 'text-cyan-600'
+    color: 'text-orange-600'
   }, {
     id: 'bug',
     label: 'Bug Report',
@@ -103,8 +103,8 @@ export const Feedback: React.FC<FeedbackProps> = ({
           <div className="lg:col-span-2">
             <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-cyan-100 to-sky-100 rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-cyan-600" />
+                <div className="w-10 h-10 bg-gradient-to-r from-orange-100 to-orange-100 rounded-lg flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-orange-600" />
                 </div>
                 <div>
                   <h3 className="text-xl font-semibold text-gray-900">Share Your Feedback</h3>
@@ -117,7 +117,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-3">Feedback Type</label>
                   <div className="grid grid-cols-3 gap-3">
-                    {feedbackTypes.map(type => <button key={type.id} onClick={() => setFeedbackType(type.id as any)} className={`p-3 rounded-lg border text-center transition-all ${feedbackType === type.id ? 'border-cyan-500 bg-cyan-50' : 'border-gray-200 hover:border-gray-300'}`}>
+                    {feedbackTypes.map(type => <button key={type.id} onClick={() => setFeedbackType(type.id as any)} className={`p-3 rounded-lg border text-center transition-all ${feedbackType === type.id ? 'border-orange-500 bg-orange-50' : 'border-gray-200 hover:border-gray-300'}`}>
                         <type.icon className={`w-5 h-5 mx-auto mb-1 ${type.color}`} />
                         <p className="text-xs font-medium">{type.label}</p>
                       </button>)}
@@ -146,7 +146,7 @@ export const Feedback: React.FC<FeedbackProps> = ({
                   <Textarea value={message} onChange={e => setMessage(e.target.value)} placeholder="Tell us more about your experience, suggestions, or issues you've encountered..." rows={6} />
                 </div>
 
-                <Button onClick={handleSubmitFeedback} disabled={!subject || !message || isSubmitting} className="w-full bg-gradient-to-r from-cyan-600 to-sky-600 text-white hover:from-cyan-700 hover:to-sky-700">
+                <Button onClick={handleSubmitFeedback} disabled={!subject || !message || isSubmitting} className="w-full bg-gradient-to-r from-orange-600 to-orange-600 text-white hover:from-orange-700 hover:to-orange-700">
                   <Send className="w-4 h-4 mr-2" />
                   {isSubmitting ? 'Submitting...' : 'Submit Feedback'}
                 </Button>
