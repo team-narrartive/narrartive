@@ -45,19 +45,28 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(45, 80%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(45, 80%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(45, 70%, 45%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(45, 70%, 45%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(45, 70%, 45%)' : '#666'
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(200, 70%, 45%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(200, 70%, 45%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(200, 70%, 45%)' : '#666'
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(30, 80%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(30, 80%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(30, 70%, 45%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(30, 70%, 45%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(30, 70%, 45%)' : '#666'
     }
   ];
 
@@ -202,19 +211,19 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                   className="w-full rounded-2xl shadow-[0_4px_20px_-4px_hsla(217,19%,24%,0.08)] hover:shadow-[0_10px_30px_-10px_hsla(217,19%,24%,0.15)] transition-all duration-300 min-h-[180px] flex flex-col"
                    style={{ 
                      backgroundColor: feature.bgColor,
-                     border: colorRevealed ? '1px solid hsl(151, 60%, 45%)' : '1px solid #666',
+                     border: `1px solid ${feature.borderColor}`,
                      padding: '16px'
                    }}
                  >
                    <div 
                      className="w-12 h-12 rounded-xl flex items-center justify-center mb-4 transition-all duration-300"
-                     style={{ backgroundColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#333' }}
+                     style={{ backgroundColor: feature.iconColor }}
                    >
                      <feature.icon className="w-6 h-6 text-white" />
                    </div>
                    <h4 
                      className="text-lg font-sans font-semibold mb-2 transition-all duration-300" 
-                     style={{ color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#333' }}
+                     style={{ color: feature.titleColor }}
                    >
                     {feature.title}
                   </h4>
