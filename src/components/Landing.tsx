@@ -148,7 +148,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           ref={heroRef} 
           className="min-h-screen flex items-center justify-center px-6 pt-20"
           style={{ 
-            backgroundColor: colorRevealed ? 'hsl(45, 85%, 90%)' : '#fff',
+            backgroundColor: colorRevealed ? '#ffee8c' : '#fff',
             transition: 'background-color 300ms ease-in-out'
           }}
         >
@@ -264,7 +264,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <section 
           className="px-6 py-24" 
           style={{ 
-            backgroundColor: colorRevealed ? 'hsl(45, 85%, 90%)' : '#fff',
+            backgroundColor: colorRevealed ? '#ffee8c' : '#fff',
             transition: 'background-color 300ms ease-in-out'
           }}
         >
