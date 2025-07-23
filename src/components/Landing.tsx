@@ -26,13 +26,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   useEffect(() => {
     if (!colorRevealed) {
       document.body.style.filter = 'grayscale(100%)';
-      document.body.style.transition = 'filter 300ms ease-in-out';
+      document.body.style.backgroundColor = '#fff';
+      document.body.style.transition = 'filter 300ms ease-in-out, background-color 300ms ease-in-out';
     } else {
       document.body.style.filter = 'grayscale(0%) saturate(110%)';
+      document.body.style.backgroundColor = 'hsl(45, 93%, 95%)';
     }
     
     return () => {
       document.body.style.filter = '';
+      document.body.style.backgroundColor = '';
       document.body.style.transition = '';
     };
   }, [colorRevealed]);
@@ -41,17 +44,20 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
     {
       icon: BookOpen,
       title: "AI Story Analysis",
-      description: "Our AI automatically identifies characters and story elements from your text"
+      description: "Our AI automatically identifies characters and story elements from your text",
+      bgColor: colorRevealed ? 'hsl(151, 55%, 95%)' : '#f0f0f0'
     },
     {
       icon: Palette,
       title: "Visual Generation",
-      description: "Transform your characters into stunning visual representations"
+      description: "Transform your characters into stunning visual representations",
+      bgColor: colorRevealed ? 'hsl(35, 90%, 95%)' : '#f0f0f0'
     },
     {
       icon: Users,
       title: "Community Sharing",
-      description: "Share your stories and discover amazing creations from other users"
+      description: "Share your stories and discover amazing creations from other users",
+      bgColor: colorRevealed ? 'hsl(186, 100%, 94%)' : '#f0f0f0'
     }
   ];
 
@@ -80,9 +86,9 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             <div>
               <h1 
                 className="text-2xl font-sans transition-all duration-300" 
-                style={{ 
+                 style={{ 
                   color: colorRevealed ? 'hsl(10, 80%, 50%)' : '#000',
-                  fontWeight: 800
+                  fontWeight: 900
                 }}
               >
                 NarrArtive
@@ -192,9 +198,10 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 key={index}
                 className="group cursor-pointer transition-all duration-300 hover:-translate-y-2"
               >
-                <div 
-                  className="w-full bg-white rounded-2xl shadow-[0_4px_20px_-4px_hsla(217,19%,24%,0.08)] hover:shadow-[0_10px_30px_-10px_hsla(217,19%,24%,0.15)] transition-all duration-300 min-h-[180px] flex flex-col"
+                 <div 
+                  className="w-full rounded-2xl shadow-[0_4px_20px_-4px_hsla(217,19%,24%,0.08)] hover:shadow-[0_10px_30px_-10px_hsla(217,19%,24%,0.15)] transition-all duration-300 min-h-[180px] flex flex-col"
                   style={{ 
+                    backgroundColor: feature.bgColor,
                     border: colorRevealed ? '1px solid hsl(10, 80%, 50%)' : '1px solid #666',
                     padding: '16px'
                   }}
