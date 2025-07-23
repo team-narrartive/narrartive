@@ -102,16 +102,6 @@ export const Feedback: React.FC<FeedbackProps> = ({
           {/* Feedback Form */}
           <div className="lg:col-span-2">
             <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20">
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-r from-orange-100 to-orange-100 rounded-lg flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 text-orange-600" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-semibold text-gray-900">Share Your Feedback</h3>
-                  <p className="text-sm text-gray-600">Your input helps us create a better experience</p>
-                </div>
-              </div>
-
               <div className="space-y-6">
                 {/* Feedback Type Selection */}
                 <div>

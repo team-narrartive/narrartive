@@ -105,7 +105,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
         <Button
           onClick={handleLogout}
           variant="ghost"
-          className={`w-full justify-start space-x-3 text-red-500 hover:bg-red-50 ${
+          className={`w-full justify-start space-x-3 text-red-500 hover:bg-red-50 hover:text-red-700 ${
             isOpen 
               ? 'px-4' 
               : 'px-2 justify-center'
