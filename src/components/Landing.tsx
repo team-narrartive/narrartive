@@ -47,8 +47,8 @@ const floatingAssets = [
     name: 'flowers',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
     position: { 
-      top: '48%', 
-      left: 'clamp(5%, 8%, 11%)'   // 5% mobile, 8% medium, 11% large - positioned near AI card with safe distance
+      top: '40%', 
+      left: 'clamp(45%, 50%, 55%)'   // Moved up and positioned above/slightly right of feature cards
     },
     animation: 'animate-float-in-bottom-left',
     delay: 'animate-delay-400',
@@ -69,8 +69,8 @@ const floatingAssets = [
     name: 'leaf_green',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
     position: { 
-      top: '58%', 
-      left: 'clamp(82%, 88%, 94%)'  // 82% mobile, 88% medium, 94% large - "emerging from right edge" effect near Community card
+      top: '72%',  // Align with bottom of feature cards
+      right: '0'   // Position at right edge to prevent horizontal scroll
     },
     animation: 'animate-float-in-bottom-right',
     delay: 'animate-delay-700',
@@ -237,7 +237,8 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             style={{
               top: asset.position.top,
               left: asset.position.left,
-              transform: 'translate(-50%, -50%)',
+              right: asset.position.right,
+              transform: asset.position.right ? 'translateY(-50%)' : 'translate(-50%, -50%)',
               width: asset.size,
               height: asset.size
             }}
