@@ -8,49 +8,63 @@ interface LandingProps {
   onLogin: () => void;
 }
 
-// Floating assets configuration
+// Floating assets with exact positioning and animations from Supabase storage
 const floatingAssets = [
   {
-    name: 'star',
-    position: { top: '10%', left: '5%' },
-    animation: 'animate-float-in-left',
-    delay: 'animate-delay-100',
-    size: 'w-12 h-12 md:w-16 md:h-16'
-  },
-  {
-    name: 'ufo', 
-    position: { top: '15%', right: '8%' },
+    name: 'spaceship',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/spaceship.png`,
+    position: { top: '10%', left: '75%' },
     animation: 'animate-float-in-right',
-    delay: 'animate-delay-200',
-    size: 'w-14 h-14 md:w-18 md:h-18'
+    delay: 'animate-delay-100',
+    size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
   },
   {
-    name: 'heart',
-    position: { top: '40%', left: '3%' },
+    name: 'moon',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/moon.png`,
+    position: { top: '5%', left: '5%' },
+    animation: 'animate-float-in-top',
+    delay: 'animate-delay-200',
+    size: 'w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56'
+  },
+  {
+    name: 'dinosaur',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/dinosaur.png`,
+    position: { top: '30%', left: '10%' },
     animation: 'animate-float-in-left',
     delay: 'animate-delay-300',
-    size: 'w-10 h-10 md:w-14 md:h-14'
+    size: 'w-44 h-44 md:w-56 md:h-56 lg:w-64 lg:h-64'
   },
   {
-    name: 'rainbow',
-    position: { top: '60%', right: '5%' },
-    animation: 'animate-float-in-right',
+    name: 'flowers',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/flowers.png`,
+    position: { top: '60%', left: '15%' },
+    animation: 'animate-float-in-bottom-left',
     delay: 'animate-delay-400',
-    size: 'w-16 h-16 md:w-20 md:h-20'
+    size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
   },
   {
-    name: 'cloud',
-    position: { top: '25%', left: '15%' },
+    name: 'glow-swirl',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/glow-swirl.png`,
+    position: { top: '15%', left: '45%' },
     animation: 'animate-float-in-top',
     delay: 'animate-delay-500',
-    size: 'w-12 h-12 md:w-16 md:h-16'
+    size: 'w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56'
   },
   {
-    name: 'sparkle',
-    position: { top: '70%', left: '12%' },
-    animation: 'animate-float-in-left',
-    delay: 'animate-delay-300',
-    size: 'w-8 h-8 md:w-12 md:h-12'
+    name: 'jupiter-planet',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/jupiter-planet.png`,
+    position: { top: '40%', left: '80%' },
+    animation: 'animate-float-in-right',
+    delay: 'animate-delay-600',
+    size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
+  },
+  {
+    name: 'leaf',
+    url: `${import.meta.env.VITE_SUPABASE_URL}/storage/v1/object/public/assets/leaf.png`,
+    position: { top: '70%', left: '85%' },
+    animation: 'animate-float-in-bottom-right',
+    delay: 'animate-delay-700',
+    size: 'w-32 h-32 md:w-44 md:h-44 lg:w-52 lg:h-52'
   }
 ];
 
@@ -60,32 +74,42 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      if (heroRef.current) {
-        const heroRect = heroRef.current.getBoundingClientRect();
-        const heroVisible = heroRect.top < window.innerHeight * 0.8;
-        
-        if (heroVisible && !colorRevealed) {
+    // Immediately set grayscale on page load
+    document.body.style.background = '#f0f0f0';
+    const contentWrapper = document.getElementById('content-wrapper');
+    if (contentWrapper) {
+      contentWrapper.style.filter = 'grayscale(100%)';
+      contentWrapper.style.transition = 'filter 500ms ease-in-out, background-color 500ms ease-in-out';
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
+          // Trigger the reveal when hero is 20% visible
           setColorRevealed(true);
-          // Delay assets animation slightly for better effect
-          setTimeout(() => setAssetsRevealed(true), 200);
+          setTimeout(() => setAssetsRevealed(true), 100);
+          
+          // Remove grayscale and apply reveal background
+          if (contentWrapper) {
+            contentWrapper.style.filter = 'grayscale(0%)';
+          }
+          document.body.style.background = 'hsl(30, 100%, 95%)';
         }
-      }
-    };
+      },
+      { threshold: [0.2] }
+    );
 
-    window.addEventListener('scroll', handleScroll);
-    // Trigger immediately if already in view
-    handleScroll();
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [colorRevealed]);
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
 
-  // Remove body styles to avoid stacking context issues with fixed nav
-  useEffect(() => {
     return () => {
-      document.body.style.filter = '';
-      document.body.style.backgroundColor = '';
-      document.body.style.transition = '';
+      observer.disconnect();
+      // Cleanup on unmount
+      document.body.style.background = '';
+      if (contentWrapper) {
+        contentWrapper.style.filter = '';
+      }
     };
   }, []);
 
@@ -189,34 +213,40 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         document.body
       )}
 
-      {/* Floating Assets */}
+      {/* Floating Assets - Only show after reveal */}
       {assetsRevealed && floatingAssets.map((asset, index) => (
         <div
           key={asset.name}
-          className={`fixed z-50 floating-asset ${asset.animation} ${asset.delay} ${asset.size}`}
-          style={{ 
-            ...asset.position,
-            opacity: 0
+          className={`
+            fixed z-10 ${asset.size} ${asset.animation} ${asset.delay}
+            opacity-0 transition-transform duration-300 hover:scale-105 cursor-pointer
+          `}
+          style={{
+            top: asset.position.top,
+            left: asset.position.left,
+            transform: 'translate(-50%, -50%)'
           }}
         >
-          {/* Using emoji as placeholders for creative assets */}
-          <div className="w-full h-full flex items-center justify-center text-2xl md:text-4xl">
-            {asset.name === 'star' && '✨'}
-            {asset.name === 'ufo' && '🛸'}
-            {asset.name === 'heart' && '💖'}
-            {asset.name === 'rainbow' && '🌈'}
-            {asset.name === 'cloud' && '☁️'}
-            {asset.name === 'sparkle' && '🌟'}
-          </div>
+          <img 
+            src={asset.url} 
+            alt={asset.name}
+            className="w-full h-full object-contain drop-shadow-lg"
+            onError={(e) => {
+              // Fallback to emoji if image fails to load
+              const emojis = ['🚀', '🌙', '🦕', '🌸', '✨', '🪐', '🍃'];
+              e.currentTarget.style.display = 'none';
+              e.currentTarget.parentElement!.innerHTML = `<div class="text-6xl md:text-8xl lg:text-9xl">${emojis[index] || '✨'}</div>`;
+            }}
+          />
         </div>
       ))}
 
-      {/* Content wrapper - applies filter/transitions instead of body */}
+      {/* Content wrapper - applies filter/transitions */}
       <div 
         id="content-wrapper"
         style={{ 
-          filter: colorRevealed ? 'grayscale(0%) saturate(110%)' : 'grayscale(100%)',
-          backgroundColor: colorRevealed ? 'hsl(30, 100%, 95%)' : 'hsl(0, 0%, 95%)',
+          filter: 'grayscale(100%)', // Start in grayscale immediately
+          backgroundColor: '#f0f0f0', // Start with neutral gray background
           transition: 'filter 500ms ease-in-out, background-color 500ms ease-in-out',
           minHeight: '100vh'
         }}
