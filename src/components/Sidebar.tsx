@@ -43,7 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
   };
 
   return (
-    <div className={`fixed left-0 top-0 h-full bg-white/95 backdrop-blur-xl border-r border-border transition-all duration-300 z-50 ${isOpen ? 'w-64' : 'w-16'}`}>
+    <div className={`fixed left-0 top-0 h-full border-r border-border transition-all duration-300 z-50 ${isOpen ? 'w-64' : 'w-16'}`} style={{ backgroundColor: '#ffee8c' }}>
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center space-x-3">

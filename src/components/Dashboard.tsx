@@ -64,70 +64,70 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </Alert>}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(30, 80%, 95%)', borderColor: 'hsl(30, 70%, 85%)' }}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Minutes Spent</CardTitle>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
+              <Clock className="h-4 w-4 text-white" />
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-display text-foreground mb-1">
+              {userStatsLoading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : minutesSpent}
+            </div>
+            <p className="text-xs text-muted-foreground font-medium">Creating amazing content</p>
+          </CardContent>
+        </Card>
+
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(200, 80%, 95%)', borderColor: 'hsl(200, 70%, 85%)' }}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Stories Generated</CardTitle>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
+              <BookOpen className="h-4 w-4 text-white" />
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-display mb-1" style={{ color: 'hsl(200, 70%, 55%)' }}>
+              {userStatsLoading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalStories}
+            </div>
+            <p className="text-xs text-muted-foreground font-medium">Your creative works</p>
+          </CardContent>
+        </Card>
+
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(270, 60%, 95%)', borderColor: 'hsl(270, 50%, 85%)' }}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Likes Received</CardTitle>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(270, 50%, 55%)' }}>
+              <Heart className="h-4 w-4 text-white" />
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="text-2xl font-display mb-1" style={{ color: 'hsl(270, 50%, 55%)' }}>
+              {userStatsLoading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalLikes}
+            </div>
+            <p className="text-xs text-muted-foreground font-medium">Community appreciation</p>
+          </CardContent>
+        </Card>
+
         <Card className="card-premium group hover:scale-105 transition-transform duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Minutes Spent</CardTitle>
-            <div className="w-10 h-10 bg-muted rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-              <Clock className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Views</CardTitle>
+            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+              <Eye className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-display text-foreground mb-1">
-              {userStatsLoading ? <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> : minutesSpent}
+          <CardContent className="pt-0">
+            <div className="text-2xl font-display text-foreground mb-1">
+              {userStatsLoading ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> : totalViews}
             </div>
-            <p className="text-sm text-muted-foreground font-medium">Creating amazing content</p>
-          </CardContent>
-        </Card>
-
-        <Card className="card-premium group hover:scale-105 transition-transform duration-300 border-primary/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Stories Generated</CardTitle>
-            <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-              <BookOpen className="h-5 w-5 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-display text-primary mb-1">
-              {userStatsLoading ? <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> : totalStories}
-            </div>
-            <p className="text-sm text-muted-foreground font-medium">Your creative works</p>
-          </CardContent>
-        </Card>
-
-        <Card className="card-premium group hover:scale-105 transition-transform duration-300 border-success/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Likes Received</CardTitle>
-            <div className="w-10 h-10 bg-success/10 rounded-xl flex items-center justify-center group-hover:bg-success/20 transition-colors">
-              <Heart className="h-5 w-5 text-success" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-display text-success mb-1">
-              {userStatsLoading ? <div className="w-6 h-6 border-2 border-success border-t-transparent rounded-full animate-spin"></div> : totalLikes}
-            </div>
-            <p className="text-sm text-muted-foreground font-medium">Community appreciation</p>
-          </CardContent>
-        </Card>
-
-        <Card className="card-premium group hover:scale-105 transition-transform duration-300 border-brand/20">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
-            <CardTitle className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">Total Views</CardTitle>
-            <div className="w-10 h-10 bg-brand/10 rounded-xl flex items-center justify-center group-hover:bg-brand/20 transition-colors">
-              <Users className="h-5 w-5 text-brand" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-display text-brand mb-1">
-              {userStatsLoading ? <div className="w-6 h-6 border-2 border-brand border-t-transparent rounded-full animate-spin"></div> : totalViews}
-            </div>
-            <p className="text-sm text-muted-foreground font-medium">Story engagement</p>
+            <p className="text-xs text-muted-foreground font-medium">Story engagement</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions with Premium Design */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         <Card className="gradient-primary text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onCreateNew}>
           <CardHeader className="flex-1 p-8">
             <CardTitle className="flex items-center gap-4 text-2xl font-display">

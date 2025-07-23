@@ -293,7 +293,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-semibold text-primary">Your Story</h2>
+                  <h2 className="text-xl font-semibold text-foreground">Your Story</h2>
                   <div className="flex items-center space-x-2">
                     <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
                     <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">

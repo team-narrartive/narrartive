@@ -44,7 +44,7 @@ export const Layout: React.FC<LayoutProps> = ({
           onLogout={handleLogout}
           onBack={onBack}
         />
-        <main className="p-6" style={{ backgroundColor: '#ffee8c' }}>
+        <main className="p-6 bg-white">
           {children}
         </main>
       </div>
