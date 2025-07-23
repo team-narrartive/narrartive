@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.52.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,11 +23,16 @@ interface ImageSettings {
 
 // Constants for optimization  
 const MAX_PROMPT_LENGTH = 3500;
-const API_TIMEOUT = 45000; // 45 seconds per request (reduced)
-const RETRY_ATTEMPTS = 2; // Reduced retries
-const RETRY_DELAY = 1000; // 1 second
+// No individual timeouts - let OpenAI take as long as needed
+const RETRY_ATTEMPTS = 2;
+const RETRY_DELAY = 1000;
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+
+// Initialize Supabase client for file uploads
+const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // Helper function for delays
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
@@ -191,61 +197,68 @@ serve(async (req) => {
             console.log(`Generating image ${i + 1}/${imageSettings.numImages} - Scene: ${sceneDescription}`);
             console.log(`Prompt length: ${prompt.length} characters`);
 
-            // Make API call with timeout handling
+            // Make API call with retry logic (no timeout)
             const imageData = await retryWithBackoff(async () => {
-              const controller = new AbortController();
-              const timeoutId = setTimeout(() => {
-                controller.abort();
-                console.log(`API timeout for image ${i + 1} after ${API_TIMEOUT}ms`);
-              }, API_TIMEOUT);
+              const response = await fetch('https://api.openai.com/v1/images/generations', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${openAIApiKey}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  model: "gpt-image-1",
+                  prompt: prompt.trim(),
+                  size: "1024x1024",
+                  quality: qualityMap[imageSettings.quality] || "medium",
+                  output_format: "png"
+                })
+              });
+
+              if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+                throw new Error(`OpenAI API error: ${errorMessage}`);
+              }
+
+              const data = await response.json();
               
-              try {
-                const response = await fetch('https://api.openai.com/v1/images/generations', {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${openAIApiKey}`,
-                    'Content-Type': 'application/json',
-                  },
-                  body: JSON.stringify({
-                    model: "gpt-image-1",
-                    prompt: prompt.trim(),
-                    size: "1024x1024",
-                    quality: qualityMap[imageSettings.quality] || "medium",
-                    output_format: "png"
-                  }),
-                  signal: controller.signal
+              if (!data.data?.[0]) {
+                throw new Error('No image data received from OpenAI API');
+              }
+
+              const imageItem = data.data[0];
+              
+              if (!imageItem.b64_json) {
+                throw new Error('No base64 image data in response');
+              }
+
+              // Convert base64 to blob and upload to Supabase storage
+              const imageBuffer = Uint8Array.from(atob(imageItem.b64_json), c => c.charCodeAt(0));
+              const fileName = `${Date.now()}-image-${i + 1}.png`;
+              const storyId = crypto.randomUUID(); // Generate unique story ID
+              const filePath = `stories/${storyId}/${fileName}`;
+
+              console.log(`Uploading image ${i + 1} to storage: ${filePath}`);
+              
+              const { data: uploadData, error: uploadError } = await supabase.storage
+                .from('story-images')
+                .upload(filePath, imageBuffer, {
+                  contentType: 'image/png',
+                  upsert: false
                 });
 
-                clearTimeout(timeoutId);
-
-                if (!response.ok) {
-                  const errorData = await response.json().catch(() => ({}));
-                  const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
-                  throw new Error(`OpenAI API error: ${errorMessage}`);
-                }
-
-                const data = await response.json();
-                
-                // Handle gpt-image-1 response format
-                if (!data.data?.[0]) {
-                  throw new Error('No image data received from OpenAI API');
-                }
-
-                const imageItem = data.data[0];
-                
-                // gpt-image-1 returns base64 by default
-                if (imageItem.b64_json) {
-                  return `data:image/png;base64,${imageItem.b64_json}`;
-                } else if (imageItem.url) {
-                  return imageItem.url;
-                } else {
-                  throw new Error('No valid image data format in response');
-                }
-                
-              } catch (error) {
-                clearTimeout(timeoutId);
-                throw error;
+              if (uploadError) {
+                console.error(`Storage upload error for image ${i + 1}:`, uploadError);
+                throw new Error(`Failed to upload image: ${uploadError.message}`);
               }
+
+              // Get public URL
+              const { data: urlData } = supabase.storage
+                .from('story-images')
+                .getPublicUrl(filePath);
+
+              console.log(`✓ Image ${i + 1} uploaded successfully: ${urlData.publicUrl}`);
+              return urlData.publicUrl;
             });
 
             console.log(`✓ Successfully generated image ${i + 1}/${imageSettings.numImages} for ${sceneDescription}`);
