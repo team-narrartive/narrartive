@@ -277,13 +277,13 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       {/* Spinning Cat Loader - Full screen overlay */}
       <SpinningCatLoader isVisible={isGeneratingImages} message="Creating magical images from your story... 🎨✨" />
       
-      <Layout showSidebar={true} currentView="create" onBack={onBack}>
+      <Layout showSidebar={false} currentView="create" onBack={onBack}>
         <div className="flex min-h-screen">
           {/* Character Sidebar */}
           <CharacterSidebar characters={characters} loading={isExtractingCharacters} onCharacterUpdate={handleCharacterUpdate} />
 
           {/* Main Content */}
-          <div className="flex-1 p-6 transition-all duration-300 max-w-[calc(100%-640px)]">
+          <div className="flex-1 p-6 transition-all duration-300">
             {/* Persistent Error Message */}
             {imageGenerationError && <Card className="p-4 bg-red-50 border-red-200 mb-6">
                 <div className="flex items-start space-x-3">
@@ -296,41 +296,38 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                 </div>
               </Card>}
 
-            {/* Story Input Panel with unified header */}
+            {/* Story Input Panel with restructured header */}
             <div className="border border-gray-300 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm mb-6">
-              {/* Unified Header */}
-              <div className="px-6 py-4 border-b border-gray-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                      <FileText className="w-5 h-5 text-white" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-black whitespace-nowrap">Your Story</h2>
+              {/* Compact Top Section */}
+              <div className="px-3 py-2 flex items-center justify-between">
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center space-x-2">
+                    <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
+                    <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground whitespace-nowrap">
+                      {isPublic ? 'Public' : 'Private'}
+                    </Label>
                   </div>
                   
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
-                      <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground whitespace-nowrap">
-                        {isPublic ? 'Public' : 'Private'}
-                      </Label>
-                    </div>
-                    
-                    <div className="text-sm text-gray-500 whitespace-nowrap">
-                      {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
-                    </div>
-                    
-                    {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                        <Save className="w-4 h-4 mr-2" />
-                        Save Project
-                      </Button>}
+                  <div className="text-sm text-muted-foreground whitespace-nowrap">
+                    {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                   </div>
                 </div>
+                
+                {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Project
+                  </Button>}
               </div>
               
               {/* Story Input Area */}
-              <div className="p-6">
-                <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-64 p-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground" />
+              <div className="p-3">
+                <textarea 
+                  value={story} 
+                  onChange={e => setStory(e.target.value)} 
+                  placeholder="Input Story Here..." 
+                  className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground"
+                  style={{ minHeight: '300px' }}
+                />
                 
                 <div className="mt-4">
                   <div className="flex flex-wrap items-center justify-center gap-4">
