@@ -91,16 +91,31 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
     document.documentElement.style.filter = 'grayscale(100%)';
     document.documentElement.style.transition = 'filter 500ms ease-in-out';
 
+    let hasScrolled = false;
+
+    // Track if user has scrolled
+    const handleScroll = () => {
+      hasScrolled = true;
+    };
+
+    // Add scroll listener
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
-          // Trigger the reveal when hero is 60% visible
+        // Only trigger color reveal if user has scrolled AND hero is visible
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.6 && hasScrolled) {
+          // Trigger the reveal when hero is 60% visible AND user has scrolled
           setColorRevealed(true);
           setTimeout(() => setAssetsRevealed(true), 300);
           
           // Remove grayscale from entire page
           document.documentElement.style.filter = 'grayscale(0%)';
           document.body.style.background = 'hsl(30, 100%, 95%)';
+          
+          // Clean up listeners since we're done
+          window.removeEventListener('scroll', handleScroll);
+          observer.disconnect();
         }
       },
       { threshold: [0.6] }
@@ -112,6 +127,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
 
     return () => {
       observer.disconnect();
+      window.removeEventListener('scroll', handleScroll);
       // Cleanup on unmount
       document.body.style.background = '';
       document.documentElement.style.filter = '';
