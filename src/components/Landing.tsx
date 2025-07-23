@@ -45,19 +45,19 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(151, 55%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(10, 80%, 95%)' : '#f0f0f0'
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(35, 90%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(20, 70%, 95%)' : '#f0f0f0'
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(186, 100%, 94%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(30, 90%, 95%)' : '#f0f0f0'
     }
   ];
 
