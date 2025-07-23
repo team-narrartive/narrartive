@@ -259,6 +259,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                               onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
                               placeholder="Story description..."
                               rows={3}
+                              className="resize-none"
                             />
                           </div>
                           <div className="flex items-center space-x-2">
@@ -270,15 +271,17 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                             <Label htmlFor="public">{editForm.is_public ? 'Public' : 'Private'}</Label>
                           </div>
                         </div>
-                        <DialogFooter className="flex justify-center">
-                          <Button
-                            type="submit"
-                            onClick={handleSaveEdit}
-                            disabled={isSaving}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            {isSaving ? 'Saving...' : 'Save Changes'}
-                          </Button>
+                        <DialogFooter className="sm:justify-center">
+                          <div className="flex justify-center w-full">
+                            <Button
+                              type="submit"
+                              onClick={handleSaveEdit}
+                              disabled={isSaving}
+                              className="bg-green-600 hover:bg-green-700 text-white"
+                            >
+                              {isSaving ? 'Saving...' : 'Save Changes'}
+                            </Button>
+                          </div>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>
