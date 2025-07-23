@@ -26,7 +26,7 @@ const floatingAssets = [
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
     position: { 
       top: '28%', 
-      left: 'clamp(73%, 79%, 85%)'  // 73% mobile, 79% medium, 85% large - moved down to create "sitting on top" effect
+      left: 'clamp(72%, 78%, 84%)'  // 72% mobile, 78% medium, 84% large - aligned with Jupiter center
     },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-100',
