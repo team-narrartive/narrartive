@@ -20,11 +20,11 @@ interface ImageSettings {
   instructions?: string;
 }
 
-// Constants for optimization
+// Constants for optimization  
 const MAX_PROMPT_LENGTH = 3500;
-const API_TIMEOUT = 90000; // 90 seconds
-const RETRY_ATTEMPTS = 3;
-const RETRY_DELAY = 2000; // 2 seconds
+const API_TIMEOUT = 45000; // 45 seconds per request (reduced)
+const RETRY_ATTEMPTS = 2; // Reduced retries
+const RETRY_DELAY = 1000; // 1 second
 
 const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
@@ -149,7 +149,9 @@ serve(async (req) => {
       high: "high"
     };
 
-    // Generate images with improved error handling and robustness
+    // Generate all images in parallel for better performance
+    const imagePromises = [];
+    
     for (let i = 0; i < imageSettings.numImages; i++) {
       try {
         const sceneDescription = getSceneDescription(i, imageSettings.numImages, processedStory);
@@ -183,82 +185,99 @@ serve(async (req) => {
           console.log(`Prompt truncated to ${prompt.length} characters for image ${i + 1}`);
         }
         
-        console.log(`Generating image ${i + 1}/${imageSettings.numImages} - Scene: ${sceneDescription}`);
-        console.log(`Prompt length: ${prompt.length} characters`);
-
-        // Make API call with comprehensive retry logic and timeout handling
-        const imageData = await retryWithBackoff(async () => {
-          const controller = new AbortController();
-          const timeoutId = setTimeout(() => {
-            controller.abort();
-            console.log(`API timeout for image ${i + 1} after ${API_TIMEOUT}ms`);
-          }, API_TIMEOUT);
-          
+        // Create async function for this image
+        const generateImage = async () => {
           try {
-            const response = await fetch('https://api.openai.com/v1/images/generations', {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${openAIApiKey}`,
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                model: "gpt-image-1",
-                prompt: prompt.trim(),
-                size: "1024x1024",
-                quality: qualityMap[imageSettings.quality] || "medium",
-                output_format: "png"
-              }),
-              signal: controller.signal
+            console.log(`Generating image ${i + 1}/${imageSettings.numImages} - Scene: ${sceneDescription}`);
+            console.log(`Prompt length: ${prompt.length} characters`);
+
+            // Make API call with timeout handling
+            const imageData = await retryWithBackoff(async () => {
+              const controller = new AbortController();
+              const timeoutId = setTimeout(() => {
+                controller.abort();
+                console.log(`API timeout for image ${i + 1} after ${API_TIMEOUT}ms`);
+              }, API_TIMEOUT);
+              
+              try {
+                const response = await fetch('https://api.openai.com/v1/images/generations', {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${openAIApiKey}`,
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({
+                    model: "gpt-image-1",
+                    prompt: prompt.trim(),
+                    size: "1024x1024",
+                    quality: qualityMap[imageSettings.quality] || "medium",
+                    output_format: "png"
+                  }),
+                  signal: controller.signal
+                });
+
+                clearTimeout(timeoutId);
+
+                if (!response.ok) {
+                  const errorData = await response.json().catch(() => ({}));
+                  const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+                  throw new Error(`OpenAI API error: ${errorMessage}`);
+                }
+
+                const data = await response.json();
+                
+                // Handle gpt-image-1 response format
+                if (!data.data?.[0]) {
+                  throw new Error('No image data received from OpenAI API');
+                }
+
+                const imageItem = data.data[0];
+                
+                // gpt-image-1 returns base64 by default
+                if (imageItem.b64_json) {
+                  return `data:image/png;base64,${imageItem.b64_json}`;
+                } else if (imageItem.url) {
+                  return imageItem.url;
+                } else {
+                  throw new Error('No valid image data format in response');
+                }
+                
+              } catch (error) {
+                clearTimeout(timeoutId);
+                throw error;
+              }
             });
 
-            clearTimeout(timeoutId);
-
-            if (!response.ok) {
-              const errorData = await response.json().catch(() => ({}));
-              const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
-              throw new Error(`OpenAI API error: ${errorMessage}`);
-            }
-
-            const data = await response.json();
-            
-            // Handle gpt-image-1 response format
-            if (!data.data?.[0]) {
-              throw new Error('No image data received from OpenAI API');
-            }
-
-            const imageItem = data.data[0];
-            
-            // gpt-image-1 returns base64 by default
-            if (imageItem.b64_json) {
-              return `data:image/png;base64,${imageItem.b64_json}`;
-            } else if (imageItem.url) {
-              return imageItem.url;
-            } else {
-              throw new Error('No valid image data format in response');
-            }
+            console.log(`✓ Successfully generated image ${i + 1}/${imageSettings.numImages} for ${sceneDescription}`);
+            return { success: true, data: imageData, index: i + 1 };
             
           } catch (error) {
-            clearTimeout(timeoutId);
-            throw error;
+            console.error(`✗ Failed to generate image ${i + 1}:`, error.message);
+            return { success: false, error: `Image ${i + 1}: ${error.message}`, index: i + 1 };
           }
-        });
+        };
 
-        generatedImages.push(imageData);
-        console.log(`✓ Successfully generated image ${i + 1}/${imageSettings.numImages} for ${sceneDescription}`);
-
-        // Small delay between requests to avoid rate limiting
-        if (i < imageSettings.numImages - 1) {
-          await delay(500);
-        }
-
-      } catch (error) {
-        console.error(`✗ Failed to generate image ${i + 1}:`, error.message);
-        errors.push(`Image ${i + 1}: ${error.message}`);
-        
-        // Continue with next image instead of failing completely
-        continue;
+        imagePromises.push(generateImage());
       }
     }
+
+    // Wait for all images to complete (parallel processing)
+    console.log('Processing all images in parallel...');
+    const results = await Promise.allSettled(imagePromises);
+    
+    // Process results
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        const imageResult = result.value;
+        if (imageResult.success) {
+          generatedImages.push(imageResult.data);
+        } else {
+          errors.push(imageResult.error);
+        }
+      } else {
+        errors.push(`Image ${index + 1}: ${result.reason?.message || 'Unknown error'}`);
+      }
+    });
 
     const totalTime = Date.now() - startTime;
     console.log(`Generation completed in ${totalTime}ms: ${generatedImages.length}/${imageSettings.numImages} images successful`);
