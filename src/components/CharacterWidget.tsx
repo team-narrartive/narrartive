@@ -35,7 +35,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
       case 'human': return 'bg-sky-50 text-sky-600 border-sky-200';
       case 'animal': return 'bg-emerald-50 text-emerald-600 border-emerald-200';
       case 'creature': return 'bg-violet-50 text-violet-600 border-violet-200';
-      case 'object': return 'bg-rose-50 text-rose-600 border-rose-200';
+      case 'object': return 'bg-purple-50 text-purple-600 border-purple-200';
       default: return 'bg-muted text-muted-foreground border-border';
     }
   };
@@ -100,7 +100,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
                 character.type === 'human' ? 'bg-sky-400' :
                 character.type === 'animal' ? 'bg-emerald-400' :
                 character.type === 'creature' ? 'bg-violet-400' :
-                'bg-rose-400'
+                'bg-purple-400'
               }`}
               style={{ width: `${(filledAttributes / totalAttributes) * 100}%` }}
             ></div>
