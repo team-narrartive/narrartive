@@ -25,8 +25,8 @@ const floatingAssets = [
     name: 'space_ship',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
     position: { 
-      top: '18%', 
-      left: 'clamp(72%, 78%, 84%)'  // 72% mobile, 78% medium, 84% large - moved down and right to avoid "Visual" overlap
+      top: '28%', 
+      left: 'clamp(73%, 79%, 85%)'  // 73% mobile, 79% medium, 85% large - moved down to create "sitting on top" effect
     },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-100',
@@ -58,8 +58,8 @@ const floatingAssets = [
     name: 'jupiter',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
     position: { 
-      top: '38%', 
-      left: 'clamp(74%, 80%, 86%)'  // 74% mobile, 80% medium, 86% large - nudged up near "Creative Minds" with overflow prevention
+      top: '18%', 
+      left: 'clamp(72%, 78%, 84%)'  // 72% mobile, 78% medium, 84% large - moved to where spaceship was, creating "sitting on top" effect
     },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-600',
