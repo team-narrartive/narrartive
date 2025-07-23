@@ -128,10 +128,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
 
       {/* Quick Actions with Premium Design */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <Card className="shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-xl overflow-hidden" style={{ backgroundColor: 'hsl(45, 80%, 95%)' }} onClick={onCreateNew}>
+        <Card className="shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-xl overflow-hidden" style={{ backgroundColor: 'hsl(30, 80%, 95%)' }} onClick={onCreateNew}>
           <CardHeader className="flex-1 p-5">
             <CardTitle className="flex items-center gap-3 text-lg font-semibold text-black">
-              <div className="w-8 h-8 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: 'hsl(45, 70%, 55%)' }}>
+              <div className="w-8 h-8 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
                 <PlusCircle className="h-4 w-4 text-white" />
               </div>
               Create New Story
@@ -139,7 +139,7 @@ export const Dashboard: React.FC<DashboardProps> = ({
             <CardDescription className="text-muted-foreground py-2 text-sm leading-relaxed">Start crafting your next amazing interactive story</CardDescription>
           </CardHeader>
           <CardContent className="pt-0 p-5">
-            <Button variant="outline" className="w-full border py-2 text-sm font-medium rounded-lg transition-colors" style={{ borderColor: 'hsl(45, 70%, 55%)', color: 'hsl(45, 70%, 55%)' }}>
+            <Button variant="outline" className="w-full border py-2 text-sm font-medium rounded-lg transition-colors" style={{ borderColor: 'hsl(30, 70%, 55%)', color: 'hsl(30, 70%, 55%)' }}>
               Get Started →
             </Button>
           </CardContent>
