@@ -13,58 +13,51 @@ const floatingAssets = [
   {
     name: 'space_ship',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
-    position: { top: '10%', left: '75%' },
+    position: { top: '15%', left: '85%' },
     animation: 'animate-float-in-right',
-    delay: 'animate-delay-100',
-    size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
+    delay: 'animate-delay-100'
   },
   {
     name: 'moon',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/moon.png',
-    position: { top: '5%', left: '5%' },
+    position: { top: '8%', left: '10%' },
     animation: 'animate-float-in-top',
-    delay: 'animate-delay-200',
-    size: 'w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56'
+    delay: 'animate-delay-200'
   },
   {
     name: 'dinasour',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/dinasour.png',
-    position: { top: '30%', left: '10%' },
+    position: { top: '35%', left: '8%' },
     animation: 'animate-float-in-left',
-    delay: 'animate-delay-300',
-    size: 'w-44 h-44 md:w-56 md:h-56 lg:w-64 lg:h-64'
+    delay: 'animate-delay-300'
   },
   {
     name: 'flowers',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
-    position: { top: '60%', left: '15%' },
+    position: { top: '65%', left: '12%' },
     animation: 'animate-float-in-bottom-left',
-    delay: 'animate-delay-400',
-    size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
+    delay: 'animate-delay-400'
   },
   {
     name: 'glowy',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/glowy.png',
-    position: { top: '15%', left: '45%' },
+    position: { top: '20%', left: '50%' },
     animation: 'animate-float-in-top',
-    delay: 'animate-delay-500',
-    size: 'w-36 h-36 md:w-48 md:h-48 lg:w-56 lg:h-56'
+    delay: 'animate-delay-500'
   },
   {
     name: 'jupiter',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
-    position: { top: '40%', left: '80%' },
+    position: { top: '45%', left: '88%' },
     animation: 'animate-float-in-right',
-    delay: 'animate-delay-600',
-    size: 'w-40 h-40 md:w-52 md:h-52 lg:w-60 lg:h-60'
+    delay: 'animate-delay-600'
   },
   {
     name: 'leaf_green',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
-    position: { top: '70%', left: '85%' },
+    position: { top: '75%', left: '90%' },
     animation: 'animate-float-in-bottom-right',
-    delay: 'animate-delay-700',
-    size: 'w-32 h-32 md:w-44 md:h-44 lg:w-52 lg:h-52'
+    delay: 'animate-delay-700'
   }
 ];
 
@@ -83,17 +76,17 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
 
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && entry.intersectionRatio >= 0.2) {
-          // Trigger the reveal when hero is 20% visible
+        if (entry.isIntersecting && entry.intersectionRatio >= 0.6) {
+          // Trigger the reveal when hero is 60% visible
           setColorRevealed(true);
-          setTimeout(() => setAssetsRevealed(true), 100);
+          setTimeout(() => setAssetsRevealed(true), 300);
           
           // Remove grayscale from entire page
           document.documentElement.style.filter = 'grayscale(0%)';
           document.body.style.background = 'hsl(30, 100%, 95%)';
         }
       },
-      { threshold: [0.2] }
+      { threshold: [0.6] }
     );
 
     if (heroRef.current) {
@@ -208,43 +201,46 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         document.body
       )}
 
-      {/* Floating Assets - Only show after reveal */}
-      {assetsRevealed && floatingAssets.map((asset, index) => (
-        <div
-          key={asset.name}
-          className={`
-            fixed z-10 ${asset.size} ${asset.animation} ${asset.delay}
-            opacity-0 transition-transform duration-300 hover:scale-105 cursor-pointer
-          `}
-          style={{
-            top: asset.position.top,
-            left: asset.position.left,
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          <img 
-            src={asset.url} 
-            alt={asset.name}
-            className="w-full h-full object-contain drop-shadow-lg"
-            onError={(e) => {
-              // Fallback to emoji if image fails to load
-              const emojis = ['🚀', '🌙', '🦕', '🌸', '✨', '🪐', '🍃'];
-              e.currentTarget.style.display = 'none';
-              e.currentTarget.parentElement!.innerHTML = `<div class="text-6xl md:text-8xl lg:text-9xl">${emojis[index] || '✨'}</div>`;
-            }}
-          />
-        </div>
-      ))}
-
       {/* Content wrapper */}
       <div 
         id="content-wrapper"
+        className="relative"
         style={{ 
           backgroundColor: colorRevealed ? 'hsl(30, 100%, 95%)' : '#f0f0f0',
           transition: 'background-color 500ms ease-in-out',
           minHeight: '100vh'
         }}
       >
+        {/* Floating Assets - Only show after reveal */}
+        {assetsRevealed && floatingAssets.map((asset, index) => (
+          <div
+            key={asset.name}
+            className={`
+              absolute z-10 ${asset.animation} ${asset.delay}
+              opacity-0 transition-transform duration-300 hover:scale-105 cursor-pointer
+            `}
+            style={{
+              top: asset.position.top,
+              left: asset.position.left,
+              transform: 'translate(-50%, -50%)',
+              width: '240px',
+              height: '240px'
+            }}
+          >
+            <img 
+              src={asset.url} 
+              alt={asset.name}
+              className="w-full h-full object-contain drop-shadow-lg"
+              onError={(e) => {
+                // Fallback to emoji if image fails to load
+                const emojis = ['🚀', '🌙', '🦕', '🌸', '✨', '🪐', '🍃'];
+                e.currentTarget.style.display = 'none';
+                e.currentTarget.parentElement!.innerHTML = `<div class="text-6xl md:text-8xl lg:text-9xl">${emojis[index] || '✨'}</div>`;
+              }}
+            />
+          </div>
+        ))}
+
         {/* Hero Section - Full Viewport Height */}
         <section 
           ref={heroRef} 
