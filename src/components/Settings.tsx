@@ -63,7 +63,7 @@ export const Settings: React.FC<SettingsProps> = ({
           {/* Profile Settings */}
           <Card className="p-8 bg-card/90 backdrop-blur-sm border border-primary/10 rounded-xl">
             <div className="flex items-center space-x-3 mb-6">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-xl flex items-center justify-center">
+              <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
                 <User className="w-6 h-6 text-white" />
               </div>
               <div>

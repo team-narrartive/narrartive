@@ -49,10 +49,10 @@ export const Dashboard: React.FC<DashboardProps> = ({
   const showError = userStoriesError && !userStoriesLoading;
   return <Layout showSidebar={true} currentView="dashboard">
       <div className="text-center mb-16">
-        <h1 className="text-5xl md:text-6xl font-display text-brand mb-6">
+        <h1 className="text-5xl md:text-6xl font-display text-foreground mb-6">
           Welcome back, {firstName}!
         </h1>
-        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">Ready to create your next masterpiece?</p>
+        <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">Ready to create your next <span className="text-primary font-semibold">masterpiece</span>?</p>
       </div>
 
       {showError && <Alert className="mb-6 max-w-2xl mx-auto">
@@ -145,44 +145,44 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="gradient-brand text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onViewProjects}>
+        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" style={{ backgroundColor: 'hsl(30, 80%, 95%)' }} onClick={onViewProjects}>
           <CardHeader className="flex-1 p-8">
             <CardTitle className="flex items-center gap-4 text-2xl font-display">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                <BookOpen className="h-7 w-7 group-hover:scale-110 transition-transform" />
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
+                <BookOpen className="h-7 w-7 text-white" />
               </div>
               My Projects
             </CardTitle>
-            <CardDescription className="text-white/90 flex-1 py-4 text-lg font-medium leading-relaxed">
+            <CardDescription className="text-muted-foreground flex-1 py-4 text-lg font-medium leading-relaxed">
               View and manage your created stories
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0 p-8">
-            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
+            <Button variant="outline" className="w-full border-2 py-3 text-lg font-semibold rounded-2xl" style={{ borderColor: 'hsl(30, 70%, 55%)', color: 'hsl(30, 70%, 55%)' }}>
               {userStoriesLoading ? <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   Loading...
                 </div> : `View All (${totalStories}) →`}
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="gradient-success text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onViewCommunity}>
+        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" style={{ backgroundColor: 'hsl(200, 80%, 95%)' }} onClick={onViewCommunity}>
           <CardHeader className="flex-1 p-8">
             <CardTitle className="flex items-center gap-4 text-2xl font-display">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                <Users className="h-7 w-7 group-hover:scale-110 transition-transform" />
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
+                <Users className="h-7 w-7 text-white" />
               </div>
               Community Hub
             </CardTitle>
-            <CardDescription className="text-white/90 flex-1 py-4 text-lg font-medium leading-relaxed">
+            <CardDescription className="text-muted-foreground flex-1 py-4 text-lg font-medium leading-relaxed">
               Explore stories from other creators
             </CardDescription>
           </CardHeader>
           <CardContent className="pt-0 p-8">
-            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
+            <Button variant="outline" className="w-full border-2 py-3 text-lg font-semibold rounded-2xl" style={{ borderColor: 'hsl(200, 70%, 55%)', color: 'hsl(200, 70%, 55%)' }}>
               {communityLoading ? <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   Loading...
                 </div> : `Explore (${communityStories?.length || 0}) →`}
             </Button>

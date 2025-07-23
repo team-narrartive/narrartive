@@ -292,7 +292,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                 Back to Dashboard
               </Button>
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 gradient-primary rounded-lg flex items-center justify-center">
+                <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-4">
@@ -312,17 +312,17 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                 <div className="text-sm text-gray-500">
                   {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                 </div>
-                {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-green-600 hover:bg-green-700 text-white">
+                {hasImages && <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
                     <Save className="w-4 h-4 mr-2" />
                     Save Project
                   </Button>}
               </div>
               
-              <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-48 p-4 border border-gray-200 rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-sky-400 focus:border-transparent resize-none text-gray-900 placeholder-gray-500" />
+              <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-48 p-4 border border-border rounded-lg bg-white/60 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground" />
               
               <div className="mt-4">
                 <div className="flex flex-wrap items-center justify-center gap-4">
-                  {hasGeneratedWidgets ? <Button onClick={handleGenerateImages} disabled={!story.trim() || isGeneratingImages} className="bg-gradient-to-r from-sky-400 to-emerald-400 hover:from-sky-500 hover:to-emerald-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
+                  {hasGeneratedWidgets ? <Button onClick={handleGenerateImages} disabled={!story.trim() || isGeneratingImages} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
                       {isGeneratingImages ? <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           Generating Images...
@@ -330,7 +330,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                           <Image className="w-4 h-4 mr-2" />
                           Generate Images
                         </>}
-                    </Button> : <Button onClick={handleExtractCharacters} disabled={!story.trim() || isExtractingCharacters} className="bg-gradient-to-r from-purple-400 to-pink-400 hover:from-purple-500 hover:to-pink-500 text-white px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
+                    </Button> : <Button onClick={handleExtractCharacters} disabled={!story.trim() || isExtractingCharacters} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11 shadow-lg hover:shadow-xl transition-all duration-300">
                       {isExtractingCharacters ? <>
                           <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
                           Extracting...

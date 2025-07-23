@@ -28,7 +28,7 @@ export const Layout: React.FC<LayoutProps> = ({
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-cyan-50 to-emerald-50">
+    <div className="min-h-screen bg-background">
       {showSidebar && (
         <Sidebar 
           isOpen={sidebarOpen} 
@@ -44,7 +44,7 @@ export const Layout: React.FC<LayoutProps> = ({
           onLogout={handleLogout}
           onBack={onBack}
         />
-        <main className="p-6">
+        <main className="p-6" style={{ backgroundColor: '#ffee8c' }}>
           {children}
         </main>
       </div>

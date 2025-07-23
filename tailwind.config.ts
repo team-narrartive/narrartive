@@ -52,6 +52,22 @@ export default {
 					foreground: 'hsl(var(--success-foreground))',
 					light: 'hsl(var(--success-light))',
 				},
+				// Additional pastel colors for variety
+				orange: {
+					DEFAULT: '30 80% 95%',
+					light: '30 80% 97%',
+					dark: '30 80% 85%',
+				},
+				blue: {
+					DEFAULT: '200 80% 95%',
+					light: '200 80% 97%',
+					dark: '200 80% 85%',
+				},
+				violet: {
+					DEFAULT: '270 60% 95%',
+					light: '270 60% 97%',
+					dark: '270 60% 85%',
+				},
 				secondary: {
 					DEFAULT: 'hsl(var(--secondary))',
 					foreground: 'hsl(var(--secondary-foreground))'

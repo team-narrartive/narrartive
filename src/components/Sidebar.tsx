@@ -43,9 +43,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
   };
 
   return (
-    <div className={`fixed left-0 top-0 h-full bg-white/90 backdrop-blur-xl border-r border-white/20 transition-all duration-300 z-50 ${isOpen ? 'w-64' : 'w-16'}`}>
+    <div className={`fixed left-0 top-0 h-full bg-white/95 backdrop-blur-xl border-r border-border transition-all duration-300 z-50 ${isOpen ? 'w-64' : 'w-16'}`}>
       {/* Logo */}
-      <div className="p-6 border-b border-gray-200">
+      <div className="p-6 border-b border-border">
         <div className="flex items-center space-x-3">
           <div className={`flex-shrink-0 transition-all duration-300 ${isOpen ? 'w-8 h-8' : 'w-8 h-8'}`}>
             <img 
@@ -59,7 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
               <h1 className="text-xl font-bold text-primary whitespace-nowrap">
                 NarrArtive
               </h1>
-              <p className="text-xs text-gray-500 whitespace-nowrap">Where stories come to life</p>
+              <p className="text-xs text-muted-foreground whitespace-nowrap">Where stories come to life</p>
             </div>
           )}
         </div>
@@ -71,7 +71,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
           onClick={onToggle}
           variant="outline"
           size="sm"
-          className="w-6 h-6 p-0 bg-white shadow-md border-gray-200 hover:bg-gray-50"
+          className="w-6 h-6 p-0 bg-white shadow-md border-border hover:bg-accent"
         >
           {isOpen ? <ChevronLeft className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
         </Button>

@@ -122,12 +122,12 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-hero flex items-center justify-center relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center relative overflow-hidden" style={{ backgroundColor: '#ffee8c' }}>
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-20 w-72 h-72 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-brand/8 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-masterpiece/8 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{animationDelay: '4s'}}></div>
+        <div className="absolute bottom-20 right-20 w-96 h-96 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{animationDelay: '2s', backgroundColor: 'hsl(30, 80%, 95%)'}}></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{animationDelay: '4s'}}></div>
       </div>
 
       <div className="relative z-10 w-full max-w-md px-6">
@@ -135,7 +135,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
         <Button
           variant="ghost"
           onClick={onBack}
-          className="mb-6 text-muted-foreground hover:text-brand"
+          className="mb-6 text-muted-foreground hover:text-primary"
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
@@ -145,14 +145,14 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
           <div className="p-8">
             {/* Logo */}
             <div className="text-center mb-8">
-              <div className="w-16 h-16 gradient-brand rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-card">
+              <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-card">
                 <img 
                   src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
                   alt="NarrArtive Logo" 
                   className="w-8 h-8"
                 />
               </div>
-              <h1 className="text-2xl font-bold text-brand font-display">
+              <h1 className="text-2xl font-bold text-foreground font-display">
                 {getTitle()}
               </h1>
               <p className="text-muted-foreground mt-2">
@@ -179,29 +179,29 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       First Name
                     </label>
-                    <Input
-                      type="text"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleInputChange}
-                      className="bg-white/80 border-border focus:border-brand focus:ring-brand"
-                      required
-                      disabled={loading}
-                    />
+                  <Input
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
+                    onChange={handleInputChange}
+                    className="bg-white/80 border-border focus:border-primary focus:ring-primary"
+                    required
+                    disabled={loading}
+                  />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Last Name
                     </label>
-                    <Input
-                      type="text"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleInputChange}
-                      className="bg-white/80 border-border focus:border-brand focus:ring-brand"
-                      required
-                      disabled={loading}
-                    />
+                  <Input
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
+                    onChange={handleInputChange}
+                    className="bg-white/80 border-border focus:border-primary focus:ring-primary"
+                    required
+                    disabled={loading}
+                  />
                   </div>
                 </div>
               )}
@@ -210,15 +210,15 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
                 </label>
-                <Input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  className="bg-white/80 border-border focus:border-brand focus:ring-brand"
-                  required
-                  disabled={loading}
-                />
+              <Input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleInputChange}
+                className="bg-white/80 border-border focus:border-primary focus:ring-primary"
+                required
+                disabled={loading}
+              />
               </div>
 
               {!isResetMode && (
@@ -227,16 +227,16 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                     Password
                   </label>
                   <div className="relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      name="password"
-                      value={formData.password}
-                      onChange={handleInputChange}
-                      className="bg-white/80 border-border focus:border-brand focus:ring-brand pr-12"
-                      required
-                      disabled={loading}
-                      minLength={6}
-                    />
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    className="bg-white/80 border-border focus:border-primary focus:ring-primary pr-12"
+                    required
+                    disabled={loading}
+                    minLength={6}
+                  />
                     <Button
                       type="button"
                       variant="ghost"
@@ -254,20 +254,20 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
               {isLogin && !isResetMode && (
                 <div className="text-right">
                   <Button 
-                    type="button"
-                    variant="link" 
-                    className="text-brand hover:text-brand-dark p-0"
-                    onClick={switchToReset}
-                    disabled={loading}
-                  >
-                    Forgot Password?
-                  </Button>
+                     type="button"
+                     variant="link" 
+                     className="text-primary hover:text-primary/80 p-0"
+                     onClick={switchToReset}
+                     disabled={loading}
+                   >
+                     Forgot Password?
+                   </Button>
                 </div>
               )}
 
               <Button
                 type="submit"
-                className="w-full gradient-brand text-brand-foreground hover:shadow-elegant py-3 transition-all duration-300"
+                className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-elegant py-3 transition-all duration-300"
                 disabled={loading}
               >
                 {getButtonText()}
@@ -282,7 +282,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   <Button
                     variant="link"
                     onClick={switchToLogin}
-                    className="text-brand hover:text-brand-dark ml-1 p-0"
+                    className="text-primary hover:text-primary/80 ml-1 p-0"
                     disabled={loading}
                   >
                     Sign In
@@ -294,7 +294,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
                   <Button
                     variant="link"
                     onClick={isLogin ? switchToSignUp : switchToLogin}
-                    className="text-brand hover:text-brand-dark ml-1 p-0"
+                    className="text-primary hover:text-primary/80 ml-1 p-0"
                     disabled={loading}
                   >
                     {isLogin ? 'Sign Up' : 'Sign In'}

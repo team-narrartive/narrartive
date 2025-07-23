@@ -29,7 +29,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
   };
 
   return (
-    <header className="bg-white/80 backdrop-blur-md border-b border-white/20 px-6 py-4 relative z-40">
+    <header className="bg-white/95 backdrop-blur-md border-b border-border px-6 py-4 relative z-40">
       <div className="flex items-center justify-between">
         <div className="flex items-center space-x-4">
           {/* Back Button */}
@@ -37,7 +37,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
             <Button
               variant="ghost"
               onClick={onBack}
-              className="text-gray-600 hover:text-sky-500"
+              className="text-muted-foreground hover:text-primary"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Dashboard
@@ -64,8 +64,9 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
               variant="ghost" 
               size="sm"
               onClick={handleProfileClick}
+              className="hover:bg-primary/10"
             >
-              <User className="w-5 h-5" />
+              <User className="w-5 h-5 text-foreground" />
             </Button>
             <UserProfile 
               isOpen={showProfile} 
