@@ -30,7 +30,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       document.body.style.transition = 'filter 300ms ease-in-out, background-color 300ms ease-in-out';
     } else {
       document.body.style.filter = 'grayscale(0%) saturate(110%)';
-      document.body.style.backgroundColor = 'hsl(45, 93%, 95%)';
+      document.body.style.backgroundColor = 'hsl(45, 50%, 98%)';
     }
     
     return () => {
@@ -51,20 +51,20 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(151, 55%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : '#f0f0f0'
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(186, 80%, 95%)' : '#f0f0f0'
+      bgColor: colorRevealed ? 'hsl(30, 80%, 95%)' : '#f0f0f0'
     }
   ];
 
   return (
     <div 
       className="min-h-screen transition-all duration-300 ease-in-out"
-      style={{ backgroundColor: colorRevealed ? 'hsl(45, 93%, 95%)' : '#fff' }}
+      style={{ backgroundColor: colorRevealed ? 'hsl(45, 50%, 98%)' : '#fff' }}
     >
       {/* Navigation */}
       <nav 
@@ -232,7 +232,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       </section>
 
       {/* CTA Section */}
-      <section className="px-6 py-24" style={{ backgroundColor: 'hsl(45, 93%, 95%)' }}>
+      <section className="px-6 py-24" style={{ backgroundColor: 'hsl(45, 50%, 98%)' }}>
         <div className="max-w-4xl mx-auto text-center animate-fade-in">
           <h3 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-slate-900 mb-6">
             Ready to bring your stories to life?
