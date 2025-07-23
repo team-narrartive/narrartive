@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { User, ArrowLeft } from 'lucide-react';
 import { UserProfile } from './UserProfile';
 
-interface HeaderProps {
+export interface HeaderProps {
   showSidebar?: boolean;
   onSettings?: () => void;
   onLogout?: () => void;

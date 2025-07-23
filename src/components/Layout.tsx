@@ -4,7 +4,7 @@ import { Sidebar } from './Sidebar';
 import { Header } from './Header';
 import { Button } from '@/components/ui/button';
 
-interface LayoutProps {
+export interface LayoutProps {
   children: React.ReactNode;
   showSidebar?: boolean;
   currentView?: string;

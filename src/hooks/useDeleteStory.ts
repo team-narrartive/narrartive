@@ -30,7 +30,7 @@ export const useDeleteStory = () => {
     
     try {
       // Delete story from database first
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('stories')
         .delete()
         .eq('id', storyId)

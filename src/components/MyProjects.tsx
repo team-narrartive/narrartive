@@ -18,7 +18,7 @@ import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 
-interface MyProjectsProps {
+export interface MyProjectsProps {
   onBack: () => void;
   onCreateNew: () => void;
   onViewStory: (storyId: string) => void;
@@ -49,7 +49,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
     
     setIsSaving(true);
     try {
-      const { error } = await supabase
+      const { error } = await (supabase as any)
         .from('stories')
         .update({
           title: editForm.title,

@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { useStory, useLikeStory } from '@/hooks/useStories';
+import { useStory } from '@/hooks/useStories';
 import { useUserLikes } from '@/hooks/useUserLikes';
 import { Layout } from './Layout';
 import { Button } from '@/components/ui/button';
@@ -19,7 +19,6 @@ export const StoryReader: React.FC<StoryReaderProps> = ({
   onBack
 }) => {
   const { data: story, isLoading } = useStory(storyId);
-  const likeStoryMutation = useLikeStory();
   const { toast } = useToast();
   const { isLiked, isLoading: likesLoading, likeStory } = useUserLikes();
   const [showGallery, setShowGallery] = useState(false);

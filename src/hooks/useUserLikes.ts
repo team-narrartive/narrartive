@@ -10,9 +10,10 @@ export const useUserLikes = () => {
     queryKey: ['user-likes', user?.id],
     queryFn: async () => {
       if (!user) return [];
-      const { data, error } = await supabase.from('user_story_likes').select('story_id').eq('user_id', user.id);
+      // Use type assertion to bypass TypeScript errors for missing table types
+      const { data, error } = await (supabase as any).from('user_story_likes').select('story_id').eq('user_id', user.id);
       if (error) throw error;
-      return data.map(like => like.story_id);
+      return data?.map((like: any) => like.story_id) || [];
     },
     enabled: !!user,
   });
@@ -23,9 +24,9 @@ export const useUserLikes = () => {
     mutationFn: async ({ storyId, shouldLike }: { storyId: string; shouldLike: boolean }) => {
       if (!user) throw new Error('Not authenticated');
       const rpc = shouldLike ? 'increment_story_likes' : 'decrement_story_likes';
-      const { data, error } = await supabase.rpc(rpc, { p_story_id: storyId });
+      const { data, error } = await (supabase as any).rpc(rpc, { p_story_id: storyId });
       if (error) throw error;
-      return { story: data?.[0], action: shouldLike ? 'liked' : 'unliked' };
+      return { story: data?.[0] || null, action: shouldLike ? 'liked' : 'unliked' };
     },
     onMutate: async ({ storyId, shouldLike }) => {
       // Cancel any outgoing refetches

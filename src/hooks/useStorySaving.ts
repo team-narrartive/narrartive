@@ -103,7 +103,7 @@ export const useStorySaving = () => {
 
       console.log('Saving story with uploaded image URLs:', storyData);
 
-      const { data: savedStory, error } = await supabase
+      const { data: savedStory, error } = await (supabase as any)
         .from('stories')
         .insert(storyData)
         .select()

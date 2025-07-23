@@ -9,7 +9,7 @@ import { ArrowLeft, Heart, Eye, Share2, BookOpen } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
-interface CommunityShowcaseProps {
+export interface CommunityShowcaseProps {
   onBack: () => void;
   onViewStory: (storyId: string) => void;
 }
