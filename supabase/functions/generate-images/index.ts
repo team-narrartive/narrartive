@@ -93,26 +93,29 @@ serve(async (req) => {
       // Start with style specification for better adherence
       let prompt = `${stylePrompts[imageSettings.style].toUpperCase()}.\n\n`;
       
-      // Add story context
-      prompt += `Story scene ${i + 1}: "${story}"\n\n`;
+      // CRITICAL: Ensure single scene composition
+      prompt += `CREATE A SINGLE FOCUSED SCENE - NOT A COLLAGE OR MULTIPLE SCENES COMBINED.\n\n`;
       
-      // Add character specifications if available
+      // Add story context with scene focus
+      prompt += `Focus on scene ${i + 1} from this story: "${story}"\n\n`;
+      
+      // Add character specifications if available with detailed attributes
       if (characters && characters.length > 0) {
-        prompt += "Characters to include:\n";
+        prompt += "IMPORTANT - Include these characters with ALL their specified attributes:\n";
         characters.forEach((char: Character, index: number) => {
           const characterDesc = formatCharacterDescription(char);
           prompt += `- ${characterDesc}\n`;
         });
-        prompt += "\n";
+        prompt += "\nEnsure ALL character attributes (appearance, clothing, accessories, etc.) are clearly visible and accurate in the image.\n\n";
       }
       
       // Add user instructions if provided
       if (imageSettings.instructions && imageSettings.instructions.trim()) {
-        prompt += `Special instructions: ${imageSettings.instructions.trim()}\n\n`;
+        prompt += `Additional requirements: ${imageSettings.instructions.trim()}\n\n`;
       }
       
-      // Final composition note
-      prompt += `Create this as a ${imageSettings.style} style image with high quality details.`;
+      // Final composition note with single scene emphasis
+      prompt += `Create this as ONE SINGLE ${imageSettings.style} style scene with high quality details. Do NOT create a collage or multiple scenes. Focus on one moment from the story.`;
 
       console.log(`Generated detailed prompt for image ${i + 1}:`, prompt);
 
