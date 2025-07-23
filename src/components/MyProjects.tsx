@@ -68,38 +68,37 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
 
   return (
     <Layout showSidebar={true} currentView="projects" onBack={onBack}>
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h1 className="text-5xl md:text-6xl font-display text-foreground mb-6">
-            My Projects
-          </h1>
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
-            Your creative library of <span className="text-primary font-semibold">interactive stories</span>
-          </p>
+      <div className="space-y-6">
+        <div className="flex items-center justify-start gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-foreground">My Projects</h1>
+            <p className="text-muted-foreground mt-2">Your creative library of interactive stories</p>
+          </div>
         </div>
 
         {!stories || stories.length === 0 ? (
-          <div className="text-center py-16">
-            <div className="w-24 h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-8">
-              <BookOpen className="w-12 h-12 text-primary" />
+          <div className="text-center py-12 px-4">
+            <div className="w-16 h-16 md:w-24 md:h-24 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="h-8 w-8 md:h-12 md:w-12 text-primary" />
             </div>
-            <h2 className="text-3xl font-bold text-foreground mb-4">No Projects Yet</h2>
-            <p className="text-muted-foreground max-w-md mx-auto mb-8">
+            <h3 className="text-lg md:text-xl font-semibold text-foreground mb-2">No Projects Yet</h3>
+            <p className="text-muted-foreground max-w-md mx-auto text-sm md:text-base mb-8">
               Start creating your first interactive story and watch your library grow!
             </p>
-            <Button onClick={onBack} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+            <Button onClick={onCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
               Create Your First Story
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {stories.map((story) => (
-              <Card key={story.id} className="border border-gray-300 shadow-sm hover:shadow-md transition-all duration-300 group cursor-pointer transform hover:scale-105 rounded-xl overflow-hidden bg-white">
+              <Card key={story.id} className="border border-gray-300 bg-white/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group cursor-pointer">
                 <div className="aspect-video gradient-primary relative overflow-hidden">
                   {story.main_image ? (
                     <img
                       src={story.main_image}
                       alt={story.title}
+                      loading="lazy"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                   ) : (
@@ -107,7 +106,7 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                       <BookOpen className="w-16 h-16 text-primary/40" />
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   
                   {/* Privacy Badge */}
                   <div className="absolute top-3 right-3">
@@ -127,40 +126,34 @@ export const MyProjects: React.FC<MyProjectsProps> = ({ onBack, onCreateNew, onV
                   </div>
                 </div>
 
-                <CardHeader className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <CardTitle className="text-xl font-display text-foreground line-clamp-2 mb-2">
-                        {story.title}
-                      </CardTitle>
-                      <CardDescription className="text-base text-muted-foreground font-medium line-clamp-3">
-                        {story.description}
-                      </CardDescription>
-                    </div>
-                  </div>
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg line-clamp-1">
+                    {story.title}
+                  </CardTitle>
+                  <CardDescription className="text-sm text-gray-600 line-clamp-2">
+                    {story.description}
+                  </CardDescription>
                 </CardHeader>
 
-                <CardContent className="px-6 pb-6">
-                  <div className="flex justify-between items-center text-sm text-muted-foreground font-medium mb-4">
-                    <span className="flex items-center gap-2">
-                      <Eye className="w-4 h-4" />
-                      {story.view_count || 0} views
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Heart className="w-4 h-4" />
-                      {story.like_count || 0} likes
-                    </span>
-                    <span className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4" />
-                      {new Date(story.created_at).toLocaleDateString()}
-                    </span>
+                <CardContent>
+                  <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
+                    <div className="flex items-center gap-4">
+                      <span className="flex items-center gap-1">
+                        <Eye className="w-4 h-4" />
+                        {story.view_count || 0}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <Heart className="w-4 h-4" />
+                        {story.like_count || 0}
+                      </span>
+                    </div>
+                    <span>{new Date(story.created_at).toLocaleDateString()}</span>
                   </div>
 
                   <div className="flex gap-2">
                     <Button
-                      variant="outline"
-                      size="sm"
-                      className="flex-1 hover:bg-primary/10 hover:text-primary hover:border-primary transition-colors"
+                      onClick={() => onViewStory(story.id)}
+                      className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
                       <Edit className="w-4 h-4 mr-2" />
                       Edit
