@@ -27,12 +27,12 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-amber-50/30 relative overflow-hidden">
-      {/* Subtle Background Elements */}
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-emerald-50 to-orange-50 relative overflow-hidden">
+      {/* Dynamic Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-emerald-100/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float"></div>
-        <div className="absolute top-60 right-20 w-80 h-80 bg-amber-100/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float" style={{animationDelay: '3s'}}></div>
-        <div className="absolute bottom-32 left-1/3 w-72 h-72 bg-slate-100/30 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float" style={{animationDelay: '6s'}}></div>
+        <div className="absolute top-20 left-20 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-emerald-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float"></div>
+        <div className="absolute top-60 right-20 w-80 h-80 bg-gradient-to-r from-orange-400/20 to-amber-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style={{animationDelay: '3s'}}></div>
+        <div className="absolute bottom-32 left-1/3 w-72 h-72 bg-gradient-to-r from-emerald-400/20 to-blue-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-float" style={{animationDelay: '6s'}}></div>
       </div>
 
       <div className="relative z-10">
@@ -40,15 +40,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         <header className="px-6 py-8">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-14 h-14 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-subtle border border-white/40">
+              <div className="w-14 h-14 rounded-2xl flex items-center justify-center">
                 <img 
                   src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
                   alt="NarrArtive Logo" 
-                  className="w-9 h-9"
+                  className="w-14 h-14"
                 />
               </div>
               <div>
-                <h1 className="text-3xl font-display text-slate-800 tracking-tight">
+                <h1 className="text-3xl font-display text-slate-900 tracking-tight">
                   NarrArtive
                 </h1>
                 <p className="text-sm text-slate-600 font-medium">Where stories come to life</p>
@@ -65,7 +65,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               </Button>
               <Button 
                 onClick={onGetStarted} 
-                className="bg-slate-800 text-white hover:bg-slate-900 font-medium px-6 py-2.5 rounded-xl shadow-subtle hover:shadow-card transition-all duration-200"
+                className="bg-gradient-to-r from-blue-600 to-emerald-600 text-white hover:from-blue-700 hover:to-emerald-700 font-medium px-6 py-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
               >
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2" />
@@ -80,9 +80,9 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             <div className="max-w-6xl mx-auto">
               <h2 className="text-6xl md:text-7xl lg:text-8xl font-display text-slate-900 mb-8 leading-tight tracking-tight">
                 Transform Your 
-                <span className="text-emerald-700"> Stories </span>
+                <span className="bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent"> Stories </span>
                 Into Visual 
-                <span className="text-amber-700"> Masterpieces</span>
+                <span className="bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent"> Masterpieces</span>
               </h2>
                 
               <p className="text-xl md:text-2xl text-slate-600 mb-16 leading-relaxed max-w-4xl mx-auto font-medium">
@@ -93,7 +93,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-24">
                 <Button 
                   onClick={onGetStarted}
-                  className="bg-slate-800 text-white hover:bg-slate-900 px-12 py-6 text-xl font-semibold shadow-card hover:shadow-elegant transition-all duration-300 transform hover:scale-105 rounded-2xl"
+                  className="bg-gradient-to-r from-blue-600 via-emerald-600 to-teal-600 text-white hover:from-blue-700 hover:via-emerald-700 hover:to-teal-700 px-12 py-6 text-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 rounded-2xl"
                 >
                   Start Creating Now
                   <ArrowRight className="w-6 h-6 ml-3" />
@@ -101,7 +101,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 
                 <Button 
                   variant="outline"
-                  className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 px-12 py-6 text-xl font-medium rounded-2xl transition-all duration-200"
+                  className="border-2 border-gradient-to-r border-slate-300 text-slate-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-emerald-50 hover:border-emerald-400 px-12 py-6 text-xl font-medium rounded-2xl transition-all duration-200"
                   onClick={() => window.open('https://www.youtube.com/watch?v=ukF8FUwA4w8', '_blank')}
                 >
                   <Play className="w-6 h-6 mr-3" />
@@ -111,15 +111,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
 
               {/* Demo Preview */}
               <div className="relative max-w-5xl mx-auto">
-                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 shadow-card border border-white/50">
+                <div className="bg-gradient-to-br from-white/90 to-blue-50/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 shadow-xl border border-white/50">
                   <div 
-                    className="aspect-video rounded-2xl flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 to-emerald-50/50 border border-slate-200/50"
+                    className="aspect-video rounded-2xl flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-blue-100 via-emerald-50 to-orange-100"
                   >
                     <div className="text-center relative z-10">
-                      <div className="w-20 h-20 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-card">
+                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 via-emerald-500 to-orange-500 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-lg">
                         <Sparkles className="w-12 h-12 text-white" />
                       </div>
-                      <h3 className="text-slate-800 font-display text-2xl mb-2">Premium Experience</h3>
+                      <h3 className="bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent font-display text-2xl mb-2">Premium Experience</h3>
                       <p className="text-slate-600 font-medium">Transform stories into visual masterpieces</p>
                     </div>
                   </div>
@@ -130,10 +130,10 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </section>
 
         {/* Features Section */}
-        <section className="px-6 py-24 bg-white/70 backdrop-blur-sm">
+        <section className="px-6 py-24 bg-gradient-to-br from-white/80 via-blue-50/40 to-emerald-50/40 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-20">
-              <h3 className="text-5xl md:text-6xl font-display text-slate-900 mb-6">
+              <h3 className="text-5xl md:text-6xl font-display bg-gradient-to-r from-slate-900 to-slate-700 bg-clip-text text-transparent mb-6">
                 Powerful Features for Creative Minds
               </h3>
               <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto font-medium">
@@ -145,16 +145,18 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               {features.map((feature, index) => (
                 <div 
                   key={index}
-                  className="bg-white/80 backdrop-blur-sm rounded-3xl p-10 group cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-card hover:shadow-elegant border border-white/50"
+                  className="group cursor-pointer transform hover:scale-105 transition-all duration-300"
                 >
-                  <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-card group-hover:shadow-elegant transition-all duration-300 ${
-                    index === 0 ? 'bg-gradient-to-br from-emerald-600 to-emerald-700' : 
-                    index === 1 ? 'bg-gradient-to-br from-amber-600 to-amber-700' : 'bg-gradient-to-br from-slate-600 to-slate-700'
+                  <div className={`rounded-3xl p-10 shadow-lg hover:shadow-2xl transition-all duration-300 border border-white/50 ${
+                    index === 0 ? 'bg-gradient-to-br from-emerald-400 via-teal-400 to-blue-500' : 
+                    index === 1 ? 'bg-gradient-to-br from-orange-400 via-amber-400 to-yellow-500' : 'bg-gradient-to-br from-blue-500 via-purple-500 to-indigo-600'
                   }`}>
-                    <feature.icon className="w-10 h-10 text-white" />
+                    <div className="w-20 h-20 bg-white/20 backdrop-blur-sm rounded-3xl flex items-center justify-center mb-8 shadow-lg group-hover:shadow-xl transition-all duration-300">
+                      <feature.icon className="w-10 h-10 text-white" />
+                    </div>
+                    <h4 className="text-2xl lg:text-3xl font-display text-white mb-4">{feature.title}</h4>
+                    <p className="text-lg text-white/90 leading-relaxed font-medium">{feature.description}</p>
                   </div>
-                  <h4 className="text-2xl lg:text-3xl font-display text-slate-900 mb-4">{feature.title}</h4>
-                  <p className="text-lg text-slate-600 leading-relaxed font-medium">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -162,17 +164,20 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </section>
 
         {/* CTA Section */}
-        <section className="px-6 py-24">
-          <div className="max-w-5xl mx-auto text-center">
-            <h3 className="text-5xl md:text-6xl lg:text-7xl font-display text-slate-900 mb-8">
+        <section className="px-6 py-24 bg-gradient-to-br from-slate-900 via-blue-900 to-emerald-900 relative overflow-hidden">
+          <div className="absolute inset-0">
+            <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-blue-600/20 to-emerald-600/20 animate-pulse"></div>
+          </div>
+          <div className="max-w-5xl mx-auto text-center relative z-10">
+            <h3 className="text-5xl md:text-6xl lg:text-7xl font-display text-white mb-8">
               Ready to bring your stories to life?
             </h3>
-            <p className="text-xl md:text-2xl text-slate-600 mb-16 font-medium max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-blue-100 mb-16 font-medium max-w-3xl mx-auto">
               Join thousands of creators who are already transforming their narratives with NarrArtive
             </p>
             <Button 
               onClick={onGetStarted}
-              className="bg-slate-800 text-white hover:bg-slate-900 px-16 py-8 text-2xl font-semibold shadow-card hover:shadow-elegant transition-all duration-300 transform hover:scale-105 rounded-3xl"
+              className="bg-gradient-to-r from-orange-500 via-amber-500 to-yellow-500 text-slate-900 hover:from-orange-600 hover:via-amber-600 hover:to-yellow-600 px-16 py-8 text-2xl font-semibold shadow-2xl hover:shadow-3xl transition-all duration-300 transform hover:scale-105 rounded-3xl"
             >
               Start Your Journey
               <ArrowRight className="w-8 h-8 ml-4" />
@@ -181,17 +186,17 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </section>
 
         {/* Footer */}
-        <footer className="px-6 py-16 border-t border-slate-200/50 bg-white/60 backdrop-blur-sm">
+        <footer className="px-6 py-16 border-t border-slate-200/50 bg-gradient-to-r from-white/90 to-blue-50/80 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-4 mb-6">
-              <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-subtle border border-white/40">
+              <div className="w-10 h-10 rounded-2xl flex items-center justify-center">
                 <img 
                   src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
                   alt="NarrArtive Logo" 
-                  className="w-6 h-6"
+                  className="w-10 h-10"
                 />
               </div>
-              <span className="text-2xl font-display text-slate-800">
+              <span className="text-2xl font-display bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent">
                 NarrArtive
               </span>
             </div>
