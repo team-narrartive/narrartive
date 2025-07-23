@@ -121,37 +121,63 @@ serve(async (req) => {
       return `scene ${imageIndex + 1} (${Math.round(progress * 100)}% through story)`;
     };
 
-    // Enhanced character description function prioritizing visual attributes
+    // Enhanced character description function with clear visual attribute labeling
     const formatCharacterDescription = (char: Character): string => {
       if (!char?.name) return '';
       
       let description = char.name;
       
-      // Prioritize visual attributes for image generation
+      // Build detailed visual description with proper context
       if (char.attributes && Object.keys(char.attributes).length > 0) {
-        const visualAttrs = [];
-        const otherAttrs = [];
+        const visualDescriptions = [];
         
-        // Separate visual attributes from other attributes
+        // Process attributes with clear contextual descriptions
         Object.entries(char.attributes).forEach(([key, value]) => {
           if (!value || value === "Not described" || !value.toString().trim()) return;
           
           const lowerKey = key.toLowerCase();
-          if (lowerKey.includes('color') || lowerKey.includes('hair') || lowerKey.includes('eye') || 
-              lowerKey.includes('shirt') || lowerKey.includes('pants') || lowerKey.includes('clothing') ||
-              lowerKey.includes('accessories') || lowerKey.includes('height') || lowerKey.includes('ethnicity') ||
-              lowerKey.includes('appearance')) {
-            visualAttrs.push(`${value}`);
+          const valueStr = value.toString().trim();
+          
+          // Convert attributes to descriptive text with proper context
+          if (lowerKey.includes('shirt') || lowerKey.includes('top')) {
+            visualDescriptions.push(`wearing a ${valueStr}`);
+          } else if (lowerKey.includes('pants') || lowerKey.includes('shorts') || lowerKey.includes('bottom')) {
+            visualDescriptions.push(`wearing ${valueStr}`);
+          } else if (lowerKey.includes('hair') && lowerKey.includes('color')) {
+            visualDescriptions.push(`${valueStr} hair`);
+          } else if (lowerKey.includes('eye') && lowerKey.includes('color')) {
+            visualDescriptions.push(`${valueStr} eyes`);
+          } else if (lowerKey.includes('skin')) {
+            visualDescriptions.push(`${valueStr} skin tone`);
+          } else if (lowerKey.includes('height')) {
+            visualDescriptions.push(`${valueStr} tall`);
+          } else if (lowerKey.includes('ethnicity') || lowerKey.includes('nationality')) {
+            visualDescriptions.push(`${valueStr} ethnicity`);
+          } else if (lowerKey.includes('age')) {
+            visualDescriptions.push(`${valueStr} years old`);
+          } else if (lowerKey.includes('watch') || lowerKey.includes('accessory')) {
+            visualDescriptions.push(`wearing a ${valueStr}`);
+          } else if (lowerKey.includes('hair') && lowerKey.includes('type')) {
+            visualDescriptions.push(`${valueStr} hair`);
+          } else if (lowerKey.includes('facial') && lowerKey.includes('hair')) {
+            visualDescriptions.push(`${valueStr}`);
+          } else if (lowerKey.includes('body') && lowerKey.includes('type')) {
+            visualDescriptions.push(`${valueStr} build`);
+          } else if (lowerKey.includes('clothing') && lowerKey.includes('style')) {
+            visualDescriptions.push(`${valueStr} clothing style`);
           } else {
-            otherAttrs.push(`${key}: ${value}`);
+            // For any other important visual attributes, include with context
+            if (lowerKey.includes('color') || lowerKey.includes('appearance')) {
+              visualDescriptions.push(`${key.toLowerCase()}: ${valueStr}`);
+            }
           }
         });
         
-        // Combine visual attributes first, then other important attributes
-        const allAttrs = [...visualAttrs, ...otherAttrs.slice(0, 3)].slice(0, 8);
+        // Limit to most important visual details to avoid overwhelming the prompt
+        const finalDescriptions = visualDescriptions.slice(0, 8);
         
-        if (allAttrs.length > 0) {
-          description += ` (${allAttrs.join(", ")})`;
+        if (finalDescriptions.length > 0) {
+          description += ` (${finalDescriptions.join(", ")})`;
         }
       }
       
