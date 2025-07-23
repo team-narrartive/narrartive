@@ -90,38 +90,48 @@ serve(async (req) => {
     };
 
     for (let i = 0; i < imageSettings.numImages; i++) {
-      // Calculate story progression for different scenes
-      const sceneProgress = imageSettings.numImages === 1 ? "main moment" : 
-                           i === 0 ? "beginning" : 
-                           i === imageSettings.numImages - 1 ? "ending" : 
-                           "middle part";
+      // Calculate distinct story scenes for multiple images
+      let sceneDescription = "";
+      if (imageSettings.numImages === 1) {
+        sceneDescription = "main key moment";
+      } else if (imageSettings.numImages === 2) {
+        sceneDescription = i === 0 ? "the beginning scene" : "the ending scene";
+      } else if (imageSettings.numImages === 3) {
+        sceneDescription = i === 0 ? "the opening scene" : i === 1 ? "the middle scene" : "the concluding scene";
+      } else {
+        const progress = i / (imageSettings.numImages - 1);
+        if (progress === 0) sceneDescription = "the opening scene";
+        else if (progress === 1) sceneDescription = "the final scene";
+        else sceneDescription = `scene ${i + 1} (chronologically)`;
+      }
       
-      // Start with style specification
-      let prompt = `Style: ${stylePrompts[imageSettings.style]}\n\n`;
+      // Build focused prompt for single scene
+      let prompt = `${stylePrompts[imageSettings.style]}\n\n`;
       
-      // Scene specification - one focused scene per image
-      prompt += `Create ONE single scene showing the ${sceneProgress} from this story: "${story}"\n\n`;
+      // Crucial: Single scene specification
+      prompt += `SHOW ONLY ${sceneDescription} from this story: "${story}"\n\n`;
+      prompt += `CRITICAL: Create ONE specific moment/scene only. Do NOT combine multiple story events into one image.\n\n`;
       
-      // Character specifications with error handling
+      // Character specifications
       if (characters && characters.length > 0) {
         const validCharacters = characters.filter(char => char && char.name);
         if (validCharacters.length > 0) {
-          prompt += "Characters with their exact attributes:\n";
+          prompt += "Include these characters with their exact attributes:\n";
           validCharacters.forEach((char: Character) => {
             const characterDesc = formatCharacterDescription(char);
             prompt += `• ${characterDesc}\n`;
           });
-          prompt += "\nIMPORTANT: Show ALL character attributes (clothing, accessories, physical features) accurately.\n\n";
+          prompt += "\nEnsure all character details (appearance, clothing, accessories) are precisely shown.\n\n";
         }
       }
       
-      // User instructions
+      // Additional requirements
       if (imageSettings.instructions?.trim()) {
-        prompt += `Requirements: ${imageSettings.instructions.trim()}\n\n`;
+        prompt += `Special requirements: ${imageSettings.instructions.trim()}\n\n`;
       }
       
-      // Final instruction
-      prompt += `Create a single ${imageSettings.style} scene with high detail. No collages or multiple scenes in one image.`;
+      // Final specification
+      prompt += `Generate ONE ${imageSettings.style} scene only. Focus on ${sceneDescription}. No montages or multiple events.`;
 
       try {
         console.log(`Making OpenAI API call for image ${i + 1} with gpt-image-1...`);
