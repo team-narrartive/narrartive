@@ -132,7 +132,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
                         value={editedCharacter.attributes[key] || ''}
                         onChange={(e) => handleAttributeChange(key, e.target.value)}
                         placeholder={`Enter ${key.toLowerCase()}`}
-                        className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 mx-1"
+                        className="focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       />
                     </div>
                   ))}
@@ -172,13 +172,13 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
                   placeholder="Attribute name"
                   value={customAttributeKey}
                   onChange={(e) => setCustomAttributeKey(e.target.value)}
-                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 mx-1"
+                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <Input
                   placeholder="Attribute value"
                   value={customAttributeValue}
                   onChange={(e) => setCustomAttributeValue(e.target.value)}
-                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 px-3 py-2 mx-1"
+                  className="flex-1 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
                 <Button
                   onClick={addCustomAttribute}
@@ -198,7 +198,7 @@ export const CharacterAttributesPopup: React.FC<CharacterAttributesPopupProps> =
           <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button onClick={handleSave} className="bg-blue-600 hover:bg-blue-700">
+          <Button onClick={handleSave} className="bg-primary hover:bg-primary/90">
             <Save className="w-4 h-4 mr-2" />
             Save Attributes
           </Button>

@@ -64,101 +64,101 @@ export const Dashboard: React.FC<DashboardProps> = ({
         </Alert>}
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12">
         <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(30, 80%, 95%)', borderColor: 'hsl(30, 70%, 85%)' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Minutes Spent</CardTitle>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
-              <Clock className="h-4 w-4 text-white" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Minutes Spent</CardTitle>
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
+              <Clock className="h-3 w-3 text-white" />
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-display text-foreground mb-1">
-              {userStatsLoading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : minutesSpent}
+            <div className="text-xl font-display text-foreground mb-1">
+              {userStatsLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : minutesSpent}
             </div>
-            <p className="text-xs text-muted-foreground font-medium">Creating amazing content</p>
+            <p className="text-xs text-muted-foreground">Creating amazing content</p>
           </CardContent>
         </Card>
 
         <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(200, 80%, 95%)', borderColor: 'hsl(200, 70%, 85%)' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Stories Generated</CardTitle>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
-              <BookOpen className="h-4 w-4 text-white" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Stories Generated</CardTitle>
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
+              <BookOpen className="h-3 w-3 text-white" />
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-display mb-1" style={{ color: 'hsl(200, 70%, 55%)' }}>
-              {userStatsLoading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalStories}
+            <div className="text-xl font-display mb-1" style={{ color: 'hsl(200, 70%, 55%)' }}>
+              {userStatsLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalStories}
             </div>
-            <p className="text-xs text-muted-foreground font-medium">Your creative works</p>
+            <p className="text-xs text-muted-foreground">Your creative works</p>
           </CardContent>
         </Card>
 
         <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(270, 60%, 95%)', borderColor: 'hsl(270, 50%, 85%)' }}>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Likes Received</CardTitle>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(270, 50%, 55%)' }}>
-              <Heart className="h-4 w-4 text-white" />
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Likes Received</CardTitle>
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(270, 50%, 55%)' }}>
+              <Heart className="h-3 w-3 text-white" />
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-display mb-1" style={{ color: 'hsl(270, 50%, 55%)' }}>
-              {userStatsLoading ? <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalLikes}
+            <div className="text-xl font-display mb-1" style={{ color: 'hsl(270, 50%, 55%)' }}>
+              {userStatsLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalLikes}
             </div>
-            <p className="text-xs text-muted-foreground font-medium">Community appreciation</p>
+            <p className="text-xs text-muted-foreground">Community appreciation</p>
           </CardContent>
         </Card>
 
-        <Card className="card-premium group hover:scale-105 transition-transform duration-300">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Total Views</CardTitle>
-            <div className="w-8 h-8 bg-muted rounded-lg flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-              <Eye className="h-4 w-4 text-muted-foreground group-hover:text-primary" />
+        <Card className="card-premium group hover:scale-105 transition-transform duration-300" style={{ backgroundColor: 'hsl(217, 15%, 97%)', borderColor: 'hsl(217, 15%, 85%)' }}>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+            <CardTitle className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Views</CardTitle>
+            <div className="w-6 h-6 rounded-lg flex items-center justify-center" style={{ backgroundColor: 'hsl(217, 15%, 55%)' }}>
+              <Eye className="h-3 w-3 text-white" />
             </div>
           </CardHeader>
           <CardContent className="pt-0">
-            <div className="text-2xl font-display text-foreground mb-1">
-              {userStatsLoading ? <div className="w-5 h-5 border-2 border-primary border-t-transparent rounded-full animate-spin"></div> : totalViews}
+            <div className="text-xl font-display text-foreground mb-1">
+              {userStatsLoading ? <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div> : totalViews}
             </div>
-            <p className="text-xs text-muted-foreground font-medium">Story engagement</p>
+            <p className="text-xs text-muted-foreground">Story engagement</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Quick Actions with Premium Design */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <Card className="gradient-primary text-white border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" onClick={onCreateNew}>
-          <CardHeader className="flex-1 p-8">
-            <CardTitle className="flex items-center gap-4 text-2xl font-display">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center group-hover:bg-white/30 transition-colors">
-                <PlusCircle className="h-7 w-7 group-hover:scale-110 transition-transform" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-2xl overflow-hidden" style={{ backgroundColor: 'hsl(30, 80%, 95%)' }} onClick={onCreateNew}>
+          <CardHeader className="flex-1 p-6">
+            <CardTitle className="flex items-center gap-3 text-xl font-display">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
+                <PlusCircle className="h-5 w-5 text-white" />
               </div>
               Create New Story
             </CardTitle>
-            <CardDescription className="text-white/90 flex-1 py-4 text-lg font-medium leading-relaxed">Start crafting your next amazing interactive story</CardDescription>
+            <CardDescription className="text-muted-foreground flex-1 py-3 text-base leading-relaxed">Start crafting your next amazing interactive story</CardDescription>
           </CardHeader>
-          <CardContent className="pt-0 p-8">
-            <Button variant="secondary" className="w-full bg-white/20 hover:bg-white/30 text-white border-white/20 py-3 text-lg font-semibold rounded-2xl">
+          <CardContent className="pt-0 p-6">
+            <Button variant="outline" className="w-full border-2 py-2 text-base font-semibold rounded-xl" style={{ borderColor: 'hsl(30, 70%, 55%)', color: 'hsl(30, 70%, 55%)' }}>
               Get Started →
             </Button>
           </CardContent>
         </Card>
 
-        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" style={{ backgroundColor: 'hsl(30, 80%, 95%)' }} onClick={onViewProjects}>
-          <CardHeader className="flex-1 p-8">
-            <CardTitle className="flex items-center gap-4 text-2xl font-display">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(30, 70%, 55%)' }}>
-                <BookOpen className="h-7 w-7 text-white" />
+        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-2xl overflow-hidden" style={{ backgroundColor: 'hsl(200, 80%, 95%)' }} onClick={onViewProjects}>
+          <CardHeader className="flex-1 p-6">
+            <CardTitle className="flex items-center gap-3 text-xl font-display">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
+                <BookOpen className="h-5 w-5 text-white" />
               </div>
               My Projects
             </CardTitle>
-            <CardDescription className="text-muted-foreground flex-1 py-4 text-lg font-medium leading-relaxed">
+            <CardDescription className="text-muted-foreground flex-1 py-3 text-base leading-relaxed">
               View and manage your created stories
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-0 p-8">
-            <Button variant="outline" className="w-full border-2 py-3 text-lg font-semibold rounded-2xl" style={{ borderColor: 'hsl(30, 70%, 55%)', color: 'hsl(30, 70%, 55%)' }}>
+          <CardContent className="pt-0 p-6">
+            <Button variant="outline" className="w-full border-2 py-2 text-base font-semibold rounded-xl" style={{ borderColor: 'hsl(200, 70%, 55%)', color: 'hsl(200, 70%, 55%)' }}>
               {userStoriesLoading ? <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   Loading...
@@ -167,20 +167,20 @@ export const Dashboard: React.FC<DashboardProps> = ({
           </CardContent>
         </Card>
 
-        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-3xl overflow-hidden" style={{ backgroundColor: 'hsl(200, 80%, 95%)' }} onClick={onViewCommunity}>
-          <CardHeader className="flex-1 p-8">
-            <CardTitle className="flex items-center gap-4 text-2xl font-display">
-              <div className="w-12 h-12 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(200, 70%, 55%)' }}>
-                <Users className="h-7 w-7 text-white" />
+        <Card className="text-foreground border-0 shadow-card hover:shadow-elegant transition-all duration-300 cursor-pointer group flex flex-col transform hover:scale-105 rounded-2xl overflow-hidden" style={{ backgroundColor: 'hsl(270, 60%, 95%)' }} onClick={onViewCommunity}>
+          <CardHeader className="flex-1 p-6">
+            <CardTitle className="flex items-center gap-3 text-xl font-display">
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-colors" style={{ backgroundColor: 'hsl(270, 50%, 55%)' }}>
+                <Users className="h-5 w-5 text-white" />
               </div>
               Community Hub
             </CardTitle>
-            <CardDescription className="text-muted-foreground flex-1 py-4 text-lg font-medium leading-relaxed">
+            <CardDescription className="text-muted-foreground flex-1 py-3 text-base leading-relaxed">
               Explore stories from other creators
             </CardDescription>
           </CardHeader>
-          <CardContent className="pt-0 p-8">
-            <Button variant="outline" className="w-full border-2 py-3 text-lg font-semibold rounded-2xl" style={{ borderColor: 'hsl(200, 70%, 55%)', color: 'hsl(200, 70%, 55%)' }}>
+          <CardContent className="pt-0 p-6">
+            <Button variant="outline" className="w-full border-2 py-2 text-base font-semibold rounded-xl" style={{ borderColor: 'hsl(270, 50%, 55%)', color: 'hsl(270, 50%, 55%)' }}>
               {communityLoading ? <div className="flex items-center gap-2">
                   <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
                   Loading...

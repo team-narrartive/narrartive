@@ -40,9 +40,9 @@ export const ImageGenerationSettingsComponent: React.FC<ImageGenerationSettingsP
   };
 
   return (
-    <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 mb-6">
+    <Card className="p-6 bg-white/80 backdrop-blur-sm border border-black/20 mb-6">
       <div className="flex items-center space-x-3 mb-4">
-        <div className="w-10 h-10 bg-gradient-to-r from-purple-400 to-pink-400 rounded-lg flex items-center justify-center">
+        <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
           <Settings className="w-5 h-5 text-white" />
         </div>
         <div>

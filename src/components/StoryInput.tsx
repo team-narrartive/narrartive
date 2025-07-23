@@ -293,7 +293,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div className="flex items-center gap-4">
-                  <h2 className="text-xl font-semibold text-foreground">Your Story</h2>
+                  <h2 className="text-xl font-semibold text-black">Your Story</h2>
                   <div className="flex items-center space-x-2">
                     <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
                     <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
@@ -304,7 +304,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </div>
             </div>
 
-            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-white/20 mb-6">
+            <Card className="p-6 bg-white/80 backdrop-blur-sm border border-black/20 mb-6">
               <div className="flex items-center justify-between mb-4">
                 <div className="text-sm text-gray-500">
                   {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words

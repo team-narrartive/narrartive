@@ -465,7 +465,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
             
             <Separator orientation="vertical" className="h-6" />
             
-            <Button onClick={exportToPDF} className="bg-blue-600 hover:bg-blue-700">
+            <Button onClick={exportToPDF} className="bg-primary hover:bg-primary/90">
               <Download className="w-4 h-4 mr-2" />
               Download PDF
             </Button>
@@ -559,7 +559,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
         <div className="flex flex-1 overflow-hidden">
           {/* Image Library Sidebar */}
           {showImageLibrary && (
-            <div className="w-80 border-r bg-white">
+            <div className="w-80 border-r border-black/20 bg-white">
               <CanvasImageLibrary
                 imageVersions={imageVersions}
                 onImageDragStart={() => {}}
@@ -571,7 +571,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
 
           {/* Story Elements Sidebar */}
           {showStoryElements && (
-            <div className="w-80 border-r bg-white">
+            <div className="w-80 border-r border-black/20 bg-white">
               <StoryElementsSidebar
                 story={story}
                 onDragStart={handleStoryElementDragStart}
