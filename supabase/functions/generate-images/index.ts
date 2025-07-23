@@ -90,34 +90,38 @@ serve(async (req) => {
     };
 
     for (let i = 0; i < imageSettings.numImages; i++) {
-      // Start with style specification for better adherence
-      let prompt = `${stylePrompts[imageSettings.style].toUpperCase()}.\n\n`;
+      // Calculate story progression for different scenes
+      const sceneProgress = imageSettings.numImages === 1 ? "main moment" : 
+                           i === 0 ? "beginning" : 
+                           i === imageSettings.numImages - 1 ? "ending" : 
+                           "middle part";
       
-      // CRITICAL: Ensure single scene composition
-      prompt += `CREATE A SINGLE FOCUSED SCENE - NOT A COLLAGE OR MULTIPLE SCENES COMBINED.\n\n`;
+      // Start with style specification
+      let prompt = `Style: ${stylePrompts[imageSettings.style]}\n\n`;
       
-      // Add story context with scene focus
-      prompt += `Focus on scene ${i + 1} from this story: "${story}"\n\n`;
+      // Scene specification - one focused scene per image
+      prompt += `Create ONE single scene showing the ${sceneProgress} from this story: "${story}"\n\n`;
       
-      // Add character specifications if available with detailed attributes
+      // Character specifications with error handling
       if (characters && characters.length > 0) {
-        prompt += "IMPORTANT - Include these characters with ALL their specified attributes:\n";
-        characters.forEach((char: Character, index: number) => {
-          const characterDesc = formatCharacterDescription(char);
-          prompt += `- ${characterDesc}\n`;
-        });
-        prompt += "\nEnsure ALL character attributes (appearance, clothing, accessories, etc.) are clearly visible and accurate in the image.\n\n";
+        const validCharacters = characters.filter(char => char && char.name);
+        if (validCharacters.length > 0) {
+          prompt += "Characters with their exact attributes:\n";
+          validCharacters.forEach((char: Character) => {
+            const characterDesc = formatCharacterDescription(char);
+            prompt += `• ${characterDesc}\n`;
+          });
+          prompt += "\nIMPORTANT: Show ALL character attributes (clothing, accessories, physical features) accurately.\n\n";
+        }
       }
       
-      // Add user instructions if provided
-      if (imageSettings.instructions && imageSettings.instructions.trim()) {
-        prompt += `Additional requirements: ${imageSettings.instructions.trim()}\n\n`;
+      // User instructions
+      if (imageSettings.instructions?.trim()) {
+        prompt += `Requirements: ${imageSettings.instructions.trim()}\n\n`;
       }
       
-      // Final composition note with single scene emphasis
-      prompt += `Create this as ONE SINGLE ${imageSettings.style} style scene with high quality details. Do NOT create a collage or multiple scenes. Focus on one moment from the story.`;
-
-      console.log(`Generated detailed prompt for image ${i + 1}:`, prompt);
+      // Final instruction
+      prompt += `Create a single ${imageSettings.style} scene with high detail. No collages or multiple scenes in one image.`;
 
       try {
         console.log(`Making OpenAI API call for image ${i + 1} with gpt-image-1...`);
