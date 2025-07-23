@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Palette, Users, Play } from 'lucide-react';
 
@@ -72,70 +73,73 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
 
   return (
     <>
-      {/* Navigation - completely independent */}
-      <nav 
-        style={{ 
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          width: '100vw',
-          height: 'auto',
-          zIndex: 999999,
-          backgroundColor: colorRevealed ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
-          backdropFilter: 'blur(10px)',
-          WebkitBackdropFilter: 'blur(10px)',
-          boxShadow: colorRevealed ? '0 2px 8px -2px hsla(217,19%,24%,0.08)' : 'none',
-          padding: '1rem 1.5rem',
-          transition: 'background-color 300ms ease-in-out, box-shadow 300ms ease-in-out'
-        }}
-      >
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 flex items-center justify-center">
-              <img 
-                src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
-                alt="NarrArtive Logo" 
-                className="w-10 h-10 object-contain"
-              />
+      {/* Navigation - rendered via Portal to bypass body stacking context */}
+      {createPortal(
+        <nav 
+          style={{ 
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            width: '100vw',
+            height: 'auto',
+            zIndex: 999999,
+            backgroundColor: colorRevealed ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
+            backdropFilter: 'blur(10px)',
+            WebkitBackdropFilter: 'blur(10px)',
+            boxShadow: colorRevealed ? '0 2px 8px -2px hsla(217,19%,24%,0.08)' : 'none',
+            padding: '1rem 1.5rem',
+            transition: 'background-color 300ms ease-in-out, box-shadow 300ms ease-in-out'
+          }}
+        >
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-10 h-10 flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                  alt="NarrArtive Logo" 
+                  className="w-10 h-10 object-contain"
+                />
+              </div>
+              <div>
+                <h1 
+                  className="text-2xl font-sans transition-all duration-300" 
+                   style={{ 
+                    color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
+                    fontWeight: 900
+                  }}
+                >
+                  NarrArtive
+                </h1>
+                <p 
+                  className="text-xs font-medium transition-all duration-300" 
+                  style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
+                >
+                  Where stories come to life
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 
-                className="text-2xl font-sans transition-all duration-300" 
-                 style={{ 
-                  color: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
-                  fontWeight: 900
-                }}
-              >
-                NarrArtive
-              </h1>
-              <p 
-                className="text-xs font-medium transition-all duration-300" 
-                style={{ color: colorRevealed ? 'hsl(217, 10%, 46%)' : '#666' }}
-              >
-                Where stories come to life
-              </p>
-            </div>
+            
+            <Button 
+              onClick={onLogin}
+              className="font-medium px-6 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg"
+              style={{ 
+                backgroundColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
+                color: '#fff'
+              }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 35%)' : '#333';
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 45%)' : '#000';
+              }}
+            >
+              Login
+            </Button>
           </div>
-          
-          <Button 
-            onClick={onLogin}
-            className="font-medium px-6 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg"
-            style={{ 
-              backgroundColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#000',
-              color: '#fff'
-            }}
-            onMouseEnter={(e) => {
-              (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 35%)' : '#333';
-            }}
-            onMouseLeave={(e) => {
-              (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(151, 60%, 45%)' : '#000';
-            }}
-          >
-            Login
-          </Button>
-        </div>
-      </nav>
+        </nav>,
+        document.body
+      )}
 
       {/* Main content container */}
       <div 
