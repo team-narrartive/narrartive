@@ -299,24 +299,24 @@ export const StoryInput: React.FC<StoryInputProps> = ({
             {/* Story Input Panel with unified header */}
             <div className="border border-gray-300 rounded-lg bg-white/80 backdrop-blur-sm shadow-sm mb-6">
               {/* Unified Header */}
-              <div className="p-6 border-b border-gray-200">
+              <div className="px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                       <FileText className="w-5 h-5 text-white" />
                     </div>
-                    <h2 className="text-xl font-semibold text-black">Your Story</h2>
+                    <h2 className="text-xl font-semibold text-black whitespace-nowrap">Your Story</h2>
                   </div>
                   
-                  <div className="flex items-center space-x-6">
+                  <div className="flex items-center space-x-4">
                     <div className="flex items-center space-x-2">
                       <Switch id="privacy-toggle" checked={isPublic} onCheckedChange={setIsPublic} />
-                      <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground">
+                      <Label htmlFor="privacy-toggle" className="text-sm font-medium text-muted-foreground whitespace-nowrap">
                         {isPublic ? 'Public' : 'Private'}
                       </Label>
                     </div>
                     
-                    <div className="text-sm text-gray-500">
+                    <div className="text-sm text-gray-500 whitespace-nowrap">
                       {story.length} characters • {story.split(' ').filter(word => word.length > 0).length} words
                     </div>
                     
@@ -330,7 +330,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               
               {/* Story Input Area */}
               <div className="p-6">
-                <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-48 p-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground" />
+                <textarea value={story} onChange={e => setStory(e.target.value)} placeholder="Input Story Here..." className="w-full h-64 p-4 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent resize-none text-foreground placeholder-muted-foreground" />
                 
                 <div className="mt-4">
                   <div className="flex flex-wrap items-center justify-center gap-4">
