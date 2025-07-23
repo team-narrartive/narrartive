@@ -199,14 +199,14 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               onClick={onLogin}
               className="font-medium px-6 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg"
               style={{ 
-                backgroundColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)', // Secondary purple
+                backgroundColor: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)', // Orange
                 color: 'hsl(0, 0%, 100%)'
               }}
               onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(270, 50%, 50%)' : 'hsl(0, 0%, 20%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(30, 100%, 40%)' : 'hsl(0, 0%, 20%)';
               }}
               onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)';
               }}
             >
               Sign In
@@ -272,9 +272,13 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 fontWeight: 800 
               }}>Transform </span>
               <span style={{ 
-                color: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 40%)', // Purple
+                color: colorRevealed ? 'hsl(0, 0%, 0%)' : 'hsl(0, 0%, 40%)', // Black
                 fontWeight: 800 
-              }}>Your Stories</span>
+              }}>Your </span>
+              <span style={{ 
+                color: colorRevealed ? 'hsl(0, 0%, 46%)' : 'hsl(0, 0%, 40%)', // Grey
+                fontWeight: 800 
+              }}>Stories</span>
               <span style={{ 
                 color: colorRevealed ? 'hsl(0, 0%, 0%)' : 'hsl(0, 0%, 0%)', // Black
                 fontWeight: 800 
@@ -318,13 +322,13 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 variant="outline"
                 className="px-8 py-3 text-sm font-bold transition-all duration-200 hover:shadow-lg"
                 style={{ 
-                  borderColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)', // Purple
-                  color: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)', // Purple
+                  borderColor: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)', // Orange
+                  color: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)', // Orange
                   backgroundColor: 'hsl(0, 0%, 100%)',
                   borderRadius: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(270, 50%, 95%)' : 'hsl(0, 0%, 95%)';
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(30, 100%, 95%)' : 'hsl(0, 0%, 95%)';
                 }}
                 onMouseLeave={(e) => {
                   (e.target as HTMLElement).style.backgroundColor = 'hsl(0, 0%, 100%)';
