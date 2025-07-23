@@ -66,6 +66,7 @@ serve(async (req) => {
     console.log('Processing story for image generation with settings:', settings);
     console.log(`Story length: ${story?.length || 0} characters`);
     console.log(`Characters count: ${characters?.length || 0}`);
+    console.log('Characters data:', JSON.stringify(characters, null, 2));
 
     // Input validation
     if (!openAIApiKey) {
@@ -194,8 +195,9 @@ serve(async (req) => {
         // Create async function for this image
         const generateImage = async () => {
           try {
-            console.log(`Generating image ${i + 1}/${imageSettings.numImages} - Scene: ${sceneDescription}`);
-            console.log(`Prompt length: ${prompt.length} characters`);
+        console.log(`Generating image ${i + 1}/${imageSettings.numImages} - Scene: ${sceneDescription}`);
+        console.log(`Prompt length: ${prompt.length} characters`);
+        console.log(`Full prompt for image ${i + 1}:`, prompt);
 
             // Make API call with retry logic (no timeout)
             const imageData = await retryWithBackoff(async () => {
