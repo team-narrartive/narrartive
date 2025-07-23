@@ -247,7 +247,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             <img 
               src={asset.url} 
               alt={asset.name}
-              className="w-full h-full object-contain drop-shadow-lg"
+              className="w-full h-full object-contain drop-shadow-lg transform rotate-12"
               onError={(e) => {
                 // Fallback to emoji if image fails to load
                 const emojis = ['🌙', '🚀', '🦕', '🌸', '🪐', '🍃'];
