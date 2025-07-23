@@ -281,9 +281,9 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       <SpinningCatLoader isVisible={isGeneratingImages} message="Creating magical images from your story... 🎨✨" />
       
       <Layout showSidebar={false} currentView="create" onBack={onBack}>
-        {/* Main Content - Three column layout: widgets, input, space for generated images */}
+        {/* Main Content - Three column layout: widgets, input, generated images */}
         <div className="grid grid-cols-[320px_1fr_300px] gap-4">
-          {/* Left Column - Character Sidebar and Generated Images */}
+          {/* Left Column - Character Sidebar */}
           <div>
             {/* Character Sidebar */}
             <CharacterSidebar 
@@ -291,15 +291,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               loading={isExtractingCharacters} 
               onCharacterUpdate={handleCharacterUpdate} 
             />
-            
-            {/* Enhanced Generated Images */}
-            {(imageVersions.length > 0 || isGeneratingImages) && (
-              <EnhancedGeneratedImages 
-                imageVersions={imageVersions} 
-                loading={isGeneratingImages} 
-                story={story} 
-              />
-            )}
           </div>
 
           {/* Right Column - Story Input */}
@@ -325,7 +316,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
                 value={story} 
                 onChange={e => setStory(e.target.value)} 
                 placeholder="Input Story Here..." 
-                className="w-full min-h-[300px] border-0 bg-transparent focus:outline-none focus:ring-0 resize-none text-foreground placeholder-muted-foreground"
+                className="w-full min-h-[300px] border-0 bg-transparent focus:outline-none focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 resize-none text-foreground placeholder-muted-foreground"
                 rows={12}
               />
               
@@ -347,26 +338,35 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               </div>
             </div>
 
-            {/* Generate Button - Borderless, below panel */}
-            <div className="flex justify-center mt-4">
+            {/* Generate Buttons - Borderless, below panel */}
+            <div className="flex justify-center gap-4 mt-4">
               {hasGeneratedWidgets ? (
-                <Button 
-                  onClick={handleGenerateImages} 
-                  disabled={!story.trim() || isGeneratingImages} 
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11"
-                >
-                  {isGeneratingImages ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                      Generating Images...
-                    </>
-                  ) : (
-                    <>
-                      <Image className="w-4 h-4 mr-2" />
-                      Generate Images
-                    </>
+                <>
+                  <Button 
+                    onClick={handleGenerateImages} 
+                    disabled={!story.trim() || isGeneratingImages} 
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11"
+                  >
+                    {isGeneratingImages ? (
+                      <>
+                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                        Generating Images...
+                      </>
+                    ) : (
+                      <>
+                        <Image className="w-4 h-4 mr-2" />
+                        Generate Images
+                      </>
+                    )}
+                  </Button>
+                  {/* Save Button - Show next to Generate Images when has images */}
+                  {hasImages && (
+                    <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 h-11">
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Project
+                    </Button>
                   )}
-                </Button>
+                </>
               ) : (
                 <Button 
                   onClick={handleExtractCharacters} 
@@ -388,16 +388,6 @@ export const StoryInput: React.FC<StoryInputProps> = ({
               )}
             </div>
 
-            {/* Save Button - Only show when has images */}
-            {hasImages && (
-              <div className="flex justify-center mt-4">
-                <Button onClick={() => setShowSaveDialog(true)} className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Project
-                </Button>
-              </div>
-            )}
-
             {/* Image Generation Settings Panel */}
             {hasGeneratedWidgets && (
               <div className="mt-8">
@@ -406,8 +396,16 @@ export const StoryInput: React.FC<StoryInputProps> = ({
             )}
           </div>
 
-          {/* Third Column - Reserved space for future generated images panel */}
-          <div></div>
+          {/* Right Column - Generated Images */}
+          <div>
+            {(imageVersions.length > 0 || isGeneratingImages) && (
+              <EnhancedGeneratedImages 
+                imageVersions={imageVersions} 
+                loading={isGeneratingImages} 
+                story={story} 
+              />
+            )}
+          </div>
         </div>
       </Layout>
 
