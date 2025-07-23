@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { BookOpen, Palette, Users, Play } from 'lucide-react';
 
@@ -9,16 +9,40 @@ interface LandingProps {
 
 export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   const [scrolled, setScrolled] = useState(false);
+  const [colorRevealed, setColorRevealed] = useState(false);
+  const heroRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const handleScroll = () => {
       const scrollPosition = window.scrollY;
       setScrolled(scrollPosition > 100);
+      
+      // Trigger color reveal at hero midpoint
+      if (heroRef.current) {
+        const heroHeight = heroRef.current.offsetHeight;
+        const heroMidpoint = heroHeight / 2;
+        setColorRevealed(scrollPosition > heroMidpoint);
+      }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Apply grayscale filter to body
+  useEffect(() => {
+    if (!colorRevealed) {
+      document.body.style.filter = 'grayscale(100%)';
+      document.body.style.transition = 'filter 300ms ease-in-out';
+    } else {
+      document.body.style.filter = 'grayscale(0%) saturate(110%)';
+    }
+    
+    return () => {
+      document.body.style.filter = '';
+      document.body.style.transition = '';
+    };
+  }, [colorRevealed]);
 
   const features = [
     {
@@ -90,7 +114,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       </nav>
 
       {/* Hero Section - Full Viewport Height */}
-      <section className="min-h-screen flex items-center justify-center px-6 pt-20">
+      <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 pt-20">
         <div className="max-w-6xl mx-auto text-center">
           <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans font-bold mb-8 leading-tight tracking-tight text-slate-900">
             Transform Your{' '}
@@ -163,15 +187,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               >
                 <div 
                   className="w-full bg-white rounded-2xl p-4 shadow-[0_4px_20px_-4px_hsla(217,19%,24%,0.08)] hover:shadow-[0_10px_30px_-10px_hsla(217,19%,24%,0.15)] transition-all duration-300 min-h-[180px] flex flex-col"
-                  style={{ border: '1px solid hsl(186, 100%, 26%)' }}
+                  style={{ border: '1px solid hsl(82, 39%, 30%)' }}
                 >
                   <div 
                     className="w-12 h-12 rounded-xl flex items-center justify-center mb-4"
-                    style={{ backgroundColor: 'hsl(186, 100%, 26%)' }}
+                    style={{ backgroundColor: 'hsl(82, 39%, 30%)' }}
                   >
                     <feature.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h4 className="text-lg font-sans font-semibold mb-2" style={{ color: 'hsl(186, 100%, 26%)' }}>
+                  <h4 className="text-lg font-sans font-semibold mb-2" style={{ color: 'hsl(82, 39%, 30%)' }}>
                     {feature.title}
                   </h4>
                   <p className="text-sm leading-relaxed font-medium flex-1" style={{ color: 'hsl(217, 10%, 46%)' }}>
