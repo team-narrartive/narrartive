@@ -72,8 +72,11 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
 
   return (
     <div 
-      className="min-h-screen transition-all duration-300 ease-in-out"
-      style={{ backgroundColor: colorRevealed ? 'hsl(48, 15%, 94%)' : '#fff' }}
+      className="min-h-screen"
+      style={{ 
+        backgroundColor: colorRevealed ? 'hsl(48, 15%, 94%)' : '#fff',
+        transition: 'background-color 300ms ease-in-out'
+      }}
     >
       {/* Navigation */}
       <nav 
