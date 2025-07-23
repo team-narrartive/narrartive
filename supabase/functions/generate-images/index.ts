@@ -1,13 +1,10 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
 
 interface Character {
   name: string;
@@ -23,208 +20,296 @@ interface ImageSettings {
   instructions?: string;
 }
 
+// Constants for optimization
+const MAX_PROMPT_LENGTH = 3500;
+const API_TIMEOUT = 90000; // 90 seconds
+const RETRY_ATTEMPTS = 3;
+const RETRY_DELAY = 2000; // 2 seconds
+
+const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+
+// Helper function for delays
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+// Enhanced retry logic with exponential backoff
+const retryWithBackoff = async <T>(
+  fn: () => Promise<T>,
+  attempts: number = RETRY_ATTEMPTS,
+  delayMs: number = RETRY_DELAY
+): Promise<T> => {
+  try {
+    return await fn();
+  } catch (error) {
+    if (attempts <= 1) throw error;
+    
+    console.log(`Retrying after ${delayMs}ms, attempts remaining: ${attempts - 1}`);
+    await delay(delayMs);
+    return retryWithBackoff(fn, attempts - 1, delayMs * 1.5);
+  }
+};
+
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
     const { story, characters, settings } = await req.json();
+    
+    console.log('Processing story for image generation with settings:', settings);
+    console.log(`Story length: ${story?.length || 0} characters`);
+    console.log(`Characters count: ${characters?.length || 0}`);
 
+    // Input validation
     if (!openAIApiKey) {
       throw new Error('OpenAI API key not configured');
     }
 
-    console.log('Processing story for image generation with settings:', settings);
-    console.log('Characters with attributes:', characters);
+    if (!story) {
+      throw new Error('Missing required parameter: story');
+    }
 
-    // Use settings from the request, with fallback to automatic calculation
+    // Use settings from the request with validation
     const imageSettings: ImageSettings = settings || {
       numImages: Math.min(Math.max(1, Math.floor(story.split(' ').length / 200)), 4),
       quality: 'medium',
       style: 'realistic'
     };
 
-    console.log(`Generating ${imageSettings.numImages} images with ${imageSettings.quality} quality and ${imageSettings.style} style using gpt-image-1`);
+    if (imageSettings.numImages < 1 || imageSettings.numImages > 10) {
+      throw new Error('Number of images must be between 1 and 10');
+    }
 
-    const images: string[] = [];
-    const errors: string[] = [];
+    // Truncate very long stories for better performance
+    const processedStory = story.length > 1800 ? story.slice(0, 1800) + '...' : story;
 
-    // Map quality to gpt-image-1 parameters
-    const qualityMap = {
-      low: 'low',
-      medium: 'medium', 
-      high: 'high'
-    };
-
-    // Enhanced style prompts for better accuracy
+    // Define optimized style prompts
     const stylePrompts = {
-      realistic: 'photorealistic style, professional photography, highly detailed, natural lighting, crisp sharp details',
-      artistic: 'artistic painted style, expressive brushstrokes, rich vibrant colors, creative artistic interpretation',
-      cartoon: 'cartoon animated style, vibrant bright colors, clean character designs, playful cartoon illustration'
+      realistic: "Photorealistic, highly detailed, professional quality",
+      artistic: "Artistic illustration, beautiful composition, expressive style",
+      cartoon: "Cartoon style, vibrant colors, expressive characters"
     };
 
-    // Helper function to format character attributes into detailed descriptions
-    const formatCharacterDescription = (char: Character): string => {
-      let description = `${char.name} (${char.type})`;
+    // Scene distribution function for multiple images
+    const getSceneDescription = (imageIndex: number, totalImages: number, storyText: string): string => {
+      if (totalImages === 1) return "the main key scene";
       
-      if (char.description) {
-        description += `: ${char.description}`;
+      // Predefined scene distributions for common cases
+      const sceneDistributions = {
+        2: ["opening scene", "concluding scene"],
+        3: ["opening scene", "middle scene", "final scene"],
+        4: ["opening scene", "early middle scene", "late middle scene", "final scene"],
+        5: ["opening scene", "early scene", "middle scene", "late scene", "final scene"]
+      };
+      
+      if (sceneDistributions[totalImages]) {
+        return sceneDistributions[totalImages][imageIndex];
       }
+      
+      // For more images, distribute evenly across story progression
+      const progress = imageIndex / (totalImages - 1);
+      if (progress === 0) return "opening scene";
+      if (progress === 1) return "final scene";
+      return `scene ${imageIndex + 1} (${Math.round(progress * 100)}% through story)`;
+    };
 
-      const attributes = Object.entries(char.attributes)
-        .filter(([_, value]) => value !== undefined && value !== null && value !== '')
-        .map(([key, value]) => {
-          // Handle different attribute types
-          if (typeof value === 'object' && value !== null) {
-            return `${key}: ${JSON.stringify(value)}`;
-          }
-          return `${key}: ${value}`;
-        });
-
-      if (attributes.length > 0) {
-        description += `. Physical and descriptive attributes: ${attributes.join(', ')}`;
+    // Optimized character description function
+    const formatCharacterDescription = (char: Character): string => {
+      if (!char?.name) return '';
+      
+      let description = char.name;
+      
+      // Only include the most important attributes to keep prompt concise
+      if (char.attributes && Object.keys(char.attributes).length > 0) {
+        const importantAttrs = Object.entries(char.attributes)
+          .filter(([_, value]) => value && value !== "Not described" && value.toString().trim())
+          .slice(0, 6) // Limit to 6 most important attributes
+          .map(([key, value]) => `${key}: ${value}`)
+          .join(", ");
+        
+        if (importantAttrs) {
+          description += ` (${importantAttrs})`;
+        }
       }
-
+      
       return description;
     };
 
+    console.log(`Generating ${imageSettings.numImages} images with ${imageSettings.quality} quality and ${imageSettings.style} style`);
+
+    const generatedImages: string[] = [];
+    const errors: string[] = [];
+    const startTime = Date.now();
+
+    // Quality mapping for gpt-image-1
+    const qualityMap = {
+      low: "low",
+      medium: "medium", 
+      high: "high"
+    };
+
+    // Generate images with improved error handling and robustness
     for (let i = 0; i < imageSettings.numImages; i++) {
-      // Calculate distinct story scenes for multiple images
-      let sceneDescription = "";
-      if (imageSettings.numImages === 1) {
-        sceneDescription = "main key moment";
-      } else if (imageSettings.numImages === 2) {
-        sceneDescription = i === 0 ? "the beginning scene" : "the ending scene";
-      } else if (imageSettings.numImages === 3) {
-        sceneDescription = i === 0 ? "the opening scene" : i === 1 ? "the middle scene" : "the concluding scene";
-      } else {
-        const progress = i / (imageSettings.numImages - 1);
-        if (progress === 0) sceneDescription = "the opening scene";
-        else if (progress === 1) sceneDescription = "the final scene";
-        else sceneDescription = `scene ${i + 1} (chronologically)`;
-      }
-      
-      // Build focused prompt for single scene
-      let prompt = `${stylePrompts[imageSettings.style]}\n\n`;
-      
-      // Crucial: Single scene specification
-      prompt += `SHOW ONLY ${sceneDescription} from this story: "${story}"\n\n`;
-      prompt += `CRITICAL: Create ONE specific moment/scene only. Do NOT combine multiple story events into one image.\n\n`;
-      
-      // Character specifications
-      if (characters && characters.length > 0) {
-        const validCharacters = characters.filter(char => char && char.name);
-        if (validCharacters.length > 0) {
-          prompt += "Include these characters with their exact attributes:\n";
-          validCharacters.forEach((char: Character) => {
-            const characterDesc = formatCharacterDescription(char);
-            prompt += `• ${characterDesc}\n`;
-          });
-          prompt += "\nEnsure all character details (appearance, clothing, accessories) are precisely shown.\n\n";
-        }
-      }
-      
-      // Additional requirements
-      if (imageSettings.instructions?.trim()) {
-        prompt += `Special requirements: ${imageSettings.instructions.trim()}\n\n`;
-      }
-      
-      // Final specification
-      prompt += `Generate ONE ${imageSettings.style} scene only. Focus on ${sceneDescription}. No montages or multiple events.`;
-
       try {
-        console.log(`Making OpenAI API call for image ${i + 1} with gpt-image-1...`);
-        const response = await fetch('https://api.openai.com/v1/images/generations', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${openAIApiKey}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            model: 'gpt-image-1',
-            prompt: prompt,
-            size: '1024x1024',
-            quality: qualityMap[imageSettings.quality],
-            output_format: 'png'
-          }),
-        });
-
-        const data = await response.json();
-        console.log(`OpenAI API response for image ${i + 1}:`, { 
-          status: response.status, 
-          ok: response.ok,
-          model: 'gpt-image-1',
-          quality: qualityMap[imageSettings.quality]
-        });
+        const sceneDescription = getSceneDescription(i, imageSettings.numImages, processedStory);
         
-        if (!response.ok) {
-          const errorMessage = data.error?.message || `API call failed with status ${response.status}`;
-          console.error(`OpenAI API error for image ${i + 1}:`, data);
-          errors.push(`Image ${i + 1}: ${errorMessage}`);
-          continue;
+        // Build optimized prompt for single scene focus
+        let prompt = `${stylePrompts[imageSettings.style]}. `;
+        prompt += `Create ONLY ${sceneDescription} from this story: "${processedStory}" `;
+        prompt += `Show ONE specific moment only. Do not combine multiple story events. `;
+        
+        // Add character information efficiently
+        if (characters?.length > 0) {
+          const validChars = characters
+            .filter(char => char?.name)
+            .slice(0, 4) // Limit to 4 characters max for prompt efficiency
+            .map(formatCharacterDescription)
+            .filter(desc => desc.length > 0);
+            
+          if (validChars.length > 0) {
+            prompt += `Include characters: ${validChars.join("; ")}. `;
+          }
+        }
+        
+        // Add user instructions if provided
+        if (imageSettings.instructions?.trim()) {
+          prompt += `Additional requirements: ${imageSettings.instructions.trim().slice(0, 200)}. `;
+        }
+        
+        // Ensure prompt length is within limits
+        if (prompt.length > MAX_PROMPT_LENGTH) {
+          prompt = prompt.slice(0, MAX_PROMPT_LENGTH - 20) + "...";
+          console.log(`Prompt truncated to ${prompt.length} characters for image ${i + 1}`);
+        }
+        
+        console.log(`Generating image ${i + 1}/${imageSettings.numImages} - Scene: ${sceneDescription}`);
+        console.log(`Prompt length: ${prompt.length} characters`);
+
+        // Make API call with comprehensive retry logic and timeout handling
+        const imageData = await retryWithBackoff(async () => {
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => {
+            controller.abort();
+            console.log(`API timeout for image ${i + 1} after ${API_TIMEOUT}ms`);
+          }, API_TIMEOUT);
+          
+          try {
+            const response = await fetch('https://api.openai.com/v1/images/generations', {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${openAIApiKey}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                model: "gpt-image-1",
+                prompt: prompt.trim(),
+                size: "1024x1024",
+                quality: qualityMap[imageSettings.quality] || "medium",
+                output_format: "png"
+              }),
+              signal: controller.signal
+            });
+
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              const errorData = await response.json().catch(() => ({}));
+              const errorMessage = errorData.error?.message || `HTTP ${response.status}`;
+              throw new Error(`OpenAI API error: ${errorMessage}`);
+            }
+
+            const data = await response.json();
+            
+            // Handle gpt-image-1 response format
+            if (!data.data?.[0]) {
+              throw new Error('No image data received from OpenAI API');
+            }
+
+            const imageItem = data.data[0];
+            
+            // gpt-image-1 returns base64 by default
+            if (imageItem.b64_json) {
+              return `data:image/png;base64,${imageItem.b64_json}`;
+            } else if (imageItem.url) {
+              return imageItem.url;
+            } else {
+              throw new Error('No valid image data format in response');
+            }
+            
+          } catch (error) {
+            clearTimeout(timeoutId);
+            throw error;
+          }
+        });
+
+        generatedImages.push(imageData);
+        console.log(`✓ Successfully generated image ${i + 1}/${imageSettings.numImages} for ${sceneDescription}`);
+
+        // Small delay between requests to avoid rate limiting
+        if (i < imageSettings.numImages - 1) {
+          await delay(500);
         }
 
-        // Handle gpt-image-1 response (returns base64 by default)
-        if (data.data && data.data[0]) {
-          const imageData = data.data[0];
-          let imageUrl = '';
-          
-          if (imageData.url) {
-            imageUrl = imageData.url;
-          } else if (imageData.b64_json) {
-            imageUrl = `data:image/png;base64,${imageData.b64_json}`;
-          }
-          
-          if (imageUrl) {
-            images.push(imageUrl);
-            console.log(`Successfully generated image ${i + 1}/${imageSettings.numImages} with detailed character attributes and user instructions`);
-          } else {
-            const errorMessage = 'No image URL or base64 data in response';
-            console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
-            errors.push(`Image ${i + 1}: ${errorMessage}`);
-          }
-        } else {
-          const errorMessage = 'No image data in response';
-          console.error(`Error for image ${i + 1}: ${errorMessage}`, data);
-          errors.push(`Image ${i + 1}: ${errorMessage}`);
-        }
-      } catch (imageError: any) {
-        console.error(`Error generating image ${i + 1}:`, imageError);
-        errors.push(`Image ${i + 1}: ${imageError.message || 'Unknown error'}`);
+      } catch (error) {
+        console.error(`✗ Failed to generate image ${i + 1}:`, error.message);
+        errors.push(`Image ${i + 1}: ${error.message}`);
+        
+        // Continue with next image instead of failing completely
+        continue;
       }
     }
 
-    console.log(`Image generation complete with detailed character attributes and user instructions. Generated: ${images.length}, Errors: ${errors.length}`);
+    const totalTime = Date.now() - startTime;
+    console.log(`Generation completed in ${totalTime}ms: ${generatedImages.length}/${imageSettings.numImages} images successful`);
 
-    if (images.length === 0 && errors.length > 0) {
-      return new Response(JSON.stringify({ 
-        error: `Failed to generate images: ${errors.join('; ')}`,
-        images: [],
-        details: errors
+    // Handle results - even partial success is valuable
+    if (generatedImages.length === 0) {
+      console.error('All image generation attempts failed:', errors);
+      return new Response(JSON.stringify({
+        error: `All ${imageSettings.numImages} image generation attempts failed`,
+        details: errors,
+        images: []
       }), {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    const response: any = { images };
-    if (errors.length > 0) {
-      response.warnings = errors;
-      response.message = `Generated ${images.length} out of ${imageSettings.numImages} requested images. Some images failed: ${errors.join('; ')}`;
-    }
+    // Prepare successful response
+    const result = {
+      images: generatedImages,
+      total_generated: generatedImages.length,
+      requested: imageSettings.numImages,
+      generation_time_ms: totalTime,
+      ...(errors.length > 0 && { 
+        warnings: errors,
+        message: `Successfully generated ${generatedImages.length} out of ${imageSettings.numImages} requested images`
+      })
+    };
 
-    return new Response(JSON.stringify(response), {
+    // Return 206 (Partial Content) if some images failed, 200 if all succeeded
+    const responseStatus = generatedImages.length === imageSettings.numImages ? 200 : 206;
+
+    return new Response(JSON.stringify(result), {
+      status: responseStatus,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
+
   } catch (error: any) {
-    console.error('Error in generate-images function:', error);
-    return new Response(JSON.stringify({ 
-      error: error.message || 'Unknown error occurred',
-      images: [] 
-    }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Critical error in generate-images function:', error);
+    
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'Unknown error occurred',
+        timestamp: new Date().toISOString(),
+        details: 'Check function logs for detailed error information',
+        images: []
+      }), 
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    );
   }
 });
