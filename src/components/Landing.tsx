@@ -77,8 +77,14 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
     >
       {/* Navigation */}
       <nav 
-        className="fixed top-0 left-0 right-0 w-full px-6 py-4 transition-all duration-300 ease-in-out z-50"
+        className="fixed top-0 left-0 right-0 w-full px-6 py-4 transition-all duration-300 ease-in-out"
         style={{ 
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          width: '100%',
+          zIndex: 9999,
           backgroundColor: colorRevealed ? 'rgba(255, 255, 255, 0.95)' : 'rgba(255, 255, 255, 0.8)',
           backdropFilter: 'blur(10px)',
           boxShadow: colorRevealed ? '0 2px 8px -2px hsla(217,19%,24%,0.08)' : 'none'
