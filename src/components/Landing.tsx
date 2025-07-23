@@ -121,28 +121,28 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(240, 60%, 95%)' : 'hsl(0, 0%, 95%)', // Lavender
-      iconColor: colorRevealed ? 'hsl(240, 60%, 85%)' : 'hsl(0, 0%, 80%)',
-      titleColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 20%)',
-      borderColor: colorRevealed ? 'hsl(240, 60%, 85%)' : 'hsl(0, 0%, 80%)'
+      bgColor: colorRevealed ? 'hsl(250, 100%, 95%)' : 'hsl(0, 0%, 95%)', // Lavender
+      iconColor: colorRevealed ? 'hsl(250, 100%, 70%)' : 'hsl(0, 0%, 80%)',
+      titleColor: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 20%)', // Dark purple
+      borderColor: colorRevealed ? 'hsl(250, 100%, 85%)' : 'hsl(0, 0%, 80%)'
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(330, 80%, 95%)' : 'hsl(0, 0%, 95%)', // Pink
-      iconColor: colorRevealed ? 'hsl(330, 80%, 85%)' : 'hsl(0, 0%, 80%)',
-      titleColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 20%)',
-      borderColor: colorRevealed ? 'hsl(330, 80%, 85%)' : 'hsl(0, 0%, 80%)'
+      bgColor: colorRevealed ? 'hsl(15, 100%, 95%)' : 'hsl(0, 0%, 95%)', // Sunny Yellow/Orange
+      iconColor: colorRevealed ? 'hsl(25, 100%, 65%)' : 'hsl(0, 0%, 80%)', // Primary orange
+      titleColor: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 20%)', // Dark purple
+      borderColor: colorRevealed ? 'hsl(25, 100%, 80%)' : 'hsl(0, 0%, 80%)'
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : 'hsl(0, 0%, 95%)', // Sky Blue
-      iconColor: colorRevealed ? 'hsl(200, 80%, 85%)' : 'hsl(0, 0%, 80%)',
-      titleColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 20%)',
-      borderColor: colorRevealed ? 'hsl(200, 80%, 85%)' : 'hsl(0, 0%, 80%)'
+      bgColor: colorRevealed ? 'hsl(200, 100%, 95%)' : 'hsl(0, 0%, 95%)', // Sky Blue
+      iconColor: colorRevealed ? 'hsl(200, 100%, 70%)' : 'hsl(0, 0%, 80%)',
+      titleColor: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 20%)', // Dark purple
+      borderColor: colorRevealed ? 'hsl(200, 100%, 85%)' : 'hsl(0, 0%, 80%)'
     }
   ];
 
@@ -180,7 +180,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 <h1 
                   className="text-2xl font-sans transition-all duration-300" 
                    style={{ 
-                    color: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)',
+                    color: colorRevealed ? 'hsl(25, 100%, 50%)' : 'hsl(0, 0%, 0%)', // Primary orange
                     fontWeight: 900
                   }}
                 >
@@ -199,14 +199,14 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               onClick={onLogin}
               className="font-medium px-6 py-2.5 rounded-xl transition-all duration-200 hover:shadow-lg"
               style={{ 
-                backgroundColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)',
+                backgroundColor: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 0%)', // Dark purple
                 color: 'hsl(0, 0%, 100%)'
               }}
               onMouseEnter={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(270, 50%, 50%)' : 'hsl(0, 0%, 20%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(266, 75%, 50%)' : 'hsl(0, 0%, 20%)';
               }}
               onMouseLeave={(e) => {
-                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)';
+                (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 0%)';
               }}
             >
               Sign In
@@ -268,19 +268,19 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           <div className="max-w-6xl mx-auto text-center relative z-10">
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans leading-tight tracking-tight transition-all duration-500 mb-8">
               <span style={{ 
-                color: colorRevealed ? 'hsl(0, 0%, 0%)' : 'hsl(0, 0%, 0%)', 
+                color: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 0%)', // Dark purple
                 fontWeight: 800 
               }}>Transform Your </span>
               <span style={{ 
-                color: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 40%)', 
+                color: colorRevealed ? 'hsl(266, 75%, 65%)' : 'hsl(0, 0%, 40%)', // Secondary purple
                 fontWeight: 800 
               }}>Stories</span>
               <span style={{ 
-                color: colorRevealed ? 'hsl(0, 0%, 0%)' : 'hsl(0, 0%, 0%)', 
+                color: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 0%)', // Dark purple
                 fontWeight: 800 
               }}> Into Visual </span>
               <span style={{ 
-                color: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 40%)', 
+                color: colorRevealed ? 'hsl(25, 100%, 50%)' : 'hsl(0, 0%, 40%)', // Primary orange
                 fontWeight: 800 
               }}>Masterpieces</span>
             </h2>
@@ -298,16 +298,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 onClick={onGetStarted}
                 className="px-8 py-3 text-sm font-bold transition-all duration-200 shadow-lg hover:shadow-xl"
                 style={{ 
-                  backgroundColor: colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)',
+                  backgroundColor: colorRevealed ? 'hsl(25, 100%, 50%)' : 'hsl(0, 0%, 0%)', // Primary orange
                   color: 'hsl(0, 0%, 100%)',
                   borderRadius: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(30, 100%, 40%)' : 'hsl(0, 0%, 20%)';
-                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(30, 100%, 50%, 0.3)';
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(25, 100%, 40%)' : 'hsl(0, 0%, 20%)';
+                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(25, 100%, 50%, 0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(30, 100%, 50%)' : 'hsl(0, 0%, 0%)';
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(25, 100%, 50%)' : 'hsl(0, 0%, 0%)';
                   (e.target as HTMLElement).style.boxShadow = '0 4px 20px -4px hsla(217,19%,24%,0.15)';
                 }}
               >
@@ -318,13 +318,13 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 variant="outline"
                 className="px-8 py-3 text-sm font-bold transition-all duration-200 hover:shadow-lg"
                 style={{ 
-                  borderColor: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)',
-                  color: colorRevealed ? 'hsl(270, 50%, 40%)' : 'hsl(0, 0%, 0%)',
+                  borderColor: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 0%)', // Dark purple
+                  color: colorRevealed ? 'hsl(266, 75%, 40%)' : 'hsl(0, 0%, 0%)', // Dark purple
                   backgroundColor: 'hsl(0, 0%, 100%)',
                   borderRadius: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(270, 50%, 95%)' : 'hsl(0, 0%, 95%)';
+                  (e.target as HTMLElement).style.backgroundColor = colorRevealed ? 'hsl(266, 75%, 95%)' : 'hsl(0, 0%, 95%)';
                 }}
                 onMouseLeave={(e) => {
                   (e.target as HTMLElement).style.backgroundColor = 'hsl(0, 0%, 100%)';
@@ -418,16 +418,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 onClick={onGetStarted}
                 className="px-10 py-4 text-base font-semibold transition-all duration-200 text-white shadow-lg hover:shadow-xl"
                 style={{ 
-                  backgroundColor: 'hsl(30, 100%, 50%)',
-                  border: '1px solid hsl(30, 100%, 50%)',
+                  backgroundColor: 'hsl(25, 100%, 50%)', // Primary orange
+                  border: '1px solid hsl(25, 100%, 50%)',
                   borderRadius: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = 'hsl(30, 100%, 40%)';
-                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(30, 100%, 50%, 0.3)';
+                  (e.target as HTMLElement).style.backgroundColor = 'hsl(25, 100%, 40%)';
+                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(25, 100%, 50%, 0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = 'hsl(30, 100%, 50%)';
+                  (e.target as HTMLElement).style.backgroundColor = 'hsl(25, 100%, 50%)';
                   (e.target as HTMLElement).style.boxShadow = '0 4px 20px -4px hsla(217,19%,24%,0.15)';
                 }}
               >
@@ -451,7 +451,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                   className="w-8 h-8 object-contain"
                 />
               </div>
-              <span className="text-xl font-sans font-semibold" style={{ color: 'hsl(30, 100%, 50%)' }}>
+              <span className="text-xl font-sans font-semibold" style={{ color: 'hsl(25, 100%, 50%)' }}>
                 NarrArtive
               </span>
             </div>
