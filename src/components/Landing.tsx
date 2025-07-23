@@ -38,28 +38,28 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(48, 30%, 88%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(48, 35%, 60%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(48, 35%, 60%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(48, 35%, 60%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(30, 80%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(30, 70%, 55%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(30, 70%, 55%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(30, 70%, 55%)' : '#666'
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(210, 25%, 88%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(210, 35%, 60%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(210, 35%, 60%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(210, 35%, 60%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(200, 70%, 55%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(200, 70%, 55%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(200, 70%, 55%)' : '#666'
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(0, 25%, 88%)' : '#f0f0f0',
-      iconColor: colorRevealed ? 'hsl(0, 35%, 60%)' : '#333',
-      titleColor: colorRevealed ? 'hsl(0, 35%, 60%)' : '#333',
-      borderColor: colorRevealed ? 'hsl(0, 35%, 60%)' : '#666'
+      bgColor: colorRevealed ? 'hsl(151, 55%, 95%)' : '#f0f0f0',
+      iconColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#333',
+      titleColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#333',
+      borderColor: colorRevealed ? 'hsl(151, 60%, 45%)' : '#666'
     }
   ];
 
@@ -144,7 +144,14 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         }}
       >
         {/* Hero Section - Full Viewport Height */}
-        <section ref={heroRef} className="min-h-screen flex items-center justify-center px-6 pt-20">
+        <section 
+          ref={heroRef} 
+          className="min-h-screen flex items-center justify-center px-6 pt-20"
+          style={{ 
+            backgroundColor: colorRevealed ? 'hsl(45, 70%, 95%)' : '#fff',
+            transition: 'background-color 300ms ease-in-out'
+          }}
+        >
           <div className="max-w-6xl mx-auto text-center">
             <h2 className="text-4xl md:text-6xl lg:text-7xl font-sans font-bold mb-8 leading-tight tracking-tight transition-all duration-300">
               <span style={{ color: colorRevealed ? '#000' : '#000' }}>Transform Your </span>
@@ -254,7 +261,13 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </section>
 
         {/* CTA Section */}
-        <section className="px-6 py-24" style={{ backgroundColor: 'hsl(48, 15%, 94%)' }}>
+        <section 
+          className="px-6 py-24" 
+          style={{ 
+            backgroundColor: colorRevealed ? 'hsl(45, 70%, 95%)' : '#fff',
+            transition: 'background-color 300ms ease-in-out'
+          }}
+        >
           <div className="max-w-4xl mx-auto text-center animate-fade-in">
             <h3 className="text-3xl md:text-4xl lg:text-5xl font-sans font-bold text-slate-900 mb-6">
               Ready to bring your stories to life?
