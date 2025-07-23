@@ -36,8 +36,8 @@ const floatingAssets = [
     name: 'dinasour',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/dinasour.png',
     position: { 
-      top: '28%', 
-      left: 'clamp(3%, 6%, 9%)'    // 3% mobile, 6% medium, 9% large - nudged up for better flow
+      top: '24%', 
+      left: 'clamp(3%, 6%, 9%)'    // 3% mobile, 6% medium, 9% large - moved up to align with description text
     },
     animation: 'animate-float-in-left',
     delay: 'animate-delay-300',
