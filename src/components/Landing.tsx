@@ -23,23 +23,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Apply grayscale filter to body with high contrast
+  // Remove body styles to avoid stacking context issues with fixed nav
   useEffect(() => {
-    if (!colorRevealed) {
-      document.body.style.filter = 'grayscale(100%)';
-      document.body.style.backgroundColor = '#fff';
-      document.body.style.transition = 'filter 300ms ease-in-out, background-color 300ms ease-in-out';
-    } else {
-      document.body.style.filter = 'grayscale(0%) saturate(110%)';
-      document.body.style.backgroundColor = 'hsl(48, 15%, 94%)';
-    }
-    
     return () => {
+      // Cleanup only - no body modifications
       document.body.style.filter = '';
       document.body.style.backgroundColor = '';
       document.body.style.transition = '';
     };
-  }, [colorRevealed]);
+  }, []);
 
   const features = [
     {
@@ -141,12 +133,14 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         document.body
       )}
 
-      {/* Main content container */}
+      {/* Content wrapper - applies filter/transitions instead of body */}
       <div 
-        className="min-h-screen"
+        id="content-wrapper"
         style={{ 
+          filter: colorRevealed ? 'grayscale(0%) saturate(110%)' : 'grayscale(100%)',
           backgroundColor: colorRevealed ? 'hsl(48, 15%, 94%)' : '#fff',
-          transition: 'background-color 300ms ease-in-out'
+          transition: 'filter 300ms ease-in-out, background-color 300ms ease-in-out',
+          minHeight: '100vh'
         }}
       >
         {/* Hero Section - Full Viewport Height */}
