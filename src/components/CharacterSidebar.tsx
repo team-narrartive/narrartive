@@ -54,8 +54,8 @@ export const CharacterSidebar: React.FC<CharacterSidebarProps> = ({
 
   return (
     <div className="w-80 h-screen flex flex-col">
-      {/* Header - Fixed with border */}
-      <div className="p-4 bg-white border border-border rounded-lg mb-4">
+      {/* Header - Without border to distinguish from widgets */}
+      <div className="p-4 mb-4">
         <div className="flex items-center space-x-2">
           <Users className="w-5 h-5 text-sky-600" />
           <h2 className="font-semibold text-gray-900">Story Characters</h2>
