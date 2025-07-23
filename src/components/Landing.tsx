@@ -27,39 +27,46 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-hero relative overflow-hidden">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-green-50/20 to-amber-50/30 relative overflow-hidden">
+      {/* Subtle Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-20 w-72 h-72 bg-primary/8 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-float"></div>
-        <div className="absolute top-40 right-20 w-96 h-96 bg-success/8 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-float" style={{animationDelay: '2s'}}></div>
-        <div className="absolute bottom-20 left-1/2 w-80 h-80 bg-brand/8 rounded-full mix-blend-multiply filter blur-xl opacity-50 animate-float" style={{animationDelay: '4s'}}></div>
+        <div className="absolute top-20 left-20 w-96 h-96 bg-emerald-100/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float"></div>
+        <div className="absolute top-60 right-20 w-80 h-80 bg-amber-100/20 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float" style={{animationDelay: '3s'}}></div>
+        <div className="absolute bottom-32 left-1/3 w-72 h-72 bg-slate-100/30 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-float" style={{animationDelay: '6s'}}></div>
       </div>
 
       <div className="relative z-10">
         {/* Header */}
-        <header className="px-6 py-6">
+        <header className="px-6 py-8">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 gradient-brand rounded-2xl flex items-center justify-center">
+              <div className="w-14 h-14 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-subtle border border-white/40">
                 <img 
                   src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
                   alt="NarrArtive Logo" 
-                  className="w-8 h-8"
+                  className="w-9 h-9"
                 />
               </div>
               <div>
-                <h1 className="text-3xl font-display text-brand">
+                <h1 className="text-3xl font-display text-slate-800 tracking-tight">
                   NarrArtive
                 </h1>
-                <p className="text-sm text-muted-foreground font-medium">Where stories come to life</p>
+                <p className="text-sm text-slate-600 font-medium">Where stories come to life</p>
               </div>
             </div>
             
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" onClick={onLogin} className="text-foreground hover:text-brand font-medium">
+              <Button 
+                variant="ghost" 
+                onClick={onLogin} 
+                className="text-slate-700 hover:text-slate-900 hover:bg-white/60 font-medium px-6 py-2.5 rounded-xl"
+              >
                 Log In
               </Button>
-              <Button onClick={onGetStarted} className="btn-premium">
+              <Button 
+                onClick={onGetStarted} 
+                className="bg-slate-800 text-white hover:bg-slate-900 font-medium px-6 py-2.5 rounded-xl shadow-subtle hover:shadow-card transition-all duration-200"
+              >
                 Get Started
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
@@ -68,68 +75,68 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </header>
 
         {/* Hero Section */}
-        <section className="px-6 py-20">
+        <section className="px-6 py-24">
           <div className="max-w-7xl mx-auto text-center">
-          <div className="max-w-5xl mx-auto">
-            <h2 className="text-6xl md:text-7xl lg:text-8xl font-display text-foreground mb-8 leading-tight">
-              Transform Your 
-              <span className="text-primary"> Stories </span>
-              Into Visual 
-              <span className="text-masterpiece"> Masterpieces</span>
-            </h2>
-              
-            <p className="text-xl md:text-2xl text-muted-foreground mb-12 leading-relaxed max-w-3xl mx-auto font-medium">
-              NarrArtive uses advanced AI to identify characters in your stories and generate stunning visual representations. 
-              Bring your imagination to life with the power of artificial intelligence.
-            </p>
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-6xl md:text-7xl lg:text-8xl font-display text-slate-900 mb-8 leading-tight tracking-tight">
+                Transform Your 
+                <span className="text-emerald-700"> Stories </span>
+                Into Visual 
+                <span className="text-amber-700"> Masterpieces</span>
+              </h2>
+                
+              <p className="text-xl md:text-2xl text-slate-600 mb-16 leading-relaxed max-w-4xl mx-auto font-medium">
+                NarrArtive uses advanced AI to identify characters in your stories and generate stunning visual representations. 
+                Bring your imagination to life with the power of artificial intelligence.
+              </p>
 
-            <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-20">
-              <Button 
-                onClick={onGetStarted}
-                className="bg-brand text-brand-foreground hover:bg-brand-dark px-12 py-6 text-xl font-semibold shadow-card hover:shadow-elegant transition-all duration-300 transform hover:scale-105 rounded-2xl"
-              >
-                Start Creating Now
-                <ArrowRight className="w-6 h-6 ml-3" />
-              </Button>
-              
-              <Button 
-                variant="outline"
-                className="border-2 border-brand/30 text-brand hover:bg-brand/10 px-12 py-6 text-xl font-medium rounded-2xl"
-                onClick={() => window.open('https://www.youtube.com/watch?v=ukF8FUwA4w8', '_blank')}
-              >
-                <Play className="w-6 h-6 mr-3" />
-                Watch Demo
-              </Button>
-            </div>
-
-            {/* Demo Preview */}
-            <div className="relative max-w-6xl mx-auto">
-              <div className="card-premium p-8 lg:p-12">
-                <div 
-                  className="aspect-video rounded-2xl flex items-center justify-center relative overflow-hidden gradient-hero border border-brand/10"
+              <div className="flex flex-col sm:flex-row gap-6 justify-center items-center mb-24">
+                <Button 
+                  onClick={onGetStarted}
+                  className="bg-slate-800 text-white hover:bg-slate-900 px-12 py-6 text-xl font-semibold shadow-card hover:shadow-elegant transition-all duration-300 transform hover:scale-105 rounded-2xl"
                 >
-                  <div className="text-center relative z-10">
-                    <div className="w-20 h-20 gradient-brand rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-card">
-                      <Sparkles className="w-12 h-12 text-white" />
+                  Start Creating Now
+                  <ArrowRight className="w-6 h-6 ml-3" />
+                </Button>
+                
+                <Button 
+                  variant="outline"
+                  className="border-2 border-slate-300 text-slate-700 hover:bg-slate-50 hover:border-slate-400 px-12 py-6 text-xl font-medium rounded-2xl transition-all duration-200"
+                  onClick={() => window.open('https://www.youtube.com/watch?v=ukF8FUwA4w8', '_blank')}
+                >
+                  <Play className="w-6 h-6 mr-3" />
+                  Watch Demo
+                </Button>
+              </div>
+
+              {/* Demo Preview */}
+              <div className="relative max-w-5xl mx-auto">
+                <div className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 lg:p-12 shadow-card border border-white/50">
+                  <div 
+                    className="aspect-video rounded-2xl flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-slate-50 to-emerald-50/50 border border-slate-200/50"
+                  >
+                    <div className="text-center relative z-10">
+                      <div className="w-20 h-20 bg-gradient-to-br from-emerald-600 to-emerald-700 rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-card">
+                        <Sparkles className="w-12 h-12 text-white" />
+                      </div>
+                      <h3 className="text-slate-800 font-display text-2xl mb-2">Premium Experience</h3>
+                      <p className="text-slate-600 font-medium">Transform stories into visual masterpieces</p>
                     </div>
-                    <h3 className="text-brand font-display text-2xl mb-2">Premium Experience</h3>
-                    <p className="text-muted-foreground font-medium">Transform stories into visual masterpieces</p>
                   </div>
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section className="px-6 py-24 bg-white/60 backdrop-blur-sm">
+        <section className="px-6 py-24 bg-white/70 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-20">
-              <h3 className="text-5xl md:text-6xl font-display text-foreground mb-6">
+              <h3 className="text-5xl md:text-6xl font-display text-slate-900 mb-6">
                 Powerful Features for Creative Minds
               </h3>
-              <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto font-medium">
+              <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto font-medium">
                 Everything you need to transform your written stories into visual narratives
               </p>
             </div>
@@ -138,16 +145,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               {features.map((feature, index) => (
                 <div 
                   key={index}
-                  className="card-premium p-10 group cursor-pointer transform hover:scale-105"
+                  className="bg-white/80 backdrop-blur-sm rounded-3xl p-10 group cursor-pointer transform hover:scale-105 transition-all duration-300 shadow-card hover:shadow-elegant border border-white/50"
                 >
                   <div className={`w-20 h-20 rounded-3xl flex items-center justify-center mb-8 shadow-card group-hover:shadow-elegant transition-all duration-300 ${
-                    index === 0 ? 'gradient-primary' : 
-                    index === 1 ? 'gradient-masterpiece' : 'gradient-brand'
+                    index === 0 ? 'bg-gradient-to-br from-emerald-600 to-emerald-700' : 
+                    index === 1 ? 'bg-gradient-to-br from-amber-600 to-amber-700' : 'bg-gradient-to-br from-slate-600 to-slate-700'
                   }`}>
                     <feature.icon className="w-10 h-10 text-white" />
                   </div>
-                  <h4 className="text-2xl lg:text-3xl font-display text-foreground mb-4">{feature.title}</h4>
-                  <p className="text-lg text-muted-foreground leading-relaxed font-medium">{feature.description}</p>
+                  <h4 className="text-2xl lg:text-3xl font-display text-slate-900 mb-4">{feature.title}</h4>
+                  <p className="text-lg text-slate-600 leading-relaxed font-medium">{feature.description}</p>
                 </div>
               ))}
             </div>
@@ -157,15 +164,15 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         {/* CTA Section */}
         <section className="px-6 py-24">
           <div className="max-w-5xl mx-auto text-center">
-            <h3 className="text-5xl md:text-6xl lg:text-7xl font-display text-foreground mb-8">
+            <h3 className="text-5xl md:text-6xl lg:text-7xl font-display text-slate-900 mb-8">
               Ready to bring your stories to life?
             </h3>
-            <p className="text-xl md:text-2xl text-muted-foreground mb-16 font-medium max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-slate-600 mb-16 font-medium max-w-3xl mx-auto">
               Join thousands of creators who are already transforming their narratives with NarrArtive
             </p>
             <Button 
               onClick={onGetStarted}
-              className="bg-brand text-brand-foreground hover:bg-brand-dark px-16 py-8 text-2xl font-semibold shadow-card hover:shadow-elegant transition-all duration-300 transform hover:scale-105 rounded-3xl"
+              className="bg-slate-800 text-white hover:bg-slate-900 px-16 py-8 text-2xl font-semibold shadow-card hover:shadow-elegant transition-all duration-300 transform hover:scale-105 rounded-3xl"
             >
               Start Your Journey
               <ArrowRight className="w-8 h-8 ml-4" />
@@ -174,21 +181,21 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
         </section>
 
         {/* Footer */}
-        <footer className="px-6 py-16 border-t border-border/50 bg-white/40 backdrop-blur-sm">
+        <footer className="px-6 py-16 border-t border-slate-200/50 bg-white/60 backdrop-blur-sm">
           <div className="max-w-7xl mx-auto text-center">
             <div className="flex items-center justify-center space-x-4 mb-6">
-              <div className="w-10 h-10 gradient-brand rounded-2xl flex items-center justify-center">
+              <div className="w-10 h-10 bg-white/90 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-subtle border border-white/40">
                 <img 
                   src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
                   alt="NarrArtive Logo" 
                   className="w-6 h-6"
                 />
               </div>
-              <span className="text-2xl font-display text-brand">
+              <span className="text-2xl font-display text-slate-800">
                 NarrArtive
               </span>
             </div>
-            <p className="text-muted-foreground font-medium">© 2024 NarrArtive. All rights reserved.</p>
+            <p className="text-slate-600 font-medium">© 2024 NarrArtive. All rights reserved.</p>
           </div>
         </footer>
       </div>
