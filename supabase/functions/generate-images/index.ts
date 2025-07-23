@@ -258,6 +258,14 @@ serve(async (req) => {
         };
 
         imagePromises.push(generateImage());
+      } catch (error) {
+        console.error(`✗ Failed to build prompt for image ${i + 1}:`, error.message);
+        // Create error result for this image
+        imagePromises.push(Promise.resolve({ 
+          success: false, 
+          error: `Image ${i + 1}: ${error.message}`, 
+          index: i + 1 
+        }));
       }
     }
 
