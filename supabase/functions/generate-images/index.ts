@@ -59,9 +59,9 @@ serve(async (req) => {
 
     // Enhanced style prompts for better accuracy
     const stylePrompts = {
-      realistic: 'photorealistic, highly detailed, professional photography style, accurate representation, crisp details, natural lighting',
-      artistic: 'artistic illustration, painterly technique, expressive brushstrokes, creative interpretation with artistic flair, rich colors',
-      cartoon: 'cartoon illustration, animated style, vibrant colors, clear character definition, playful and engaging visual style'
+      realistic: 'photorealistic style, professional photography, highly detailed, natural lighting, crisp sharp details',
+      artistic: 'artistic painted style, expressive brushstrokes, rich vibrant colors, creative artistic interpretation',
+      cartoon: 'cartoon animated style, vibrant bright colors, clean character designs, playful cartoon illustration'
     };
 
     // Helper function to format character attributes into detailed descriptions
@@ -90,41 +90,29 @@ serve(async (req) => {
     };
 
     for (let i = 0; i < imageSettings.numImages; i++) {
-      // Enhanced prompt structure with detailed character descriptions
-      let prompt = `Create a ${stylePrompts[imageSettings.style]} image for scene ${i + 1} of this story:\n\n"${story}"\n\n`;
+      // Start with style specification for better adherence
+      let prompt = `${stylePrompts[imageSettings.style].toUpperCase()}.\n\n`;
       
-      // Detailed character descriptions with comprehensive attribute integration
+      // Add story context
+      prompt += `Story scene ${i + 1}: "${story}"\n\n`;
+      
+      // Add character specifications if available
       if (characters && characters.length > 0) {
-        prompt += "CRITICAL CHARACTER REQUIREMENTS - Include these characters with EXACT specifications:\n\n";
-        
+        prompt += "Characters to include:\n";
         characters.forEach((char: Character, index: number) => {
           const characterDesc = formatCharacterDescription(char);
-          prompt += `${index + 1}. ${characterDesc}\n`;
+          prompt += `- ${characterDesc}\n`;
         });
-        
-        prompt += "\nIMPORTANT VISUAL ACCURACY REQUIREMENTS:\n";
-        prompt += "- Each character MUST appear exactly as described with all specified attributes\n";
-        prompt += "- Pay special attention to physical characteristics, clothing, colors, and accessories\n";
-        prompt += "- Maintain consistency with the character descriptions throughout the scene\n";
-        prompt += "- Ensure all specified details are clearly visible and accurately represented\n\n";
+        prompt += "\n";
       }
       
       // Add user instructions if provided
       if (imageSettings.instructions && imageSettings.instructions.trim()) {
-        prompt += `ADDITIONAL USER INSTRUCTIONS:\n`;
-        prompt += `${imageSettings.instructions.trim()}\n\n`;
+        prompt += `Special instructions: ${imageSettings.instructions.trim()}\n\n`;
       }
       
-      // Add scene-specific and consistency instructions
-      prompt += `SCENE COMPOSITION REQUIREMENTS:\n`;
-      prompt += `- Create scene ${i + 1} focusing on the narrative flow of the story\n`;
-      prompt += `- Use ${stylePrompts[imageSettings.style]} visual approach\n`;
-      prompt += `- Maintain visual consistency and narrative coherence\n`;
-      prompt += `- Ensure character accuracy as specified above\n`;
-      if (imageSettings.instructions && imageSettings.instructions.trim()) {
-        prompt += `- Follow the additional user instructions provided above\n`;
-      }
-      prompt += `- Create engaging composition that supports the story narrative\n`;
+      // Final composition note
+      prompt += `Create this as a ${imageSettings.style} style image with high quality details.`;
 
       console.log(`Generated detailed prompt for image ${i + 1}:`, prompt);
 

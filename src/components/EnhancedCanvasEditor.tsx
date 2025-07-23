@@ -366,6 +366,8 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
         logging: false,
         width: 1000,
         height: 700,
+        foreignObjectRendering: false,
+        imageTimeout: 5000,
         onclone: (clonedDoc) => {
           // Ensure styles are applied in the cloned document
           const clonedCanvas = clonedDoc.querySelector('div');
