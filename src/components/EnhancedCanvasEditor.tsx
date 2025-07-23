@@ -428,7 +428,7 @@ export const EnhancedCanvasEditor: React.FC<EnhancedCanvasEditorProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={() => setShowImageLibrary(!showImageLibrary)}
-                className={showImageLibrary ? 'bg-primary/10 border-primary/30 text-primary' : ''}
+                className={showImageLibrary ? 'bg-blue-100 border-blue-300 text-blue-700' : ''}
               >
                 <Image className="w-4 h-4 mr-2" />
                 Images

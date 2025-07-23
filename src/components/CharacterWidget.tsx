@@ -32,10 +32,10 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'human': return 'bg-primary/10 text-primary border-primary/20';
-      case 'animal': return 'bg-success/10 text-success border-success/20';
-      case 'creature': return 'bg-violet/10 text-violet border-violet/20';
-      case 'object': return 'bg-orange/10 text-orange border-orange/20';
+      case 'human': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'animal': return 'bg-green-100 text-green-700 border-green-200';
+      case 'creature': return 'bg-purple-100 text-purple-700 border-purple-200';
+      case 'object': return 'bg-indigo-100 text-indigo-700 border-indigo-200';
       default: return 'bg-muted text-muted-foreground border-border';
     }
   };
@@ -88,7 +88,7 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
 
           {/* Attribute Status Indicator */}
           <div className="text-sm text-gray-600 mb-2">
-            <span className="font-medium text-primary">
+            <span className="font-medium text-gray-700">
               {filledAttributes} out of {totalAttributes} attributes filled
             </span>
           </div>
@@ -96,7 +96,12 @@ export const CharacterWidget: React.FC<CharacterWidgetProps> = ({ character, onU
           {/* Progress Bar */}
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div 
-              className="bg-primary h-2 rounded-full transition-all duration-300"
+              className={`h-2 rounded-full transition-all duration-300 ${
+                character.type === 'human' ? 'bg-blue-500' :
+                character.type === 'animal' ? 'bg-green-500' :
+                character.type === 'creature' ? 'bg-purple-500' :
+                'bg-indigo-500'
+              }`}
               style={{ width: `${(filledAttributes / totalAttributes) * 100}%` }}
             ></div>
           </div>
