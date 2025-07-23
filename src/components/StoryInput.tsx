@@ -281,7 +281,7 @@ export const StoryInput: React.FC<StoryInputProps> = ({
       <SpinningCatLoader isVisible={isGeneratingImages} message="Creating magical images from your story... 🎨✨" />
       
       <Layout showSidebar={false} currentView="create" onBack={onBack}>
-        {/* Main Content - Grid layout for left panel and right space */}
+        {/* Main Content - Grid layout for left panel and right widgets */}
         <div className="grid grid-cols-2 gap-4">
           {/* Left Column - Story Input */}
           <div>
@@ -387,10 +387,22 @@ export const StoryInput: React.FC<StoryInputProps> = ({
             )}
           </div>
 
-          {/* Right Column - Reserved for Generated Images */}
+          {/* Right Column - Character Sidebar and Generated Images */}
           <div>
+            {/* Character Sidebar */}
+            <CharacterSidebar 
+              characters={characters} 
+              loading={isExtractingCharacters} 
+              onCharacterUpdate={handleCharacterUpdate} 
+            />
+            
+            {/* Enhanced Generated Images */}
             {(imageVersions.length > 0 || isGeneratingImages) && (
-              <EnhancedGeneratedImages imageVersions={imageVersions} loading={isGeneratingImages} story={story} />
+              <EnhancedGeneratedImages 
+                imageVersions={imageVersions} 
+                loading={isGeneratingImages} 
+                story={story} 
+              />
             )}
           </div>
         </div>
