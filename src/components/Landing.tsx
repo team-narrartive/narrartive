@@ -8,78 +8,73 @@ interface LandingProps {
   onLogin: () => void;
 }
 
-// Floating assets using your exact Supabase bucket structure
+// Floating assets using your exact Supabase bucket structure - optimized positions for perfect framing
 const floatingAssets = [
-  {
-    name: 'space_ship',
-    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
-    // Responsive positioning: tighter on mobile, base on medium, wider on large screens
-    position: { 
-      top: '15%', 
-      left: 'clamp(75%, 85%, 90%)'  // 75% mobile, 85% medium, 90% large
-    },
-    animation: 'animate-float-in-right',
-    delay: 'animate-delay-100'
-  },
   {
     name: 'moon',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/moon.png',
     position: { 
-      top: '8%', 
-      left: 'clamp(15%, 10%, 5%)'   // 15% mobile, 10% medium, 5% large
+      top: '10%', 
+      left: 'clamp(2%, 5%, 8%)'     // 2% mobile, 5% medium, 8% large - frames "Transform"
     },
     animation: 'animate-float-in-top',
-    delay: 'animate-delay-200'
+    delay: 'animate-delay-200',
+    size: 'clamp(160px, 12vw, 240px)'
+  },
+  {
+    name: 'space_ship',
+    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
+    position: { 
+      top: '12%', 
+      left: 'clamp(65%, 70%, 75%)'  // 65% mobile, 70% medium, 75% large - under "Visual"
+    },
+    animation: 'animate-float-in-right',
+    delay: 'animate-delay-100',
+    size: 'clamp(180px, 14vw, 260px)'
   },
   {
     name: 'dinasour',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/dinasour.png',
     position: { 
-      top: '35%', 
-      left: 'clamp(18%, 8%, 3%)'    // 18% mobile, 8% medium, 3% large
+      top: '30%', 
+      left: 'clamp(5%, 8%, 11%)'    // 5% mobile, 8% medium, 11% large - upwards flow
     },
     animation: 'animate-float-in-left',
-    delay: 'animate-delay-300'
+    delay: 'animate-delay-300',
+    size: 'clamp(220px, 16vw, 300px)'
   },
   {
     name: 'flowers',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
     position: { 
-      top: '65%', 
-      left: 'clamp(22%, 12%, 7%)'   // 22% mobile, 12% medium, 7% large
+      top: '50%', 
+      left: 'clamp(8%, 10%, 12%)'   // 8% mobile, 10% medium, 12% large - balanced bottom
     },
     animation: 'animate-float-in-bottom-left',
-    delay: 'animate-delay-400'
-  },
-  {
-    name: 'glowy',
-    url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/glowy.png',
-    position: { 
-      top: '20%', 
-      left: '50%'                   // Center stays centered
-    },
-    animation: 'animate-float-in-top',
-    delay: 'animate-delay-500'
+    delay: 'animate-delay-400',
+    size: 'clamp(170px, 13vw, 250px)'
   },
   {
     name: 'jupiter',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
     position: { 
-      top: '45%', 
-      left: 'clamp(78%, 88%, 93%)'  // 78% mobile, 88% medium, 93% large
+      top: '40%', 
+      left: 'clamp(72%, 75%, 78%)'  // 72% mobile, 75% medium, 78% large - near "Creative Minds"
     },
     animation: 'animate-float-in-right',
-    delay: 'animate-delay-600'
+    delay: 'animate-delay-600',
+    size: 'clamp(160px, 12vw, 240px)'
   },
   {
     name: 'leaf_green',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
     position: { 
-      top: '75%', 
-      left: 'clamp(80%, 90%, 95%)'  // 80% mobile, 90% medium, 95% large
+      top: '60%', 
+      left: 'clamp(75%, 80%, 85%)'  // 75% mobile, 80% medium, 85% large - fine-tuned symmetry
     },
     animation: 'animate-float-in-bottom-right',
-    delay: 'animate-delay-700'
+    delay: 'animate-delay-700',
+    size: 'clamp(150px, 11vw, 220px)'
   }
 ];
 
@@ -233,23 +228,20 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           minHeight: '100vh'
         }}
       >
-        {/* Floating Assets - Only show after reveal with responsive sizing */}
+        {/* Floating Assets - Only show after reveal with custom sizing per asset */}
         {assetsRevealed && floatingAssets.map((asset, index) => (
           <div
             key={asset.name}
             className={`
               absolute z-10 ${asset.animation} ${asset.delay}
               opacity-0 transition-transform duration-300 hover:scale-105 cursor-pointer
-              // Responsive sizing using Tailwind classes for different screen sizes
-              w-[clamp(120px,15vw,300px)] h-[clamp(120px,15vw,300px)]
-              sm:w-[clamp(140px,12vw,240px)] sm:h-[clamp(140px,12vw,240px)]
-              lg:w-[clamp(200px,10vw,280px)] lg:h-[clamp(200px,10vw,280px)]
-              xl:w-[clamp(240px,8vw,320px)] xl:h-[clamp(240px,8vw,320px)]
             `}
             style={{
               top: asset.position.top,
               left: asset.position.left,
-              transform: 'translate(-50%, -50%)'
+              transform: 'translate(-50%, -50%)',
+              width: asset.size,
+              height: asset.size
             }}
           >
             <img 
@@ -258,7 +250,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
               className="w-full h-full object-contain drop-shadow-lg"
               onError={(e) => {
                 // Fallback to emoji if image fails to load
-                const emojis = ['🚀', '🌙', '🦕', '🌸', '✨', '🪐', '🍃'];
+                const emojis = ['🌙', '🚀', '🦕', '🌸', '🪐', '🍃'];
                 e.currentTarget.style.display = 'none';
                 e.currentTarget.parentElement!.innerHTML = `<div class="text-6xl md:text-8xl lg:text-9xl">${emojis[index] || '✨'}</div>`;
               }}
