@@ -139,7 +139,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(220, 100%, 87%)' : 'hsl(0, 0%, 95%)', // Sky Blue (#BAE1FF)
+      bgColor: colorRevealed ? 'hsl(220, 100%, 92%)' : 'hsl(0, 0%, 95%)', // Very Light Sky Blue
       iconColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)', // Info color
       titleColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 20%)', // Info color
       borderColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)' // Info color
@@ -386,10 +386,10 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                    >
                     {feature.title}
                   </h4>
-                  <p 
-                    className="text-sm leading-relaxed font-medium flex-1 transition-all duration-300" 
-                    style={{ color: colorRevealed ? 'hsl(0, 0%, 20%)' : 'hsl(0, 0%, 40%)' }}
-                  >
+                   <p 
+                     className="text-sm leading-relaxed font-medium flex-1 transition-all duration-300" 
+                     style={{ color: colorRevealed ? 'hsl(0, 0%, 46%)' : 'hsl(0, 0%, 40%)' }}
+                   >
                     {feature.description}
                   </p>
                 </div>
@@ -422,16 +422,16 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
                 onClick={onGetStarted}
                 className="px-10 py-4 text-base font-semibold transition-all duration-200 text-white shadow-lg hover:shadow-xl"
                 style={{ 
-                  backgroundColor: 'hsl(30, 100%, 50%)', // Primary orange
-                  border: '1px solid hsl(30, 100%, 50%)',
+                  backgroundColor: 'hsl(270, 50%, 48%)', // Dark Purple
+                  border: '1px solid hsl(270, 50%, 48%)',
                   borderRadius: '16px'
                 }}
                 onMouseEnter={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = 'hsl(30, 100%, 40%)';
-                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(30, 100%, 50%, 0.3)';
+                  (e.target as HTMLElement).style.backgroundColor = 'hsl(270, 50%, 38%)';
+                  (e.target as HTMLElement).style.boxShadow = '0 10px 30px -10px hsla(270, 50%, 48%, 0.3)';
                 }}
                 onMouseLeave={(e) => {
-                  (e.target as HTMLElement).style.backgroundColor = 'hsl(30, 100%, 50%)';
+                  (e.target as HTMLElement).style.backgroundColor = 'hsl(270, 50%, 48%)';
                   (e.target as HTMLElement).style.boxShadow = '0 4px 20px -4px hsla(217,19%,24%,0.15)';
                 }}
               >
