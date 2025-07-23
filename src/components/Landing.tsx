@@ -13,49 +13,71 @@ const floatingAssets = [
   {
     name: 'space_ship',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/space_ship.png',
-    position: { top: '15%', left: '85%' },
+    // Responsive positioning: tighter on mobile, base on medium, wider on large screens
+    position: { 
+      top: '15%', 
+      left: 'clamp(75%, 85%, 90%)'  // 75% mobile, 85% medium, 90% large
+    },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-100'
   },
   {
     name: 'moon',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/moon.png',
-    position: { top: '8%', left: '10%' },
+    position: { 
+      top: '8%', 
+      left: 'clamp(15%, 10%, 5%)'   // 15% mobile, 10% medium, 5% large
+    },
     animation: 'animate-float-in-top',
     delay: 'animate-delay-200'
   },
   {
     name: 'dinasour',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/dinasour.png',
-    position: { top: '35%', left: '8%' },
+    position: { 
+      top: '35%', 
+      left: 'clamp(18%, 8%, 3%)'    // 18% mobile, 8% medium, 3% large
+    },
     animation: 'animate-float-in-left',
     delay: 'animate-delay-300'
   },
   {
     name: 'flowers',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/flowers.png',
-    position: { top: '65%', left: '12%' },
+    position: { 
+      top: '65%', 
+      left: 'clamp(22%, 12%, 7%)'   // 22% mobile, 12% medium, 7% large
+    },
     animation: 'animate-float-in-bottom-left',
     delay: 'animate-delay-400'
   },
   {
     name: 'glowy',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/glowy.png',
-    position: { top: '20%', left: '50%' },
+    position: { 
+      top: '20%', 
+      left: '50%'                   // Center stays centered
+    },
     animation: 'animate-float-in-top',
     delay: 'animate-delay-500'
   },
   {
     name: 'jupiter',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/jupiter.png',
-    position: { top: '45%', left: '88%' },
+    position: { 
+      top: '45%', 
+      left: 'clamp(78%, 88%, 93%)'  // 78% mobile, 88% medium, 93% large
+    },
     animation: 'animate-float-in-right',
     delay: 'animate-delay-600'
   },
   {
     name: 'leaf_green',
     url: 'https://yzmladsjrirvzzmaendi.supabase.co/storage/v1/object/public/assets/leaf_green.png',
-    position: { top: '75%', left: '90%' },
+    position: { 
+      top: '75%', 
+      left: 'clamp(80%, 90%, 95%)'  // 80% mobile, 90% medium, 95% large
+    },
     animation: 'animate-float-in-bottom-right',
     delay: 'animate-delay-700'
   }
@@ -211,20 +233,23 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
           minHeight: '100vh'
         }}
       >
-        {/* Floating Assets - Only show after reveal */}
+        {/* Floating Assets - Only show after reveal with responsive sizing */}
         {assetsRevealed && floatingAssets.map((asset, index) => (
           <div
             key={asset.name}
             className={`
               absolute z-10 ${asset.animation} ${asset.delay}
               opacity-0 transition-transform duration-300 hover:scale-105 cursor-pointer
+              // Responsive sizing using Tailwind classes for different screen sizes
+              w-[clamp(120px,15vw,300px)] h-[clamp(120px,15vw,300px)]
+              sm:w-[clamp(140px,12vw,240px)] sm:h-[clamp(140px,12vw,240px)]
+              lg:w-[clamp(200px,10vw,280px)] lg:h-[clamp(200px,10vw,280px)]
+              xl:w-[clamp(240px,8vw,320px)] xl:h-[clamp(240px,8vw,320px)]
             `}
             style={{
               top: asset.position.top,
               left: asset.position.left,
-              transform: 'translate(-50%, -50%)',
-              width: '240px',
-              height: '240px'
+              transform: 'translate(-50%, -50%)'
             }}
           >
             <img 
