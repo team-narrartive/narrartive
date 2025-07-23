@@ -99,28 +99,28 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
       icon: BookOpen,
       title: "AI Story Analysis",
       description: "Our AI automatically identifies characters and story elements from your text",
-      bgColor: colorRevealed ? 'hsl(270, 60%, 92%)' : 'hsl(0, 0%, 95%)', // Lavender
-      iconColor: colorRevealed ? 'hsl(280, 100%, 62%)' : 'hsl(0, 0%, 80%)', // Secondary Purple
-      titleColor: colorRevealed ? 'hsl(280, 100%, 62%)' : 'hsl(0, 0%, 20%)', // Secondary Purple
-      borderColor: colorRevealed ? 'hsl(280, 100%, 62%)' : 'hsl(0, 0%, 80%)' // Secondary Purple
+      bgColor: colorRevealed ? 'hsl(270, 60%, 95%)' : 'hsl(0, 0%, 95%)', // Purple - matching Dashboard Community Hub
+      iconColor: colorRevealed ? 'hsl(270, 50%, 55%)' : 'hsl(0, 0%, 80%)', // Purple - matching Dashboard Community Hub
+      titleColor: colorRevealed ? 'hsl(270, 50%, 55%)' : 'hsl(0, 0%, 20%)', // Purple - matching Dashboard Community Hub
+      borderColor: colorRevealed ? 'hsl(270, 50%, 55%)' : 'hsl(0, 0%, 80%)' // Purple - matching Dashboard Community Hub
     },
     {
       icon: Palette,
       title: "Visual Generation",
       description: "Transform your characters into stunning visual representations",
-      bgColor: colorRevealed ? 'hsl(39, 100%, 86%)' : 'hsl(0, 0%, 95%)', // Sunny Yellow
-      iconColor: colorRevealed ? 'hsl(36, 100%, 50%)' : 'hsl(0, 0%, 80%)', // Primary Orange
-      titleColor: colorRevealed ? 'hsl(36, 100%, 50%)' : 'hsl(0, 0%, 20%)', // Primary Orange
-      borderColor: colorRevealed ? 'hsl(36, 100%, 50%)' : 'hsl(0, 0%, 80%)' // Primary Orange
+      bgColor: colorRevealed ? 'rgb(255, 237, 213)' : 'hsl(0, 0%, 95%)', // Orange - matching Dashboard Create New Story (orange-50)
+      iconColor: colorRevealed ? 'rgb(249, 115, 22)' : 'hsl(0, 0%, 80%)', // Orange - matching Dashboard Create New Story (orange-500)
+      titleColor: colorRevealed ? 'rgb(249, 115, 22)' : 'hsl(0, 0%, 20%)', // Orange - matching Dashboard Create New Story (orange-500)
+      borderColor: colorRevealed ? 'rgb(249, 115, 22)' : 'hsl(0, 0%, 80%)' // Orange - matching Dashboard Create New Story (orange-500)
     },
     {
       icon: Users,
       title: "Community Sharing",
       description: "Share your stories and discover amazing creations from other users",
-      bgColor: colorRevealed ? 'hsl(220, 100%, 92%)' : 'hsl(0, 0%, 95%)', // Very Light Sky Blue
-      iconColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)', // Info color
-      titleColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 20%)', // Info color
-      borderColor: colorRevealed ? 'hsl(188, 75%, 41%)' : 'hsl(0, 0%, 80%)' // Info color
+      bgColor: colorRevealed ? 'hsl(200, 80%, 95%)' : 'hsl(0, 0%, 95%)', // Blue - matching Dashboard My Projects
+      iconColor: colorRevealed ? 'hsl(200, 70%, 55%)' : 'hsl(0, 0%, 80%)', // Blue - matching Dashboard My Projects
+      titleColor: colorRevealed ? 'hsl(200, 70%, 55%)' : 'hsl(0, 0%, 20%)', // Blue - matching Dashboard My Projects
+      borderColor: colorRevealed ? 'hsl(200, 70%, 55%)' : 'hsl(0, 0%, 80%)' // Blue - matching Dashboard My Projects
     }
   ];
 
