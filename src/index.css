@@ -46,6 +46,17 @@
     --sage-green: 120 60% 95%;
     --sage-green-dark: 120 60% 85%;
 
+    /* Character Type Colors */
+    --character-human: 269 100% 71%;
+    --character-human-light: 269 100% 95%;
+    --character-human-foreground: 0 0% 100%;
+    --character-animal: 217 91% 60%;
+    --character-animal-light: 217 91% 95%;
+    --character-animal-foreground: 0 0% 100%;
+    --character-object: 43 96% 41%;
+    --character-object-light: 43 96% 95%;
+    --character-object-foreground: 0 0% 100%;
+
     /* Background reveal color */
     --background-reveal: 30 100% 95%;
 

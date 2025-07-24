@@ -101,6 +101,21 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				'character-human': {
+					DEFAULT: 'hsl(var(--character-human))',
+					light: 'hsl(var(--character-human-light))',
+					foreground: 'hsl(var(--character-human-foreground))'
+				},
+				'character-animal': {
+					DEFAULT: 'hsl(var(--character-animal))',
+					light: 'hsl(var(--character-animal-light))',
+					foreground: 'hsl(var(--character-animal-foreground))'
+				},
+				'character-object': {
+					DEFAULT: 'hsl(var(--character-object))',
+					light: 'hsl(var(--character-object-light))',
+					foreground: 'hsl(var(--character-object-foreground))'
 				}
 			},
 			borderRadius: {
