@@ -176,6 +176,10 @@ export type Database = {
           view_count: number | null
         }[]
       }
+      get_public_author_display_name: {
+        Args: { author_id: string }
+        Returns: string
+      }
       increment_story_likes: {
         Args: { p_story_id: string }
         Returns: {
