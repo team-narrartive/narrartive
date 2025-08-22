@@ -167,12 +167,12 @@ export type Database = {
         }
         Insert: {
           created_at?: string | null
-          display_name?: string | null
+          display_name?: never
           id?: string | null
         }
         Update: {
           created_at?: string | null
-          display_name?: string | null
+          display_name?: never
           id?: string | null
         }
         Relationships: []
