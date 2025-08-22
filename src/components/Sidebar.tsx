@@ -49,7 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onToggle, currentView,
         <div className="flex items-center space-x-3">
           <div className={`flex-shrink-0 transition-all duration-300 ${isOpen ? 'w-8 h-8' : 'w-8 h-8'}`}>
             <img 
-              src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+              src="/assets/logo.png" 
               alt="NarrArtive Logo" 
               className="w-full h-full object-contain"
             />

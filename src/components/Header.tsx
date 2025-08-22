@@ -47,7 +47,7 @@ export const Header: React.FC<HeaderProps> = ({ showSidebar, onSettings, onLogou
           {!showSidebar && !onBack && (
             <div className="flex items-center space-x-2">
               <img 
-                src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                src="/assets/logo.png" 
                 alt="NarrArtive Logo" 
                 className="w-8 h-8"
               />

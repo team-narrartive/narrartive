@@ -149,7 +149,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 flex items-center justify-center">
                 <img 
-                  src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                  src="/assets/logo.png" 
                   alt="NarrArtive Logo" 
                   className="w-10 h-10 object-contain"
                 />
@@ -428,7 +428,7 @@ export const Landing: React.FC<LandingProps> = ({ onGetStarted, onLogin }) => {
             <div className="flex items-center justify-center space-x-3 mb-4">
               <div className="w-8 h-8 flex items-center justify-center">
                 <img 
-                  src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                  src="/assets/logo.png" 
                   alt="NarrArtive Logo" 
                   className="w-8 h-8 object-contain"
                 />

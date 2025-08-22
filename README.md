@@ -1,73 +1,78 @@
-# Welcome to your Lovable project
+# NarrArtive
 
-## Project info
+A modern React application for transforming stories into visual narratives using AI-powered character identification and image generation.
 
-**URL**: https://lovable.dev/projects/9cb335b0-320b-4fa2-90ce-5bf358c98de9
+## Features
 
-## How can I edit this code?
+- **Story Analysis**: AI-powered character identification and story element extraction
+- **Visual Generation**: Transform characters into stunning visual representations
+- **Community Sharing**: Share stories and discover creations from other users
+- **Real-time Editor**: Interactive canvas for editing and customizing visuals
+- **User Authentication**: Secure authentication and user profiles
 
-There are several ways of editing your application.
+## Tech Stack
 
-**Use Lovable**
+- **Frontend**: React 18, TypeScript, Vite
+- **UI Components**: shadcn/ui, Tailwind CSS
+- **Backend**: Supabase (Authentication, Database, Storage)
+- **State Management**: React Query (TanStack Query)
+- **Routing**: React Router DOM
+- **Styling**: Tailwind CSS with custom design tokens
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/9cb335b0-320b-4fa2-90ce-5bf358c98de9) and start prompting.
+## Getting Started
 
-Changes made via Lovable will be committed automatically to this repo.
+### Prerequisites
 
-**Use your preferred IDE**
+- Node.js (v16 or higher)
+- npm or yarn
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Installation
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+1. Clone the repository:
+```bash
+git clone <your-repo-url>
+cd narrattive
+```
 
-Follow these steps:
+2. Install dependencies:
+```bash
+npm install
+```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+3. Start the development server:
+```bash
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+4. Open your browser and navigate to `http://localhost:8080`
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+## Available Scripts
 
-**Use GitHub Codespaces**
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run build:dev` - Build in development mode
+- `npm run preview` - Preview production build locally
+- `npm run lint` - Run ESLint
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Project Structure
 
-## What technologies are used for this project?
+```
+src/
+├── components/          # React components
+├── hooks/              # Custom React hooks
+├── integrations/       # External service integrations
+├── lib/               # Utility functions
+├── pages/             # Page components
+└── types/             # TypeScript type definitions
+```
 
-This project is built with:
+## Contributing
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## How can I deploy this project?
+## License
 
-Simply open [Lovable](https://lovable.dev/projects/9cb335b0-320b-4fa2-90ce-5bf358c98de9) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is private and proprietary.

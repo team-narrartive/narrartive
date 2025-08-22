@@ -147,7 +147,7 @@ export const Auth: React.FC<AuthProps> = ({ onSuccess, onBack }) => {
             <div className="text-center mb-8">
               <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg border border-gray-100">
                 <img 
-                  src="/lovable-uploads/5ad0184b-23a4-4c18-a55d-19eb10875bb1.png" 
+                  src="/assets/logo.png" 
                   alt="NarrArtive Logo" 
                   className="w-8 h-8"
                 />
