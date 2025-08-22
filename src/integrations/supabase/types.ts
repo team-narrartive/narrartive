@@ -119,6 +119,13 @@ export type Database = {
             referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "fk_stories_user_id"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "public_author_profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_story_likes: {
@@ -152,7 +159,24 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      public_author_profiles: {
+        Row: {
+          created_at: string | null
+          display_name: string | null
+          id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          display_name?: string | null
+          id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       decrement_story_likes: {
